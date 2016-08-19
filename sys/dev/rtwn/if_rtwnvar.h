@@ -23,7 +23,7 @@
 
 #include "opt_rtwn.h"
 
-#define RTWN_TX_DESC_SIZE	40
+#define RTWN_TX_DESC_SIZE	64
 
 #define RTWN_RXBUFSZ		(8 * 1024)
 #define RTWN_TXBUFSZ		(RTWN_TX_DESC_SIZE + IEEE80211_MAX_LEN)
