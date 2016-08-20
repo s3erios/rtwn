@@ -69,8 +69,8 @@ static const struct rtwn_mac_prog rtl8812au_mac_no_ext_pa_lna[] = {
  */
 #define R12A_COND_GPA		0x01
 #define R12A_COND_APA		0x02
-#define R12A_COND_GLNA	0x04
-#define R12A_COND_ALNA	0x08
+#define R12A_COND_GLNA		0x04
+#define R12A_COND_ALNA		0x08
 #define R12A_COND_TYPE(t)	((t) << 4)
 
 static const uint16_t rtl8812au_bb_regs0[] = {
