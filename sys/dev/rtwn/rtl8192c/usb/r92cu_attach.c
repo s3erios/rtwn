@@ -74,15 +74,13 @@ r92cu_postattach(struct rtwn_softc *sc)
 			sc->bb_size = nitems(rtl8188ru_bb);
 			sc->rf_prog = &rtl8188ru_rf[0];
 		} else {
-			if (rs->board_type == R92C_BOARD_TYPE_MINICARD) {
-				sc->bb_prog = &rtl8188ce_bb[0];
-				sc->bb_size = nitems(rtl8188ce_bb);
+			if (rs->board_type == R92C_BOARD_TYPE_MINICARD)
 				sc->rf_prog = &rtl8188ce_rf[0];
-			} else {
-				sc->bb_prog = &rtl8188cu_bb[0];
-				sc->bb_size = nitems(rtl8188cu_bb);
+			else
 				sc->rf_prog = &rtl8188cu_rf[0];
-			}
+
+			sc->bb_prog = &rtl8188cu_bb[0];
+			sc->bb_size = nitems(rtl8188cu_bb);
 		}
 	} else {
 		if (rs->board_type == R92C_BOARD_TYPE_MINICARD) {
