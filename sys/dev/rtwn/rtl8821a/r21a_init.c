@@ -48,8 +48,8 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/rtl8812a/r12a_var.h>
 
 #include <dev/rtwn/rtl8821a/r21a.h>
-#include <dev/rtwn/rtl8821a/r21a_reg.h>
 #include <dev/rtwn/rtl8821a/r21a_priv.h>
+#include <dev/rtwn/rtl8821a/r21a_reg.h>
 
 
 int

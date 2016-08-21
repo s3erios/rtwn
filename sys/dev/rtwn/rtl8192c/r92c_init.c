@@ -49,18 +49,38 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/if_rtwn_debug.h>
 
 #include <dev/rtwn/rtl8192c/r92c.h>
+#include <dev/rtwn/rtl8192c/r92c_priv.h>
 #include <dev/rtwn/rtl8192c/r92c_reg.h>
 #include <dev/rtwn/rtl8192c/r92c_var.h>
 
 
-/* XXX TODO */
 int
 r92c_check_condition(struct rtwn_softc *sc, const uint8_t cond[])
 {
+	struct r92c_softc *rs = sc->sc_priv;
+	uint8_t mask;
+	int i;
+
 	if (cond[0] == 0)
 		return (1);
 
-	KASSERT(0, ("not implemented\n"));
+	RTWN_DPRINTF(sc, RTWN_DEBUG_RESET,
+	    "%s: condition byte 0: %02X; chip %02X, board %02X\n",
+	    __func__, cond[0], rs->chip, rs->board_type);
+
+	if (!(rs->chip & R92C_CHIP_92C)) {
+		if (rs->board_type == R92C_BOARD_TYPE_HIGHPA)
+			mask = R92C_COND_RTL8188RU;
+		else if (rs->board_type == R92C_BOARD_TYPE_MINICARD)
+			mask = R92C_COND_RTL8188CE;
+		else
+			mask = R92C_COND_RTL8188CU;
+	} else
+		mask = R92C_COND_RTL8192CE;
+
+	for (i = 0; i < RTWN_MAX_CONDITIONS && cond[i] != 0; i++)
+		if ((cond[i] & mask) == mask)
+			return (1);
 
 	return (0);
 }

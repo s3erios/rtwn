@@ -74,17 +74,9 @@ r92ce_postattach(struct rtwn_softc *sc)
 	if (!(rs->chip & R92C_CHIP_92C)) {
 		sc->bb_prog = &rtl8192ce_bb_1t[0];
 		sc->bb_size = nitems(rtl8192ce_bb_1t);
-
-		if (rs->board_type == R92C_BOARD_TYPE_MINICARD)
-			sc->rf_prog = &rtl8188ce_rf[0];
-		else if (rs->board_type == R92C_BOARD_TYPE_HIGHPA)
-			sc->rf_prog = &rtl8188ru_rf[0];
-		else
-			sc->rf_prog = &rtl8188cu_rf[0];
 	} else {
 		sc->bb_prog = &rtl8192ce_bb_2t[0];
 		sc->bb_size = nitems(rtl8192ce_bb_2t);
-		sc->rf_prog = &rtl8192ce_rf[0];
 	}
 
 	if (!(rs->chip & R92C_CHIP_92C) &&
@@ -226,6 +218,7 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	sc->mac_size			= nitems(rtl8192ce_mac);
 	sc->agc_prog			= &rtl8192ce_agc[0];
 	sc->agc_size			= nitems(rtl8192ce_agc);
+	sc->rf_prog			= &rtl8192c_rf[0];
 
 	sc->ntx				= 2;	/* XXX TODO: static configuration */
 	sc->page_count			= R92CE_TX_PAGE_COUNT;
