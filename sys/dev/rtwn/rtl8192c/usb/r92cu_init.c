@@ -170,7 +170,8 @@ r92cu_power_on(struct rtwn_softc *sc)
 	    R92C_CR_HCI_TXDMA_EN | R92C_CR_TXDMA_EN |
 	    R92C_CR_HCI_RXDMA_EN | R92C_CR_RXDMA_EN |
 	    R92C_CR_PROTOCOL_EN | R92C_CR_SCHEDULE_EN |
-	    (sc->sc_hwcrypto ? R92C_CR_ENSEC : 0) | R92C_CR_CALTMR_EN));
+	    ((sc->sc_hwcrypto != RTWN_CRYPTO_SW) ? R92C_CR_ENSEC : 0) |
+	    R92C_CR_CALTMR_EN));
 
 	RTWN_CHK(rtwn_write_1(sc, 0xfe10, 0x19));
 

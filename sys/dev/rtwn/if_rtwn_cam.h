@@ -19,10 +19,12 @@
 #ifndef IF_RTWN_CAM_H
 #define IF_RTWN_CAM_H
 
+void	rtwn_init_cam(struct rtwn_softc *);
+void	rtwn_init_seccfg(struct rtwn_softc *);
 int	rtwn_key_alloc(struct ieee80211vap *, struct ieee80211_key *,
 	    ieee80211_keyix *, ieee80211_keyix *);
 int	rtwn_key_set(struct ieee80211vap *, const struct ieee80211_key *);
+int	rtwn_init_static_keys(struct rtwn_softc *, struct rtwn_vap *);
 int	rtwn_key_delete(struct ieee80211vap *, const struct ieee80211_key *);
-void	rtwn_cam_init(struct rtwn_softc *);
 
 #endif	/* IF_RTWN_CAM_H */

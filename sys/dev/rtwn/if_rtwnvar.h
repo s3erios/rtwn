@@ -109,6 +109,8 @@ struct rtwn_vap {
 	struct callout		tsf_sync_adhoc;
 	struct task		tsf_sync_adhoc_task;
 
+	const struct ieee80211_key	*keys[IEEE80211_WEP_NKID];
+
 	int			(*newstate)(struct ieee80211vap *,
 				    enum ieee80211_state, int);
 	void			(*recv_mgmt)(struct ieee80211_node *,
@@ -146,13 +148,23 @@ enum {
 	RTWN_RATECTL_MAX
 };
 
+/*
+ * Control h/w crypto usage.
+ */
+enum {
+	RTWN_CRYPTO_SW,
+	RTWN_CRYPTO_PAIR,
+	RTWN_CRYPTO_FULL,
+	RTWN_CRYPTO_MAX,
+};
+
 struct rtwn_softc {
 	struct ieee80211com	sc_ic;
 	struct mbufq		sc_snd;
 	device_t		sc_dev;
 
 	uint32_t		sc_debug;
-	bool			sc_hwcrypto;
+	int			sc_hwcrypto;
 	int			sc_ratectl_sysctl;
 	int			sc_ratectl;
 

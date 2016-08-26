@@ -54,7 +54,7 @@ __FBSDID("$FreeBSD$");
 
 
 void
-rtwn_cam_init(struct rtwn_softc *sc)
+rtwn_init_cam(struct rtwn_softc *sc)
 {
 	/* Invalidate all CAM entries. */
 	rtwn_write_4(sc, R92C_CAMCMD,
@@ -76,54 +76,120 @@ rtwn_cam_write(struct rtwn_softc *sc, uint32_t addr, uint32_t data)
 	return (error);
 }
 
+void
+rtwn_init_seccfg(struct rtwn_softc *sc)
+{
+	uint16_t seccfg;
+
+	/* Select decryption / encryption flags. */
+	seccfg = 0;
+	switch (sc->sc_hwcrypto) {
+	case RTWN_CRYPTO_SW:
+		break;	/* nothing to do */
+	case RTWN_CRYPTO_PAIR:
+		seccfg = R92C_SECCFG_TXUCKEY_DEF | R92C_SECCFG_RXUCKEY_DEF |
+		    R92C_SECCFG_TXENC_ENA | R92C_SECCFG_RXDEC_ENA |
+		    R92C_SECCFG_MC_SRCH_DIS;
+		break;
+	case RTWN_CRYPTO_FULL:
+		seccfg = R92C_SECCFG_TXUCKEY_DEF | R92C_SECCFG_RXUCKEY_DEF |
+		    R92C_SECCFG_TXENC_ENA | R92C_SECCFG_RXDEC_ENA |
+		    R92C_SECCFG_TXBCKEY_DEF | R92C_SECCFG_RXBCKEY_DEF;
+		break;
+	default:
+		KASSERT(0, ("%s: case %d was not handled\n", __func__,
+		    sc->sc_hwcrypto));
+		break;
+	}
+
+	RTWN_DPRINTF(sc, RTWN_DEBUG_KEY, "%s: seccfg %04X, hwcrypto %d\n",
+	    __func__, seccfg, sc->sc_hwcrypto);
+
+	rtwn_write_2(sc, R92C_SECCFG, seccfg);
+}
+
 int
 rtwn_key_alloc(struct ieee80211vap *vap, struct ieee80211_key *k,
     ieee80211_keyix *keyix, ieee80211_keyix *rxkeyix)
 {
 	struct rtwn_softc *sc = vap->iv_ic->ic_softc;
-	uint8_t i;
+	int i, start;
 
-	if (!(&vap->iv_nw_keys[0] <= k &&
-	     k < &vap->iv_nw_keys[IEEE80211_WEP_NKID])) {
-		if (!(k->wk_flags & IEEE80211_KEY_SWCRYPT)) {
-			RTWN_LOCK(sc);
-			/*
-			 * Current slot usage:
-			 * everything for pairwise keys.
-			 */
-			for (i = 0; i < sc->cam_entry_limit; i++) {
-				if (isclr(sc->keys_bmap, i)) {
-					setbit(sc->keys_bmap, i);
-					*keyix = i;
-					break;
-				}
-			}
-			RTWN_UNLOCK(sc);
-			if (i == sc->cam_entry_limit) {
-				device_printf(sc->sc_dev,
-				    "%s: no free space in the key table\n",
-				    __func__);
-				return 0;
-			}
-		} else
-			*keyix = 0;
-	} else {
+	if (&vap->iv_nw_keys[0] <= k &&
+	    k < &vap->iv_nw_keys[IEEE80211_WEP_NKID]) {
 		*keyix = k - vap->iv_nw_keys;
-		/* XXX will be overridden during group key handshake */
-		k->wk_flags |= IEEE80211_KEY_SWCRYPT;
+		if (sc->sc_hwcrypto != RTWN_CRYPTO_FULL) {
+			/* XXX will be overridden during group key handshake */
+			k->wk_flags |= IEEE80211_KEY_SWCRYPT;
+		} else {
+			RTWN_LOCK(sc);
+			if (isset(sc->keys_bmap, *keyix)) {
+				device_printf(sc->sc_dev,
+				    "%s: group key slot %d is already used!\n",
+				    __func__, *keyix);
+				/* XXX recover? */
+				RTWN_UNLOCK(sc);
+				return (0);
+			}
+
+			setbit(sc->keys_bmap, *keyix);
+			RTWN_UNLOCK(sc);
+		}
+
+		goto end;
 	}
+
+	start = sc->cam_entry_limit;
+	switch (sc->sc_hwcrypto) {
+	case RTWN_CRYPTO_SW:
+		k->wk_flags |= IEEE80211_KEY_SWCRYPT;
+		*keyix = 0;
+		goto end;
+	case RTWN_CRYPTO_PAIR:
+		/* all slots for pairwise keys. */
+		start = 0;
+		break;
+	case RTWN_CRYPTO_FULL:
+		/* first 4 - for group keys, others for pairwise. */
+		start = 4;
+		break;
+	default:
+		KASSERT(0, ("%s: case %d was not handled!\n",
+		    __func__, sc->sc_hwcrypto));
+		break;
+	}
+
+	RTWN_LOCK(sc);
+	for (i = start; i < sc->cam_entry_limit; i++) {
+		if (isclr(sc->keys_bmap, i)) {
+			setbit(sc->keys_bmap, i);
+			*keyix = i;
+			break;
+		}
+	}
+	RTWN_UNLOCK(sc);
+	if (i == sc->cam_entry_limit) {
+		device_printf(sc->sc_dev,
+		    "%s: no free space in the key table\n", __func__);
+		return (0);
+	}
+
+end:
 	*rxkeyix = *keyix;
-	return 1;
+	return (1);
 }
 
-static void
-rtwn_key_set_cb(struct rtwn_softc *sc, union sec_param *data)
+static int
+rtwn_key_set_cb0(struct rtwn_softc *sc, const struct ieee80211_key *k)
 {
-	struct ieee80211_key *k = &data->key;
 	uint8_t algo, keyid;
 	int i, error;
 
-	keyid = 0;
+	if (sc->sc_hwcrypto == RTWN_CRYPTO_FULL &&
+	    k->wk_keyix < IEEE80211_WEP_NKID)
+		keyid = k->wk_keyix;
+	else
+		keyid = 0;
 
 	/* Map net80211 cipher to HW crypto algorithm. */
 	switch (k->wk_cipher->ic_cipher) {
@@ -142,7 +208,7 @@ rtwn_key_set_cb(struct rtwn_softc *sc, union sec_param *data)
 	default:
 		device_printf(sc->sc_dev, "%s: unknown cipher %d\n",
 		    __func__, k->wk_cipher->ic_cipher);
-		return;
+		return (EINVAL);
 	}
 
 	RTWN_DPRINTF(sc, RTWN_DEBUG_KEY,
@@ -176,10 +242,39 @@ rtwn_key_set_cb(struct rtwn_softc *sc, union sec_param *data)
 	if (error != 0)
 		goto fail;
 
-	return;
+	return (0);
 
 fail:
 	device_printf(sc->sc_dev, "%s fails, error %d\n", __func__, error);
+	return (error);
+}
+
+static void
+rtwn_key_set_cb(struct rtwn_softc *sc, union sec_param *data)
+{
+	const struct ieee80211_key *k = &data->key;
+
+	(void) rtwn_key_set_cb0(sc, k);
+}
+
+int
+rtwn_init_static_keys(struct rtwn_softc *sc, struct rtwn_vap *rvp)
+{
+	int i, error;
+
+	if (sc->sc_hwcrypto != RTWN_CRYPTO_FULL)
+		return (0);		/* nothing to do */
+
+	for (i = 0; i < IEEE80211_WEP_NKID; i++) {
+		const struct ieee80211_key *k = rvp->keys[i];
+		if (k != NULL) {
+			error = rtwn_key_set_cb0(sc, k);
+			if (error != 0)
+				return (error);
+		}
+	}
+
+	return (0);
 }
 
 static void
@@ -216,13 +311,23 @@ rtwn_process_key(struct ieee80211vap *vap, const struct ieee80211_key *k,
 	    k < &vap->iv_nw_keys[IEEE80211_WEP_NKID]) {
 		struct ieee80211_key *k1 = &vap->iv_nw_keys[k->wk_keyix];
 
-		/*
-		 * Do not offload group keys;
-		 * multicast key search is too problematic with 2+ vaps.
-		 */
-		/* XXX fix net80211 instead */
-		k1->wk_flags |= IEEE80211_KEY_SWCRYPT;
-		return (k->wk_cipher->ic_setkey(k1));
+		if (sc->sc_hwcrypto != RTWN_CRYPTO_FULL) {
+			/* XXX fix net80211 instead */
+			k1->wk_flags |= IEEE80211_KEY_SWCRYPT;
+			return (k->wk_cipher->ic_setkey(k1));
+		} else {
+			struct rtwn_vap *rvp = RTWN_VAP(vap);
+
+			RTWN_LOCK(sc);
+			rvp->keys[k->wk_keyix] = (set ? k : NULL);
+			if ((sc->sc_flags & RTWN_RUNNING) == 0) {
+				if (!set)
+					clrbit(sc->keys_bmap, k->wk_keyix);
+				RTWN_UNLOCK(sc);
+				return (1);
+			}
+			RTWN_UNLOCK(sc);
+		}
 	}
 
 	return (!rtwn_cmd_sleepable(sc, k, sizeof(*k),

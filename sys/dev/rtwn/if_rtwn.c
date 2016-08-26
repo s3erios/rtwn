@@ -237,7 +237,7 @@ rtwn_attach(struct rtwn_softc *sc)
 		| IEEE80211_C_FF		/* Atheros fast-frames */
 		;
 
-	if (sc->sc_hwcrypto) {
+	if (sc->sc_hwcrypto != RTWN_CRYPTO_SW) {
 		ic->ic_cryptocaps =
 		    IEEE80211_CRYPTO_WEP |
 		    IEEE80211_CRYPTO_TKIP |
@@ -331,10 +331,13 @@ rtwn_sysctlattach(struct rtwn_softc *sc)
 	    "Control debugging printfs");
 #endif
 
-	sc->sc_hwcrypto = 1;
-	SYSCTL_ADD_BOOL(ctx, SYSCTL_CHILDREN(tree), OID_AUTO,
-	    "hwcrypto", CTLFLAG_RDTUN, &sc->sc_hwcrypto, sc->sc_hwcrypto,
-	    "Enable h/w crypto");
+	sc->sc_hwcrypto = RTWN_CRYPTO_PAIR;
+	SYSCTL_ADD_INT(ctx, SYSCTL_CHILDREN(tree), OID_AUTO,
+	    "hwcrypto", CTLFLAG_RDTUN, &sc->sc_hwcrypto,
+	    sc->sc_hwcrypto, "Enable h/w crypto: "
+	    "0 - disable, 1 - pairwise keys, 2 - all keys");
+	if (sc->sc_hwcrypto >= RTWN_CRYPTO_MAX)
+		sc->sc_hwcrypto = RTWN_CRYPTO_FULL;
 
 	sc->sc_ratectl_sysctl = RTWN_RATECTL_NET80211;
 	SYSCTL_ADD_INT(ctx, SYSCTL_CHILDREN(tree), OID_AUTO,
@@ -1842,14 +1845,18 @@ rtwn_init(struct rtwn_softc *sc)
 	rtwn_set_chan(sc, ic->ic_curchan);
 
 	/* Clear per-station keys table. */
-	rtwn_cam_init(sc);
+	rtwn_init_cam(sc);
 
 	/* Enable decryption / encryption. */
-	if (sc->sc_hwcrypto) {
-		rtwn_write_2(sc, R92C_SECCFG,
-		    R92C_SECCFG_TXUCKEY_DEF | R92C_SECCFG_RXUCKEY_DEF |
-		    R92C_SECCFG_TXENC_ENA | R92C_SECCFG_RXDEC_ENA |
-		    R92C_SECCFG_MC_SRCH_DIS);
+	rtwn_init_seccfg(sc);
+
+	/* Install static keys (if any). */
+	for (i = 0; i < nitems(sc->vaps); i++) {
+		if (sc->vaps[i] != NULL) {
+			error = rtwn_init_static_keys(sc, sc->vaps[i]);
+			if (error != 0)
+				goto fail;
+		}
 	}
 
 	/* Initialize antenna selection. */
