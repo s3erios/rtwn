@@ -70,15 +70,6 @@ r92ce_postattach(struct rtwn_softc *sc)
 	struct r92c_softc *rs = sc->sc_priv;
 	struct ieee80211com *ic = &sc->sc_ic;
 
-	/* XXX convert to conditions */
-	if (!(rs->chip & R92C_CHIP_92C)) {
-		sc->bb_prog = &rtl8192ce_bb_1t[0];
-		sc->bb_size = nitems(rtl8192ce_bb_1t);
-	} else {
-		sc->bb_prog = &rtl8192ce_bb_2t[0];
-		sc->bb_size = nitems(rtl8192ce_bb_2t);
-	}
-
 	if (!(rs->chip & R92C_CHIP_92C) &&
 	    rs->board_type == R92C_BOARD_TYPE_HIGHPA)
 		rs->rs_txagc = &rtl8188ru_txagc[0];
@@ -216,6 +207,8 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 
 	sc->mac_prog			= &rtl8192ce_mac[0];
 	sc->mac_size			= nitems(rtl8192ce_mac);
+	sc->bb_prog			= &rtl8192ce_bb[0];
+	sc->bb_size			= nitems(rtl8192ce_bb);
 	sc->agc_prog			= &rtl8192ce_agc[0];
 	sc->agc_size			= nitems(rtl8192ce_agc);
 	sc->rf_prog			= &rtl8192c_rf[0];

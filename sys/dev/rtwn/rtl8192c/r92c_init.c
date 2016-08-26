@@ -75,8 +75,12 @@ r92c_check_condition(struct rtwn_softc *sc, const uint8_t cond[])
 			mask = R92C_COND_RTL8188CE;
 		else
 			mask = R92C_COND_RTL8188CU;
-	} else
-		mask = R92C_COND_RTL8192CE;
+	} else {
+		if (rs->board_type == R92C_BOARD_TYPE_MINICARD)
+			mask = R92C_COND_RTL8192CE;
+		else
+			mask = R92C_COND_RTL8192CU;
+	}
 
 	for (i = 0; i < RTWN_MAX_CONDITIONS && cond[i] != 0; i++)
 		if ((cond[i] & mask) == mask)

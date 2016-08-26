@@ -67,25 +67,6 @@ r92cu_postattach(struct rtwn_softc *sc)
 	struct r92c_softc *rs = sc->sc_priv;
 	struct ieee80211com *ic = &sc->sc_ic;
 
-	/* XXX convert to conditions */
-	if (!(rs->chip & R92C_CHIP_92C)) {
-		if (rs->board_type == R92C_BOARD_TYPE_HIGHPA) {
-			sc->bb_prog = &rtl8188ru_bb[0];
-			sc->bb_size = nitems(rtl8188ru_bb);
-		} else {
-			sc->bb_prog = &rtl8188cu_bb[0];
-			sc->bb_size = nitems(rtl8188cu_bb);
-		}
-	} else {
-		if (rs->board_type == R92C_BOARD_TYPE_MINICARD) {
-			sc->bb_prog = &rtl8192ce_bb[0];
-			sc->bb_size = nitems(rtl8192ce_bb);
-		} else {
-			sc->bb_prog = &rtl8192cu_bb[0];
-			sc->bb_size = nitems(rtl8192cu_bb);
-		}
-	}
-
 	if (!(rs->chip & R92C_CHIP_92C) &&
 	    rs->board_type == R92C_BOARD_TYPE_HIGHPA) {
 		sc->agc_prog = &rtl8188ru_agc[0];
@@ -218,6 +199,8 @@ r92cu_attach(struct rtwn_usb_softc *uc)
 
 	sc->mac_prog			= &rtl8192cu_mac[0];
 	sc->mac_size			= nitems(rtl8192cu_mac);
+	sc->bb_prog			= &rtl8192cu_bb[0];
+	sc->bb_size			= nitems(rtl8192cu_bb);
 	sc->rf_prog			= &rtl8192c_rf[0];
 
 	sc->page_count			= R92CU_TX_PAGE_COUNT;
