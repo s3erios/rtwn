@@ -131,7 +131,7 @@ r88e_macid_enable_link(struct rtwn_softc *sc, int id, int enable)
 }
 
 void
-r88e_set_media_status(struct rtwn_softc *sc, uint8_t macid)
+r88e_set_media_status(struct rtwn_softc *sc, int macid)
 {
 	struct r88e_fw_cmd_msrrpt status;
 

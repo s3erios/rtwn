@@ -82,7 +82,7 @@ void	r12a_set_band_5ghz(struct rtwn_softc *);
 
 /* r12a_fw.c */
 void	r12a_fw_reset(struct rtwn_softc *, int);
-void	r12a_set_media_status(struct rtwn_softc *, uint8_t);
+void	r12a_set_media_status(struct rtwn_softc *, int);
 int	r12a_set_pwrmode(struct rtwn_softc *, struct ieee80211vap *,
 	    int);
 void	r12a_iq_calib_fw(struct rtwn_softc *);

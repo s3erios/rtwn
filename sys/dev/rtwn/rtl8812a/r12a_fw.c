@@ -73,7 +73,7 @@ r12a_fw_reset(struct rtwn_softc *sc, int reason)
 }
 
 void
-r12a_set_media_status(struct rtwn_softc *sc, uint8_t macid)
+r12a_set_media_status(struct rtwn_softc *sc, int macid)
 {
 	struct r12a_fw_cmd_msrrpt status;
 	int error;

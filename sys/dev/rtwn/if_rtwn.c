@@ -1680,7 +1680,7 @@ rtwn_newassoc(struct ieee80211_node *ni, int isnew)
 {
 	struct rtwn_softc *sc = ni->ni_ic->ic_softc;
 	struct rtwn_node *un = RTWN_NODE(ni);
-	uint8_t id;
+	int id;
 
 	if (!isnew)
 		return;

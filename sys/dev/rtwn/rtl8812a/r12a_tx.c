@@ -178,8 +178,8 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	struct rtwn_vap *uvp = RTWN_VAP(vap);
 	struct ieee80211_frame *wh;
 	struct r12au_tx_desc *txd;	/* XXX */
-	uint8_t macid, type, tid, qos, qsel;
-	int hasqos, ismcast;
+	uint8_t type, tid, qos, qsel;
+	int hasqos, ismcast, macid;
 
 	wh = mtod(m, struct ieee80211_frame *);
 	type = wh->i_fc[0] & IEEE80211_FC0_TYPE_MASK;

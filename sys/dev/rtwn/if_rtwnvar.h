@@ -32,8 +32,8 @@
 #define RTWN_CAM_ENTRY_LIMIT	64
 
 #define RTWN_MACID_BC		1	/* Broadcast. */
-#define RTWN_MACID_UNDEFINED	(uint8_t)-1
-#define RTWN_MACID_VALID 	0x80
+#define RTWN_MACID_UNDEFINED	0x7fff
+#define RTWN_MACID_VALID 	0x8000
 #define RTWN_MACID_LIMIT	128
 
 #define RTWN_TX_TIMEOUT	5000	/* ms */
@@ -78,7 +78,7 @@ struct rtwn_softc;
 
 union sec_param {
 	struct ieee80211_key	key;
-	uint8_t			macid;
+	int			macid;
 };
 
 #define CMD_FUNC_PROTO		void (*func)(struct rtwn_softc *, \
@@ -92,7 +92,7 @@ struct rtwn_cmdq {
 
 struct rtwn_node {
 	struct ieee80211_node	ni;	/* must be the first */
-	uint8_t			id;
+	int			id;
 	int8_t			last_rssi;
 	int			avg_pwdb;
 };
@@ -308,7 +308,7 @@ struct rtwn_softc {
 	void		(*sc_beacon_select)(struct rtwn_softc *, int);
 	void		(*sc_set_chan)(struct rtwn_softc *,
 			    struct ieee80211_channel *);
-	void		(*sc_set_media_status)(struct rtwn_softc *, uint8_t);
+	void		(*sc_set_media_status)(struct rtwn_softc *, int);
 #ifndef RTWN_WITHOUT_UCODE
 	int		(*sc_set_rsvd_page)(struct rtwn_softc *, int, int,
 			    int);

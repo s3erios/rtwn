@@ -64,7 +64,7 @@ void	r92c_scan_end(struct ieee80211com *);
 #ifndef RTWN_WITHOUT_UCODE
 void	r92c_fw_reset(struct rtwn_softc *, int);
 #endif
-void	r92c_joinbss_rpt(struct rtwn_softc *, uint8_t);
+void	r92c_joinbss_rpt(struct rtwn_softc *, int);
 #ifndef RTWN_WITHOUT_UCODE
 int	r92c_set_rsvd_page(struct rtwn_softc *, int, int, int);
 int	r92c_set_pwrmode(struct rtwn_softc *, struct ieee80211vap *, int);

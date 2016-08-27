@@ -187,7 +187,7 @@ r92c_get_rates(struct ieee80211_node *ni, uint32_t *rates, int *maxrate,
 }
 
 static void
-r92c_init_mrr_rate(struct rtwn_softc *sc, uint8_t macid)
+r92c_init_mrr_rate(struct rtwn_softc *sc, int macid)
 {
 	struct ieee80211_node *ni;
 	uint32_t rates, basicrates;
@@ -213,7 +213,7 @@ r92c_init_mrr_rate(struct rtwn_softc *sc, uint8_t macid)
 }
 
 void
-r92c_joinbss_rpt(struct rtwn_softc *sc, uint8_t macid)
+r92c_joinbss_rpt(struct rtwn_softc *sc, int macid)
 {
 #ifndef RTWN_WITHOUT_UCODE
 	struct r92c_softc *rs = sc->sc_priv;
