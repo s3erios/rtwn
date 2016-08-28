@@ -314,6 +314,7 @@ struct rtwn_softc {
 			    int);
 	int		(*sc_set_pwrmode)(struct rtwn_softc *,
 			    struct ieee80211vap *, int);
+	void		(*sc_set_rssi)(struct rtwn_softc *);
 #endif
 	int8_t		(*sc_get_rssi_cck)(struct rtwn_softc *, void *);
 	int8_t		(*sc_get_rssi_ofdm)(struct rtwn_softc *, void *);
@@ -498,6 +499,8 @@ void	rtwn_suspend(struct rtwn_softc *);
 	    (_resp), (_null), (_qos_null)))
 #define rtwn_set_pwrmode(_sc, _vap, _off) \
 	(((_sc)->sc_set_pwrmode)((_sc), (_vap), (_off)))
+#define rtwn_set_rssi(_sc) \
+	(((_sc)->sc_set_rssi)((_sc)))
 #endif
 #define rtwn_classify_intr(_sc, _buf, _len) \
 	(((_sc)->sc_classify_intr)((_sc), (_buf), (_len)))

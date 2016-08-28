@@ -149,6 +149,7 @@ r88eu_attach(struct rtwn_usb_softc *uc)
 #ifndef RTWN_WITHOUT_UCODE
 	sc->sc_set_rsvd_page		= r88e_set_rsvd_page;
 	sc->sc_set_pwrmode		= r88e_set_pwrmode;
+	sc->sc_set_rssi			= rtwn_nop_softc;	/* XXX TODO? */
 #endif
 	sc->sc_beacon_init		= r92c_beacon_init;
 	sc->sc_beacon_enable		= r88e_beacon_enable;

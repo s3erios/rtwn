@@ -68,6 +68,7 @@ void	r92c_joinbss_rpt(struct rtwn_softc *, int);
 #ifndef RTWN_WITHOUT_UCODE
 int	r92c_set_rsvd_page(struct rtwn_softc *, int, int, int);
 int	r92c_set_pwrmode(struct rtwn_softc *, struct ieee80211vap *, int);
+void	r92c_set_rssi(struct rtwn_softc *);
 void	r92c_handle_c2h_report(void *);
 #endif
 

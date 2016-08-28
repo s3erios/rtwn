@@ -316,7 +316,7 @@ r92ce_post_init(struct rtwn_softc *sc)
 		struct r92c_softc *rs = sc->sc_priv;
 
 		if (sc->sc_ratectl_sysctl == RTWN_RATECTL_FW) {
-			/* TODO: port from rtwn/implement */
+			/* XXX TODO: fix (see comment in r92cu_init.c) */
 			sc->sc_ratectl = RTWN_RATECTL_NET80211;
 		} else
 			sc->sc_ratectl = sc->sc_ratectl_sysctl;

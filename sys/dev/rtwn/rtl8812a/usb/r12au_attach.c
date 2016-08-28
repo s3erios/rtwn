@@ -204,6 +204,7 @@ r12au_attach(struct rtwn_usb_softc *uc)
 	sc->sc_set_media_status		= r12a_set_media_status;
 	sc->sc_set_rsvd_page		= r88e_set_rsvd_page;
 	sc->sc_set_pwrmode		= r12a_set_pwrmode;
+	sc->sc_set_rssi			= rtwn_nop_softc;	/* XXX TODO */
 #else
 	sc->sc_set_media_status		= rtwn_nop_softc_uint8;
 #endif

@@ -175,6 +175,7 @@ r92cu_attach(struct rtwn_usb_softc *uc)
 #ifndef RTWN_WITHOUT_UCODE
 	sc->sc_set_rsvd_page		= r92c_set_rsvd_page;
 	sc->sc_set_pwrmode		= r92c_set_pwrmode;
+	sc->sc_set_rssi			= r92c_set_rssi;
 #endif
 	sc->sc_beacon_init		= r92c_beacon_init;
 	sc->sc_beacon_enable		= r92c_beacon_enable;

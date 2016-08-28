@@ -107,6 +107,13 @@ rtwn_calib_cb(struct rtwn_softc *sc, union sec_param *data)
 	/* Do temperature compensation. */
 	rtwn_temp_calib(sc);
 
+#ifndef RTWN_WITHOUT_UCODE
+	if (sc->sc_ratectl == RTWN_RATECTL_FW) {
+		/* Refresh per-node RSSI. */
+		rtwn_set_rssi(sc);
+	}
+#endif
+
 	if (sc->vaps_running > sc->monvaps_running)
 		callout_reset(&sc->sc_calib_to, 2*hz, rtwn_calib_to, sc);
 }

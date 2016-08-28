@@ -57,6 +57,7 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/rtl8192c/r92c_reg.h>
 #include <dev/rtwn/rtl8192c/r92c_var.h>
 #include <dev/rtwn/rtl8192c/r92c_fw_cmd.h>
+#include <dev/rtwn/rtl8192c/r92c_tx_desc.h>
 
 
 #ifndef RTWN_WITHOUT_UCODE
@@ -186,8 +187,65 @@ r92c_get_rates(struct ieee80211_node *ni, uint32_t *rates, int *maxrate,
 	}
 }
 
+/*
+ * Initialize firmware rate adaptation.
+ */
+#ifndef RTWN_WITHOUT_UCODE
+static int
+r92c_send_ra_cmd(struct rtwn_softc *sc, int macid, uint32_t rates,
+    int maxrate, uint32_t basicrates, int maxbasicrate)
+{
+	struct r92c_fw_cmd_macid_cfg cmd;
+	uint8_t mode;
+	int error = 0;
+
+	/* XXX should be called directly from iv_newstate() for MACID_BC */
+	/* XXX joinbss, not send_ra_cmd() */
+#ifdef URTWM_TODO
+	/* NB: group addressed frames are done at 11bg rates for now */
+	if (ic->ic_curmode == IEEE80211_MODE_11B)
+		mode = R92C_RAID_11B;
+	else
+		mode = R92C_RAID_11BG;
+	/* XXX misleading 'mode' value here for unicast frames */
+	RTWN_DPRINTF(sc, RTWN_DEBUG_RA,
+	    "%s: mode 0x%x, rates 0x%08x, basicrates 0x%08x\n", __func__,
+	    mode, rates, basicrates);
+
+	/* Set rates mask for group addressed frames. */
+	cmd.macid = RTWN_MACID_BC | R92C_CMD_MACID_VALID;
+	cmd.mask = htole32(mode << 28 | basicrates);
+	error = rtwn_fw_cmd(sc, R92C_CMD_MACID_CONFIG, &cmd, sizeof(cmd));
+	if (error != 0) {
+		device_printf(sc->sc_dev,
+		    "could not set RA mask for broadcast station\n");
+		return (error);
+	}
+#endif
+
+	/* Set rates mask for unicast frames. */
+	if (maxrate >= RTWN_RIDX_MCS(0))
+		mode = R92C_RAID_11GN;
+	else if (maxrate >= RTWN_RIDX_OFDM6)
+		mode = R92C_RAID_11BG;
+	else
+		mode = R92C_RAID_11B;
+	cmd.macid = macid | R92C_CMD_MACID_VALID;
+	cmd.mask = htole32(mode << 28 | rates);
+	error = r92c_fw_cmd(sc, R92C_CMD_MACID_CONFIG, &cmd, sizeof(cmd));
+	if (error != 0) {
+		device_printf(sc->sc_dev,
+		    "%s: could not set RA mask for %d station\n",
+		    __func__, macid);
+		return (error);
+	}
+
+	return (0);
+}
+#endif
+
 static void
-r92c_init_mrr_rate(struct rtwn_softc *sc, int macid)
+r92c_init_ra(struct rtwn_softc *sc, int macid)
 {
 	struct ieee80211_node *ni;
 	uint32_t rates, basicrates;
@@ -205,7 +263,12 @@ r92c_init_mrr_rate(struct rtwn_softc *sc, int macid)
 	r92c_get_rates(ni, &rates, &maxrate, &basicrates, &maxbasicrate);
 	RTWN_NT_UNLOCK(sc);
 
-	/* TODO: f/w rate adaptation */
+#ifndef RTWN_WITHOUT_UCODE
+	if (sc->sc_ratectl == RTWN_RATECTL_FW) {
+		r92c_send_ra_cmd(sc, macid, rates, maxrate, basicrates,
+		    maxbasicrate);
+	}
+#endif
 
 	rtwn_write_1(sc, R92C_INIDATA_RATE_SEL(macid), maxrate);
 
@@ -219,20 +282,14 @@ r92c_joinbss_rpt(struct rtwn_softc *sc, int macid)
 	struct r92c_softc *rs = sc->sc_priv;
 	struct ieee80211vap *vap;
 	struct r92c_fw_cmd_joinbss_rpt cmd;
-#endif
 
-	/* TODO: init rates for RTWN_MACID_BC. */
-	if (macid & RTWN_MACID_VALID)
-		r92c_init_mrr_rate(sc, macid & ~RTWN_MACID_VALID);
-
-#ifndef RTWN_WITHOUT_UCODE
 	if (sc->vaps[0] == NULL)	/* XXX fix */
-		return;
+		goto end;
 
 	vap = &sc->vaps[0]->vap;
 	if ((vap->iv_state == IEEE80211_S_RUN) ^
 	    !(rs->rs_flags & R92C_FLAG_ASSOCIATED))
-		return;
+		goto end;
 
 	if (rs->rs_flags & R92C_FLAG_ASSOCIATED) {
 		cmd.mstatus = R92C_MSTATUS_DISASSOC;
@@ -246,7 +303,13 @@ r92c_joinbss_rpt(struct rtwn_softc *sc, int macid)
 		device_printf(sc->sc_dev, "%s: cannot change media status!\n",
 		    __func__);
 	}
+
+end:
 #endif
+
+	/* TODO: init rates for RTWN_MACID_BC. */
+	if (macid & RTWN_MACID_VALID)
+		r92c_init_ra(sc, macid & ~RTWN_MACID_VALID);
 }
 
 #ifndef RTWN_WITHOUT_UCODE
@@ -289,75 +352,36 @@ r92c_set_pwrmode(struct rtwn_softc *sc, struct ieee80211vap *vap,
 	return (error);
 }
 
-#ifdef RTWN_TODO
-/* XXX should be called from joinbss_rpt() */
-/*
- * Initialize firmware rate adaptation.
- */
-static int
-rtwn_ra_init(struct rtwn_softc *sc)
+void
+r92c_set_rssi(struct rtwn_softc *sc)
 {
-	struct ieee80211com *ic = &sc->sc_ic;
-	struct ieee80211vap *vap = TAILQ_FIRST(&ic->ic_vaps);
 	struct ieee80211_node *ni;
-	struct r92c_fw_cmd_macid_cfg cmd;
-	uint32_t rates, basicrates;
-	uint8_t mode;
-	int maxrate, maxbasicrate, error = 0, i;
+	struct rtwn_node *rn;
+	struct r92c_fw_cmd_rssi cmd;
+	int i;
 
-	ni = ieee80211_ref_node(vap->iv_bss);
+	cmd.reserved = 0;
 
-	/* Get normal and basic rates mask. */
-	r92c_get_rates(ni, &rates, &maxrate, &basicrates, &maxbasicrate);
+	RTWN_NT_LOCK(sc);
+	for (i = 0; i < sc->macid_limit; i++) {
+		/* XXX optimize? */
+		ni = sc->node_list[i];
+		if (ni == NULL)
+			continue;
 
-	/* NB: group addressed frames are done at 11bg rates for now */
-	if (ic->ic_curmode == IEEE80211_MODE_11B)
-		mode = R92C_RAID_11B;
-	else
-		mode = R92C_RAID_11BG;
-	/* XXX misleading 'mode' value here for unicast frames */
-	RTWN_DPRINTF(sc, RTWN_DEBUG_RA,
-	    "%s: mode 0x%x, rates 0x%08x, basicrates 0x%08x\n", __func__,
-	    mode, rates, basicrates);
+		rn = RTWN_NODE(ni);
+		cmd.macid = i;
+		cmd.pwdb = rn->avg_pwdb;
+		RTWN_DPRINTF(sc, RTWN_DEBUG_RSSI,
+		    "%s: sending RSSI command (macid %d, rssi %d)\n",
+		    __func__, i, rn->avg_pwdb);
 
-	/* Set rates mask for group addressed frames. */
-	cmd.macid = RTWN_MACID_BC | RTWN_MACID_VALID;
-	cmd.mask = htole32(mode << 28 | basicrates);
-	error = rtwn_fw_cmd(sc, R92C_CMD_MACID_CONFIG, &cmd, sizeof(cmd));
-	if (error != 0) {
-		ieee80211_free_node(ni);
-		device_printf(sc->sc_dev,
-		    "could not add broadcast station\n");
-		return (error);
+		RTWN_NT_UNLOCK(sc);
+		r92c_fw_cmd(sc, R92C_CMD_RSSI_SETTING, &cmd, sizeof(cmd));
+		RTWN_NT_LOCK(sc);
 	}
-
-	/* Set rates mask for unicast frames. */
-	if (ni->ni_flags & IEEE80211_NODE_HT)
-		mode = R92C_RAID_11GN;
-	else if (ic->ic_curmode == IEEE80211_MODE_11B)
-		mode = R92C_RAID_11B;
-	else
-		mode = R92C_RAID_11BG;
-	cmd.macid = RTWN_MACID_BSS | RTWN_MACID_VALID;
-	cmd.mask = htole32(mode << 28 | rates);
-	error = rtwn_fw_cmd(sc, R92C_CMD_MACID_CONFIG, &cmd, sizeof(cmd));
-	if (error != 0) {
-		ieee80211_free_node(ni);
-		device_printf(sc->sc_dev, "could not add BSS station\n");
-		return (error);
-	}
-
-	/* Indicate highest supported rate. */
-	if (ni->ni_flags & IEEE80211_NODE_HT)
-		ni->ni_txrate = rs_ht->rs_rates[rs_ht->rs_nrates - 1]
-		    | IEEE80211_RATE_MCS;
-	else
-		ni->ni_txrate = rs->rs_rates[rs->rs_nrates - 1];
-	ieee80211_free_node(ni);
-
-	return (0);
+	RTWN_NT_UNLOCK(sc);
 }
-#endif
 
 static void
 r92c_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
