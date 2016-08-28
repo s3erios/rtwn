@@ -206,7 +206,7 @@ r12au_attach(struct rtwn_usb_softc *uc)
 	sc->sc_set_pwrmode		= r12a_set_pwrmode;
 	sc->sc_set_rssi			= rtwn_nop_softc;	/* XXX TODO */
 #else
-	sc->sc_set_media_status		= rtwn_nop_softc_uint8;
+	sc->sc_set_media_status		= rtwn_nop_softc_int;
 #endif
 	sc->sc_beacon_init		= r12a_beacon_init;
 	sc->sc_beacon_enable		= r92c_beacon_enable;
