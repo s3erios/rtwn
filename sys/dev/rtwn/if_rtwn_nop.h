@@ -42,11 +42,6 @@ rtwn_nop_softc_int(struct rtwn_softc *sc, int id)
 }
 
 static __inline void
-rtwn_nop_softc_uint8(struct rtwn_softc *sc, uint8_t macid)
-{
-}
-
-static __inline void
 rtwn_nop_softc_uint32(struct rtwn_softc *sc, uint32_t reg)
 {
 }
