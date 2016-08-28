@@ -96,6 +96,8 @@ r92ce_attach_private(struct rtwn_softc *sc)
 
 	rs = malloc(sizeof(struct r92c_softc), M_TEMP, M_WAITOK | M_ZERO);
 
+	rs->rs_txpwr			= &r92c_txpwr;
+
 	rs->rs_set_bw20			= r92c_set_bw20;
         rs->rs_get_txpower		= r92c_get_txpower;
         rs->rs_set_gain			= r92c_set_gain;
