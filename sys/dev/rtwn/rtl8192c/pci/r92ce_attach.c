@@ -142,6 +142,7 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 {
 	struct rtwn_softc *sc		= &pc->pc_sc;
 
+	/* PCIe part. */
 	pc->pc_setup_tx_desc		= r92ce_setup_tx_desc;
 	pc->pc_tx_postsetup		= r92ce_tx_postsetup;
 	pc->pc_reset_tx_desc		= r92ce_reset_tx_desc;
@@ -151,6 +152,7 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	pc->tcr				=
 	    R92C_TCR_CFENDFORM | (1 << 12) | (1 << 13);
 
+	/* Common part. */
 	sc->sc_flags			= 0;
 
 	sc->sc_start_xfers		= r92ce_start_xfers;
@@ -162,10 +164,12 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	sc->sc_get_rssi_cck		= r92c_get_rssi_cck;
 	sc->sc_get_rssi_ofdm		= r92c_get_rssi_ofdm;
 	sc->sc_classify_intr		= r92ce_classify_intr;
+	sc->sc_handle_tx_report		= rtwn_nop_softc_uint8_int;
+	sc->sc_handle_c2h_report	= rtwn_nop_softc_uint8_int;
 	sc->sc_check_frame		= rtwn_nop_int_softc_mbuf;
 	sc->sc_rf_read			= r92c_rf_read;
 	sc->sc_rf_write			= r92c_rf_write;
-	sc->sc_check_condition		= r92c_check_condition;	/* XXX TODO */
+	sc->sc_check_condition		= r92c_check_condition;
 	sc->sc_efuse_postread		= r92c_efuse_postread;
 	sc->sc_parse_rom		= r92c_parse_rom;
 	sc->sc_set_led			= r92ce_set_led;
