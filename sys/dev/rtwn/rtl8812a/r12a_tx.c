@@ -361,7 +361,7 @@ r12a_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b, int qos,
 }
 
 int
-r12a_sgi_isset(void *buf)
+r12a_tx_sgi_isset(void *buf)
 {
 	struct r12au_tx_desc *txd = (struct r12au_tx_desc *)buf; /* XXX */
 

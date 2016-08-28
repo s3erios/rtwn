@@ -375,7 +375,7 @@ r92c_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b,
 }
 
 int
-r92c_sgi_isset(void *buf)
+r92c_tx_sgi_isset(void *buf)
 {
 	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
 

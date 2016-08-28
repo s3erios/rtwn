@@ -106,6 +106,6 @@ void	r92c_fill_tx_desc(struct rtwn_softc *, struct ieee80211_node *,
 void	r92c_fill_tx_desc_raw(struct rtwn_softc *, struct ieee80211_node *,
 	    struct mbuf *, void *, const struct ieee80211_bpf_params *);
 void	r92c_fill_tx_desc_null(struct rtwn_softc *, void *, int, int, int);
-int	r92c_sgi_isset(void *);
+int	r92c_tx_sgi_isset(void *);
 
 #endif	/* RTL8192C_H */

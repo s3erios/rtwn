@@ -145,7 +145,7 @@ r92cu_attach(struct rtwn_usb_softc *uc)
 	sc->sc_fill_tx_desc		= r92c_fill_tx_desc;
 	sc->sc_fill_tx_desc_raw 	= r92c_fill_tx_desc_raw;
 	sc->sc_fill_tx_desc_null	= r92cu_fill_tx_desc_null;
-	sc->sc_sgi_isset		= r92c_sgi_isset;
+	sc->sc_tx_sgi_isset		= r92c_tx_sgi_isset;
 	sc->sc_get_rssi_cck		= r92c_get_rssi_cck;
 	sc->sc_get_rssi_ofdm		= r92c_get_rssi_ofdm;
 	sc->sc_classify_intr		= r92cu_classify_intr;

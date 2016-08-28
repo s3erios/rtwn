@@ -188,7 +188,7 @@ rtwn_tx_data(struct rtwn_softc *sc, struct ieee80211_node *ni,
 		tap->wt_flags = 0;
 		if (k != NULL)
 			tap->wt_flags |= IEEE80211_RADIOTAP_F_WEP;
-		if (rtwn_sgi_isset(sc, tx_desc))
+		if (rtwn_tx_sgi_isset(sc, tx_desc))
 			tap->wt_flags |= IEEE80211_RADIOTAP_F_SHORTGI;
 		ieee80211_radiotap_tx(vap, m);
 	}
@@ -235,7 +235,7 @@ rtwn_tx_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 		tap->wt_flags = 0;
 		if (k != NULL)
 			tap->wt_flags |= IEEE80211_RADIOTAP_F_WEP;
-		if (rtwn_sgi_isset(sc, tx_desc))
+		if (rtwn_tx_sgi_isset(sc, tx_desc))
 			tap->wt_flags |= IEEE80211_RADIOTAP_F_SHORTGI;
 		ieee80211_radiotap_tx(vap, m);
 	}

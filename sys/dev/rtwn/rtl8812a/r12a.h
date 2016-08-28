@@ -124,6 +124,6 @@ void	r12a_fill_tx_desc(struct rtwn_softc *, struct ieee80211_node *,
 void	r12a_fill_tx_desc_raw(struct rtwn_softc *, struct ieee80211_node *,
 	    struct mbuf *, void *, const struct ieee80211_bpf_params *);
 void	r12a_fill_tx_desc_null(struct rtwn_softc *, void *, int, int, int);
-int	r12a_sgi_isset(void *);
+int	r12a_tx_sgi_isset(void *);
 
 #endif	/* RTL8812A_H */
