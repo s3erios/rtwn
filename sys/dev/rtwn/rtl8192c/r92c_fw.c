@@ -50,6 +50,7 @@ __FBSDID("$FreeBSD$");
 
 #include <dev/rtwn/if_rtwn_debug.h>
 #include <dev/rtwn/if_rtwn_ridx.h>
+#include <dev/rtwn/if_rtwn_rx.h>
 #include <dev/rtwn/if_rtwn_task.h>
 #include <dev/rtwn/if_rtwn_tx.h>
 
@@ -140,60 +141,13 @@ r92c_fw_reset(struct rtwn_softc *sc, int reason)
 }
 #endif
 
-static void
-r92c_get_rates(struct ieee80211_node *ni, uint32_t *rates, int *maxrate,
-    uint32_t *basicrates, int *maxbasicrate)
-{
-	struct ieee80211_rateset *rs, *rs_ht;
-	uint8_t ridx;
-	int i;
-
-	rs = &ni->ni_rates;
-	rs_ht = (struct ieee80211_rateset *) &ni->ni_htrates;
-
-	/* Get normal and basic rates mask. */
-	*rates = *basicrates = 0;
-	*maxrate = *maxbasicrate = 0;
-
-	/* This is for 11bg */
-	for (i = 0; i < rs->rs_nrates; i++) {
-		/* Convert 802.11 rate to HW rate index. */
-		ridx = rate2ridx(IEEE80211_RV(rs->rs_rates[i]));
-		if (ridx == RTWN_RIDX_UNKNOWN)	/* Unknown rate, skip. */
-			continue;
-		*rates |= 1 << ridx;
-		if (ridx > *maxrate)
-			*maxrate = ridx;
-		if (rs->rs_rates[i] & IEEE80211_RATE_BASIC) {
-			*basicrates |= 1 << ridx;
-			if (ridx > *maxbasicrate)
-				*maxbasicrate = ridx;
-		}
-	}
-
-	/* If we're doing 11n, enable 11n rates */
-	if (ni->ni_flags & IEEE80211_NODE_HT) {
-		for (i = 0; i < rs_ht->rs_nrates; i++) {
-			if ((rs_ht->rs_rates[i] & 0x7f) > 0xf)
-				continue;
-			/* 11n rates start at index 12 */
-			ridx = ((rs_ht->rs_rates[i]) & 0xf) + RTWN_RIDX_MCS(0);
-			*rates |= (1 << ridx);
-
-			/* Guard against the rate table being oddly ordered */
-			if (ridx > *maxrate)
-				*maxrate = ridx;
-		}
-	}
-}
-
 /*
  * Initialize firmware rate adaptation.
  */
 #ifndef RTWN_WITHOUT_UCODE
 static int
 r92c_send_ra_cmd(struct rtwn_softc *sc, int macid, uint32_t rates,
-    int maxrate, uint32_t basicrates, int maxbasicrate)
+    int maxrate, uint32_t basicrates)
 {
 	struct r92c_fw_cmd_macid_cfg cmd;
 	uint8_t mode;
@@ -249,7 +203,7 @@ r92c_init_ra(struct rtwn_softc *sc, int macid)
 {
 	struct ieee80211_node *ni;
 	uint32_t rates, basicrates;
-	int maxrate, maxbasicrate;
+	int maxrate;
 
 	RTWN_NT_LOCK(sc);
 	if (sc->node_list[macid] == NULL) {
@@ -260,13 +214,12 @@ r92c_init_ra(struct rtwn_softc *sc, int macid)
 	}
 
 	ni = ieee80211_ref_node(sc->node_list[macid]);
-	r92c_get_rates(ni, &rates, &maxrate, &basicrates, &maxbasicrate);
+	rtwn_get_rates(sc, ni, &rates, &maxrate, &basicrates, NULL);
 	RTWN_NT_UNLOCK(sc);
 
 #ifndef RTWN_WITHOUT_UCODE
 	if (sc->sc_ratectl == RTWN_RATECTL_FW) {
-		r92c_send_ra_cmd(sc, macid, rates, maxrate, basicrates,
-		    maxbasicrate);
+		r92c_send_ra_cmd(sc, macid, rates, maxrate, basicrates);
 	}
 #endif
 

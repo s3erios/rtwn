@@ -56,6 +56,71 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/rtl8192c/r92c_rx_desc.h>
 
 
+
+void
+rtwn_get_rates(struct rtwn_softc *sc, struct ieee80211_node *ni,
+    uint32_t *rates_p, int *maxrate_p, uint32_t *basicrates_p,
+    int *maxbasicrate_p)
+{
+	struct ieee80211_rateset *rs, *rs_ht;
+	uint32_t basicrates, rates;
+	uint8_t ridx;
+	int i, maxrate, maxbasicrate;
+
+	rs = &ni->ni_rates;
+	rs_ht = (struct ieee80211_rateset *) &ni->ni_htrates;
+
+	/* Get normal and basic rates mask. */
+	rates = basicrates = 0;
+	maxrate = maxbasicrate = 0;
+
+	/* This is for 11bg */
+	for (i = 0; i < rs->rs_nrates; i++) {
+		/* Convert 802.11 rate to HW rate index. */
+		ridx = rate2ridx(IEEE80211_RV(rs->rs_rates[i]));
+		if (ridx == RTWN_RIDX_UNKNOWN)	/* Unknown rate, skip. */
+			continue;
+		rates |= 1 << ridx;
+		if (ridx > maxrate)
+			maxrate = ridx;
+		if (rs->rs_rates[i] & IEEE80211_RATE_BASIC) {
+			basicrates |= 1 << ridx;
+			if (ridx > maxbasicrate)
+				maxbasicrate = ridx;
+		}
+	}
+
+	/* If we're doing 11n, enable 11n rates */
+	if ((ni->ni_flags & IEEE80211_NODE_HT) &&
+	    (rates_p != NULL || maxrate_p != NULL)) {
+		for (i = 0; i < rs_ht->rs_nrates; i++) {
+			if ((rs_ht->rs_rates[i] & 0x7f) > 0xf)
+				continue;
+			/* 11n rates start at index 12 */
+			ridx = RTWN_RIDX_MCS((rs_ht->rs_rates[i]) & 0xf);
+			rates |= (1 << ridx);
+
+			/* Guard against the rate table being oddly ordered */
+			if (ridx > maxrate)
+				maxrate = ridx;
+		}
+	}
+
+	RTWN_DPRINTF(sc, RTWN_DEBUG_RA,
+	    "%s: rates 0x%08x, maxrate %d, basicrates 0x%08x, "
+	    "maxbasicrate %d\n",
+	    __func__, rates, maxrate, basicrates, maxbasicrate);
+
+	if (rates_p != NULL)
+		*rates_p = rates;
+	if (maxrate_p != NULL)
+		*maxrate_p = maxrate;
+	if (basicrates_p != NULL)
+		*basicrates_p = basicrates;
+	if (maxbasicrate_p != NULL)
+		*maxbasicrate_p = maxbasicrate;
+}
+
 static void
 rtwn_update_avgrssi(struct rtwn_softc *sc, struct rtwn_node *un, int rate)
 {
