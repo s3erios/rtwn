@@ -83,6 +83,13 @@ rtwn_fw_loadpage(struct rtwn_softc *sc, int page, const uint8_t *buf,
 		buf += mlen;
 		len -= mlen;
 	}
+
+	if (error != 0) {
+		RTWN_DPRINTF(sc, RTWN_DEBUG_FIRMWARE,
+		    "%s: could not load firmware page %d (offset %d)\n",
+		    __func__, page, off);
+	}
+
 	return (error);
 }
 
@@ -110,9 +117,9 @@ rtwn_load_firmware(struct rtwn_softc *sc)
 {
 	const struct firmware *fw;
 	const struct r92c_fw_hdr *hdr;
-	const u_char *ptr, *ptr2;
-	size_t len, len2;
-	int mlen, ntries, page, error;
+	const u_char *ptr;
+	size_t len;
+	int ntries, error;
 
 	/* Read firmware image from the filesystem. */
 	RTWN_UNLOCK(sc);
@@ -156,28 +163,40 @@ rtwn_load_firmware(struct rtwn_softc *sc)
 
 	error = 0;	/* compiler warning */
 	for (ntries = 0; ntries < 3; ntries++) {
-		ptr2 = ptr;
-		len2 = len;	/* XXX optimize */
+		const u_char *curr_ptr = ptr;
+		const int maxpages = len / R92C_FW_PAGE_SIZE;
+		int page;
 
 		/* Reset the FWDL checksum. */
 		rtwn_setbits_1(sc, R92C_MCUFWDL, 0, R92C_MCUFWDL_CHKSUM_RPT);
 
-		for (page = 0; len2 > 0; page++) {
-			mlen = min(len2, R92C_FW_PAGE_SIZE);
-			error = rtwn_fw_loadpage(sc, page, ptr2, mlen);
-			if (error != 0) {
-				RTWN_DPRINTF(sc, RTWN_DEBUG_FIRMWARE,
-				    "could not load firmware page (try %d)\n",
-				    ntries);
+		for (page = 0; page < maxpages; page++) {
+			error = rtwn_fw_loadpage(sc, page, curr_ptr,
+			    R92C_FW_PAGE_SIZE);
+			if (error != 0)
+				break;
+			curr_ptr += R92C_FW_PAGE_SIZE;
+		}
+		if (page != maxpages)
+			continue;
+
+		if (len % R92C_FW_PAGE_SIZE != 0) {
+			error = rtwn_fw_loadpage(sc, page, curr_ptr,
+			    len % R92C_FW_PAGE_SIZE);
+			if (error != 0)
 				continue;
-			}
-			ptr2 += mlen;
-			len2 -= mlen;
 		}
 
 		/* Wait for checksum report. */
-		if (rtwn_fw_checksum_report(sc) == 0)
+		error = rtwn_fw_checksum_report(sc);
+		if (error == 0)
 			break;
+	}
+	if (ntries == 3) {
+		device_printf(sc->sc_dev,
+		    "%s: failed to upload firmware %s (error %d)\n",
+		    __func__, sc->fwname, error);
+		goto fail;
 	}
 
 	/* MCU download disable. */

@@ -201,7 +201,7 @@ r92c_send_ra_cmd(struct rtwn_softc *sc, int macid, uint32_t rates,
 
 	/* XXX should be called directly from iv_newstate() for MACID_BC */
 	/* XXX joinbss, not send_ra_cmd() */
-#ifdef URTWM_TODO
+#ifdef RTWN_TODO
 	/* NB: group addressed frames are done at 11bg rates for now */
 	if (ic->ic_curmode == IEEE80211_MODE_11B)
 		mode = R92C_RAID_11B;
