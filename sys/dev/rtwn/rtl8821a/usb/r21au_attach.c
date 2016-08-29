@@ -153,6 +153,7 @@ r21au_attach(struct rtwn_usb_softc *uc)
 	sc->sc_fill_tx_desc_raw		= r12a_fill_tx_desc_raw;
 	sc->sc_fill_tx_desc_null	= r12au_fill_tx_desc_null;
 	sc->sc_tx_sgi_isset		= r12a_tx_sgi_isset;
+	sc->sc_rx_sgi_isset		= r12a_rx_sgi_isset;
 	sc->sc_set_chan			= r12a_set_chan;
 #ifndef RTWN_WITHOUT_UCODE
 	sc->sc_set_media_status		= r12a_set_media_status;

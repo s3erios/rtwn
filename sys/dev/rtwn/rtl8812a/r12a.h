@@ -117,6 +117,7 @@ void	r12a_parse_rom(struct rtwn_softc *, uint8_t *);
 void	r12a_ratectl_tx_complete(struct rtwn_softc *, uint8_t *, int);
 void	r12a_handle_c2h_report(struct rtwn_softc *, uint8_t *, int);
 int	r12a_check_frame_checksum(struct rtwn_softc *, struct mbuf *);
+int	r12a_rx_sgi_isset(void *);
 
 /* r12a_tx.c */
 void	r12a_fill_tx_desc(struct rtwn_softc *, struct ieee80211_node *,

@@ -302,6 +302,7 @@ struct rtwn_softc {
 	void		(*sc_fill_tx_desc_null)(struct rtwn_softc *,
 			    void *, int, int, int);
 	int		(*sc_tx_sgi_isset)(void *);
+	int		(*sc_rx_sgi_isset)(void *);
 	void		(*sc_beacon_init)(struct rtwn_softc *, void *, int);
 	void		(*sc_beacon_enable)(struct rtwn_softc *, int, int);
 	void		(*sc_beacon_set_rate)(void *, int);
@@ -491,6 +492,8 @@ void	rtwn_suspend(struct rtwn_softc *);
 	    (_buf), (_11b), (_qos), (_id)))
 #define rtwn_tx_sgi_isset(_sc, _buf) \
 	(((_sc)->sc_tx_sgi_isset)((_buf)))
+#define rtwn_rx_sgi_isset(_sc, _buf) \
+	(((_sc)->sc_rx_sgi_isset)((_buf)))
 #define rtwn_set_chan(_sc, _c) \
 	(((_sc)->sc_set_chan)((_sc), (_c)))
 #ifndef RTWN_WITHOUT_UCODE

@@ -161,6 +161,7 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	sc->sc_fill_tx_desc_raw		= r92c_fill_tx_desc_raw;
 	sc->sc_fill_tx_desc_null	= r92c_fill_tx_desc_null; /* XXX recheck */
 	sc->sc_tx_sgi_isset		= r92c_tx_sgi_isset;
+	sc->sc_rx_sgi_isset		= r92c_rx_sgi_isset;
 	sc->sc_get_rssi_cck		= r92c_get_rssi_cck;
 	sc->sc_get_rssi_ofdm		= r92c_get_rssi_ofdm;
 	sc->sc_classify_intr		= r92ce_classify_intr;

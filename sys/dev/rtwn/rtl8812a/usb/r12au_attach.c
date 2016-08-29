@@ -177,6 +177,7 @@ r12au_attach(struct rtwn_usb_softc *uc)
 	sc->sc_fill_tx_desc_raw 	= r12a_fill_tx_desc_raw;
 	sc->sc_fill_tx_desc_null	= r12au_fill_tx_desc_null;
 	sc->sc_tx_sgi_isset		= r12a_tx_sgi_isset;
+	sc->sc_rx_sgi_isset		= r12a_rx_sgi_isset;
 	sc->sc_get_rssi_cck		= r88e_get_rssi_cck;
 	sc->sc_get_rssi_ofdm		= r88e_get_rssi_ofdm;
 	sc->sc_classify_intr		= r12au_classify_intr;

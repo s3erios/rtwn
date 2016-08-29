@@ -30,6 +30,10 @@
 #define R12A_RXDW1_CKSUM	0x00800000
 /* Rx dword 2 */
 #define R12A_RXDW2_RPT_C2H	0x10000000
+/* Rx dword 4 */
+#define R12A_RXDW4_SGI		0x00000001
+#define R12A_RXDW4_LDPC		0x00000002
+#define R12A_RXDW4_STBC		0x00000004
 
 /* Rx PHY descriptor. */
 struct r12a_rx_phystat {

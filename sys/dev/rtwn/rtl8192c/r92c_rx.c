@@ -81,3 +81,11 @@ r92c_get_rssi_ofdm(struct rtwn_softc *sc, void *physt)
 
 	return (rssi);
 }
+
+int
+r92c_rx_sgi_isset(void *buf)
+{
+	struct r92c_rx_stat *stat = buf;
+
+	return ((stat->rxdw3 & htole32(R92C_RXDW3_SGI)) != 0);
+}

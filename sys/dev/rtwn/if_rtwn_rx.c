@@ -183,11 +183,8 @@ rtwn_rx_common(struct rtwn_softc *sc, struct mbuf *m, void *desc,
 		int id = RTWN_VAP_ID_INVALID;
 
 		tap->wr_flags = 0;
-#ifdef RTWN_TODO
-		/* XXX TODO: recheck */
-		if (le32toh(stat->rxdw4) & R92C_RXDW4_SGI)
+		if (rtwn_rx_sgi_isset(sc, desc))
 			tap->wr_flags |= IEEE80211_RADIOTAP_F_SHORTGI;
-#endif
 
 		if (ni != NULL)
 			id = RTWN_VAP(ni->ni_vap)->id;

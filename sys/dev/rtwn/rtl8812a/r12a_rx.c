@@ -182,3 +182,11 @@ r12a_check_frame_checksum(struct rtwn_softc *sc, struct mbuf *m)
 
 	return (0);
 }
+
+int
+r12a_rx_sgi_isset(void *buf)
+{
+	struct r92c_rx_stat *stat = buf;
+
+	return ((stat->rxdw4 & htole32(R12A_RXDW4_SGI)) != 0);
+}

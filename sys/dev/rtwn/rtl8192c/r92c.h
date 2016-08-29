@@ -96,6 +96,7 @@ void	r92c_parse_rom(struct rtwn_softc *, uint8_t *);
 /* r92c_rx.c */
 int8_t	r92c_get_rssi_cck(struct rtwn_softc *, void *);
 int8_t	r92c_get_rssi_ofdm(struct rtwn_softc *, void *);
+int	r92c_rx_sgi_isset(void *);
 
 /* r92c_tx.c */
 void	r92c_tx_setup_ampdu(void *, int, int);
