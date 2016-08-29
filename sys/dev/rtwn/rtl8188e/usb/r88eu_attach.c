@@ -91,6 +91,7 @@ r88eu_attach_private(struct rtwn_softc *sc)
 	rs->rs_tx_setup_ampdu		= r88e_tx_setup_ampdu;
 	rs->rs_tx_setup_hwseq		= r88e_tx_setup_hwseq;
 	rs->rs_tx_setup_macid		= r88e_tx_setup_macid;
+	rs->rs_set_name			= rtwn_nop_softc;	/* not used */
 
 	rs->rf_read_delay[0]		= 10;
 	rs->rf_read_delay[1]		= 100;

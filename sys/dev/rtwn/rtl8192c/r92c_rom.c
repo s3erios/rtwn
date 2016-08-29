@@ -57,22 +57,6 @@ __FBSDID("$FreeBSD$");
 
 
 static void
-r92c_set_name(struct rtwn_softc *sc)
-{
-	struct r92c_softc *rs = sc->sc_priv;
-
-	if (!(rs->chip & R92C_CHIP_92C)) {
-		if (rs->board_type == R92C_BOARD_TYPE_HIGHPA)
-			sc->name = "RTL8188RU";
-		else if (rs->board_type == R92C_BOARD_TYPE_MINICARD)
-			sc->name = "RTL8188CU-VAU";
-		else
-			sc->name = "RTL8188CUS";
-	} else
-		sc->name = "RTL8192CU";
-}
-
-static void
 r92c_set_chains(struct rtwn_softc *sc)
 {
 	struct r92c_softc *rs = sc->sc_priv;
@@ -112,7 +96,7 @@ r92c_parse_rom(struct rtwn_softc *sc, uint8_t *buf)
 	    __func__, rs->regulatory);
 
 	/* Need to be set before postinit() (but after preinit()). */
-	r92c_set_name(sc);
+	rtwn_r92c_set_name(sc);
 	r92c_set_chains(sc);
 
 	for (j = 0; j < R92C_GROUP_2G; j++) {
