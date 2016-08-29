@@ -1349,6 +1349,7 @@ rtwn_dma_init(struct rtwn_softc *sc)
 	uint16_t reg;
 	int hasnq, haslq, nqueues;
 	int error, nqpages, nrempages;
+	int tx_boundary = sc->page_count + 1;
 
 	/* Initialize LLT table. */
 	error = rtwn_llt_init(sc);
@@ -1391,12 +1392,11 @@ rtwn_dma_init(struct rtwn_softc *sc)
 	    R92C_RQPN_LD));
 
 	/* Initialize TX buffer boundary. */
-	RTWN_CHK(rtwn_write_1(sc, R92C_TXPKTBUF_BCNQ_BDNY, sc->tx_boundary));
-	RTWN_CHK(rtwn_write_1(sc, R92C_TXPKTBUF_MGQ_BDNY, sc->tx_boundary));
-	RTWN_CHK(rtwn_write_1(sc, R92C_TXPKTBUF_WMAC_LBK_BF_HD,
-	    sc->tx_boundary));
-	RTWN_CHK(rtwn_write_1(sc, R92C_TRXFF_BNDY, sc->tx_boundary));
-	RTWN_CHK(rtwn_write_1(sc, R92C_TDECTRL + 1, sc->tx_boundary));
+	RTWN_CHK(rtwn_write_1(sc, R92C_TXPKTBUF_BCNQ_BDNY, tx_boundary));
+	RTWN_CHK(rtwn_write_1(sc, R92C_TXPKTBUF_MGQ_BDNY, tx_boundary));
+	RTWN_CHK(rtwn_write_1(sc, R92C_TXPKTBUF_WMAC_LBK_BF_HD, tx_boundary));
+	RTWN_CHK(rtwn_write_1(sc, R92C_TRXFF_BNDY, tx_boundary));
+	RTWN_CHK(rtwn_write_1(sc, R92C_TDECTRL + 1, tx_boundary));
 
 	error = rtwn_init_bcnq1_boundary(sc);
 	if (error != 0)

@@ -248,7 +248,7 @@ r12au_attach(struct rtwn_usb_softc *uc)
 
 	sc->page_count			= R12A_TX_PAGE_COUNT;
 	sc->pktbuf_count		= R12A_TXPKTBUF_COUNT;
-	sc->tx_boundary			= R12A_TX_PAGE_BOUNDARY;
+
 	sc->ackto			= 0x80;
 	sc->npubqpages			= R12A_PUBQ_NPAGES;
 	sc->page_size			= R12A_TX_PAGE_SIZE;

@@ -352,7 +352,6 @@ struct rtwn_softc {
 
 	int				page_count;
 	int				pktbuf_count;
-	int				tx_boundary;
 
 	int				ackto;
 

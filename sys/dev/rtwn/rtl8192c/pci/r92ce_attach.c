@@ -225,7 +225,7 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	sc->ntx				= 2;	/* XXX TODO: static configuration */
 	sc->page_count			= R92CE_TX_PAGE_COUNT;
 	sc->pktbuf_count		= R92C_TXPKTBUF_COUNT;
-	sc->tx_boundary			= R92CE_TX_PAGE_BOUNDARY;
+
 	sc->ackto			= 0x40;
 	sc->npubqpages			= R92CE_PUBQ_NPAGES;
 	sc->page_size			= R92C_TX_PAGE_SIZE;
