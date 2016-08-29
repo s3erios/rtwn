@@ -716,9 +716,7 @@ rtwn_tx_fwpkt_check(struct rtwn_softc *sc, struct ieee80211vap *vap)
 
 	return (0);
 }
-#endif
 
-#ifndef RTWN_WITHOUT_UCODE
 static int
 rtwn_construct_nulldata(struct rtwn_softc *sc, struct ieee80211vap *vap,
     uint8_t *ptr, int qos)
