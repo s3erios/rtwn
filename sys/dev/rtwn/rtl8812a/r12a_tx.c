@@ -67,8 +67,6 @@ r12a_tx_protection(struct rtwn_softc *sc, struct r12au_tx_desc *txd,
 
 	if (mode == IEEE80211_PROT_CTSONLY ||
 	    mode == IEEE80211_PROT_RTSCTS) {
-		txd->txdw3 |= htole32(R12A_TXDW3_HWRTSEN);
-
 		/* XXX TODO: rtsrate is configurable? 24mbit may
 		 * be a bit high for RTS rate? */
 		txd->txdw4 |= htole32(SM(R12A_TXDW4_RTSRATE,
@@ -178,6 +176,7 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	struct rtwn_vap *uvp = RTWN_VAP(vap);
 	struct ieee80211_frame *wh;
 	struct r12au_tx_desc *txd;	/* XXX */
+	enum ieee80211_protmode prot;
 	uint8_t type, tid, qos, qsel;
 	int hasqos, ismcast, macid;
 
@@ -230,12 +229,22 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 				sc->sc_tx_n_active++;
 			}
 
+			prot = IEEE80211_PROT_NONE;
 			if (ridx >= RTWN_RIDX_MCS(0)) {
 				r12a_tx_set_sgi(sc, txd, ni);
-				r12a_tx_protection(sc, txd,
-				    ic->ic_htprotmode);
+				prot = ic->ic_htprotmode;
 			} else if (ic->ic_flags & IEEE80211_F_USEPROT)
-				r12a_tx_protection(sc, txd, ic->ic_protmode);
+				prot = ic->ic_protmode;
+
+			/* XXX fix last comparison for A-MSDU (in net80211) */
+			/* XXX A-MPDU? */
+			if (m->m_pkthdr.len + IEEE80211_CRC_LEN >
+			    vap->iv_rtsthreshold &&
+			    vap->iv_rtsthreshold != IEEE80211_RTS_MAX)
+				prot = IEEE80211_PROT_RTSCTS;
+
+			if (prot != IEEE80211_PROT_NONE)
+				r12a_tx_protection(sc, txd, prot);
 		} else	/* IEEE80211_FC0_TYPE_MGT */
 			qsel = R12A_TXDW1_QSEL_MGNT;
 	} else {
