@@ -167,9 +167,13 @@ r12au_attach(struct rtwn_usb_softc *uc)
 {
 	struct rtwn_softc *sc		= &uc->uc_sc;
 
+	/* USB part. */
 	uc->uc_align_rx			= r12au_align_rx;
 	uc->uc_tx_checksum		= r12au_tx_checksum;
 
+	uc->tx_agg_desc_num		= 1;
+
+	/* Common part. */
 	sc->sc_flags			= RTWN_FLAG_EXT_HDR;
 
 	sc->sc_set_chan			= r12a_set_chan;
@@ -257,8 +261,6 @@ r12au_attach(struct rtwn_usb_softc *uc)
 	sc->macid_limit			= R12A_MACID_MAX + 1;
 	sc->cam_entry_limit		= R12A_CAM_ENTRY_COUNT;
 	sc->fwsize_limit		= R12A_MAX_FW_SIZE;
-
-	sc->tx_agg_desc_num		= 1;
 
 	sc->bcn_status_reg[0]		= R92C_TDECTRL;
 	sc->bcn_status_reg[1]		= R92C_TDECTRL;

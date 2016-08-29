@@ -138,6 +138,8 @@ r92cu_attach(struct rtwn_usb_softc *uc)
 	uc->uc_align_rx			= r92cu_align_rx;
 	uc->uc_tx_checksum		= r92cu_tx_checksum;
 
+	uc->tx_agg_desc_num		= 6;
+
 	/* Common part. */
 	sc->sc_flags			= 0;
 
@@ -220,8 +222,6 @@ r92cu_attach(struct rtwn_usb_softc *uc)
 	sc->macid_limit			= R92C_MACID_MAX + 1;
 	sc->cam_entry_limit		= R92C_CAM_ENTRY_COUNT;
 	sc->fwsize_limit		= R92C_MAX_FW_SIZE;
-
-	sc->tx_agg_desc_num		= 6;
 
 	sc->bcn_status_reg[0]		= R92C_TDECTRL;
 	sc->bcn_status_reg[1]		= R92C_TDECTRL;

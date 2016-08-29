@@ -63,6 +63,8 @@ struct rtwn_usb_softc {
 
 	int			(*uc_align_rx)(int, int);
 	void			(*uc_tx_checksum)(void *);
+
+	int			tx_agg_desc_num;
 };
 #define RTWN_USB_SOFTC(sc)	((struct rtwn_usb_softc *)(sc))
 

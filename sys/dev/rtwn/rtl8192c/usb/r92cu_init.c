@@ -48,6 +48,8 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/if_rtwnvar.h>
 #include <dev/rtwn/if_rtwn_debug.h>
 
+#include <dev/rtwn/usb/rtwn_usb_var.h>
+
 #include <dev/rtwn/rtl8192c/r92c_var.h>
 
 #include <dev/rtwn/rtl8192c/usb/r92cu.h>
@@ -327,8 +329,10 @@ r92cu_init_intr(struct rtwn_softc *sc)
 void
 r92cu_init_tx_agg(struct rtwn_softc *sc)
 {
+	struct rtwn_usb_softc *uc = RTWN_USB_SOFTC(sc);
+
 	rtwn_setbits_4(sc, R92C_TDECTRL,
-	    R92C_TDECTRL_BLK_DESC_NUM_M, sc->tx_agg_desc_num);
+	    R92C_TDECTRL_BLK_DESC_NUM_M, uc->tx_agg_desc_num);
 }
 
 void

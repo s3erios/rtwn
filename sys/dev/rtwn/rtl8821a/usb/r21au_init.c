@@ -42,6 +42,8 @@ __FBSDID("$FreeBSD$");
 
 #include <dev/rtwn/if_rtwnvar.h>
 
+#include <dev/rtwn/usb/rtwn_usb_var.h>
+
 #include <dev/rtwn/rtl8192c/usb/r92cu.h>
 
 #include <dev/rtwn/rtl8821a/usb/r21au.h>
@@ -51,10 +53,11 @@ __FBSDID("$FreeBSD$");
 void
 r21au_init_tx_agg(struct rtwn_softc *sc)
 {
+	struct rtwn_usb_softc *uc = RTWN_USB_SOFTC(sc);
 
 	r92cu_init_tx_agg(sc);
 
-	rtwn_write_1(sc, R21A_DWBCN1_CTRL, sc->tx_agg_desc_num << 1);
+	rtwn_write_1(sc, R21A_DWBCN1_CTRL, uc->tx_agg_desc_num << 1);
 }
 
 void

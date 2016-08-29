@@ -110,9 +110,13 @@ r88eu_attach(struct rtwn_usb_softc *uc)
 {
 	struct rtwn_softc *sc		= &uc->uc_sc;
 
+	/* USB part. */
 	uc->uc_align_rx			= r92cu_align_rx;
 	uc->uc_tx_checksum		= r92cu_tx_checksum;
 
+	uc->tx_agg_desc_num		= 6;
+
+	/* Common part. */
 	sc->sc_flags			= RTWN_FLAG_EXT_HDR;
 
 	sc->sc_set_chan			= r92c_set_chan;
@@ -200,8 +204,6 @@ r88eu_attach(struct rtwn_usb_softc *uc)
 	sc->macid_limit			= R88E_MACID_MAX + 1;
 	sc->cam_entry_limit		= R92C_CAM_ENTRY_COUNT;
 	sc->fwsize_limit		= R92C_MAX_FW_SIZE;
-
-	sc->tx_agg_desc_num		= 6;
 
 	sc->bcn_status_reg[0]		= R92C_TDECTRL;
 	sc->bcn_status_reg[1]		= R92C_TDECTRL;

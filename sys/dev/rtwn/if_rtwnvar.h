@@ -369,8 +369,6 @@ struct rtwn_softc {
 	int				cam_entry_limit;
 	int				fwsize_limit;
 
-	int				tx_agg_desc_num;
-
 	uint16_t			bcn_status_reg[RTWN_PORT_COUNT];
 	uint32_t			rcr;	/* Rx filter */
 	uint32_t			rrsr;	/* Response Rate Set */
