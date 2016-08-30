@@ -23,7 +23,7 @@
 
 
 void	rtwn_get_rates(struct rtwn_softc *, struct ieee80211_node *,
-	    uint32_t *, int *, uint32_t *, int *);
+	    uint32_t *, int *, int);
 struct ieee80211_node *	rtwn_rx_common(struct rtwn_softc *, struct mbuf *,
 	    void *, int8_t *);
 void	rtwn_adhoc_recv_mgmt(struct ieee80211_node *, struct mbuf *, int,

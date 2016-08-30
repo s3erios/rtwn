@@ -147,7 +147,7 @@ r92c_fw_reset(struct rtwn_softc *sc, int reason)
 #ifndef RTWN_WITHOUT_UCODE
 static int
 r92c_send_ra_cmd(struct rtwn_softc *sc, int macid, uint32_t rates,
-    int maxrate, uint32_t basicrates)
+    int maxrate)
 {
 	struct r92c_fw_cmd_macid_cfg cmd;
 	uint8_t mode;
@@ -202,7 +202,7 @@ static void
 r92c_init_ra(struct rtwn_softc *sc, int macid)
 {
 	struct ieee80211_node *ni;
-	uint32_t rates, basicrates;
+	uint32_t rates;
 	int maxrate;
 
 	RTWN_NT_LOCK(sc);
@@ -214,12 +214,13 @@ r92c_init_ra(struct rtwn_softc *sc, int macid)
 	}
 
 	ni = ieee80211_ref_node(sc->node_list[macid]);
-	rtwn_get_rates(sc, ni, &rates, &maxrate, &basicrates, NULL);
+	/* XXX MACID_BC */
+	rtwn_get_rates(sc, ni, &rates, &maxrate, 0);
 	RTWN_NT_UNLOCK(sc);
 
 #ifndef RTWN_WITHOUT_UCODE
 	if (sc->sc_ratectl == RTWN_RATECTL_FW) {
-		r92c_send_ra_cmd(sc, macid, rates, maxrate, basicrates);
+		r92c_send_ra_cmd(sc, macid, rates, maxrate);
 	}
 #endif
 
