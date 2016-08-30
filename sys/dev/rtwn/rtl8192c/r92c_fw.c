@@ -201,6 +201,7 @@ r92c_send_ra_cmd(struct rtwn_softc *sc, int macid, uint32_t rates,
 static void
 r92c_init_ra(struct rtwn_softc *sc, int macid)
 {
+	struct ieee80211_htrateset *rs_ht;
 	struct ieee80211_node *ni;
 	uint32_t rates;
 	int maxrate;
@@ -214,8 +215,12 @@ r92c_init_ra(struct rtwn_softc *sc, int macid)
 	}
 
 	ni = ieee80211_ref_node(sc->node_list[macid]);
+	if (ni->ni_flags & IEEE80211_NODE_HT)
+		rs_ht = &ni->ni_htrates;
+	else
+		rs_ht = NULL;
 	/* XXX MACID_BC */
-	rtwn_get_rates(sc, ni, &rates, &maxrate, 0);
+	rtwn_get_rates(sc, &ni->ni_rates, rs_ht, &rates, &maxrate, 0);
 	RTWN_NT_UNLOCK(sc);
 
 #ifndef RTWN_WITHOUT_UCODE

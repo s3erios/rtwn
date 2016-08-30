@@ -57,16 +57,13 @@ __FBSDID("$FreeBSD$");
 
 
 void
-rtwn_get_rates(struct rtwn_softc *sc, struct ieee80211_node *ni,
-    uint32_t *rates_p, int *maxrate_p, int basic_rates)
+rtwn_get_rates(struct rtwn_softc *sc, struct ieee80211_rateset *rs,
+    struct ieee80211_htrateset *rs_ht, uint32_t *rates_p,
+    int *maxrate_p, int basic_rates)
 {
-	struct ieee80211_rateset *rs, *rs_ht;
 	uint32_t rates;
 	uint8_t ridx;
 	int i, maxrate;
-
-	rs = &ni->ni_rates;
-	rs_ht = (struct ieee80211_rateset *) &ni->ni_htrates;
 
 	/* Get rates mask. */
 	rates = 0;
@@ -87,7 +84,7 @@ rtwn_get_rates(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	}
 
 	/* If we're doing 11n, enable 11n rates */
-	if ((ni->ni_flags & IEEE80211_NODE_HT) && !basic_rates) {
+	if (rs_ht != NULL && !basic_rates) {
 		for (i = 0; i < rs_ht->rs_nrates; i++) {
 			if ((rs_ht->rs_rates[i] & 0x7f) > 0xf)
 				continue;
