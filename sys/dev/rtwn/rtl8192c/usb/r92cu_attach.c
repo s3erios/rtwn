@@ -206,7 +206,6 @@ r92cu_attach(struct rtwn_usb_softc *uc)
 	sc->sc_init_rx_agg		= r92cu_init_rx_agg;
 	sc->sc_init_ampdu		= r92c_init_ampdu;
 	sc->sc_init_intr		= r92cu_init_intr;
-	sc->sc_init_rf_workaround	= rtwn_nop_softc;
 	sc->sc_init_edca		= r92c_init_edca;
 	sc->sc_init_bb			= r92cu_init_bb;
 	sc->sc_init_rf			= r92c_init_rf;

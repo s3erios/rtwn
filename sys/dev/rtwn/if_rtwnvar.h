@@ -332,7 +332,6 @@ struct rtwn_softc {
 	void		(*sc_init_rx_agg)(struct rtwn_softc *);
 	void		(*sc_init_intr)(struct rtwn_softc *);
 	void		(*sc_init_ampdu)(struct rtwn_softc *);
-	void		(*sc_init_rf_workaround)(struct rtwn_softc *);
 	void		(*sc_init_edca)(struct rtwn_softc *);
 	void		(*sc_init_bb)(struct rtwn_softc *);
 	void		(*sc_init_rf)(struct rtwn_softc *);
@@ -531,8 +530,6 @@ void	rtwn_suspend(struct rtwn_softc *);
 	(((_sc)->sc_init_intr)((_sc)))
 #define rtwn_init_ampdu(_sc) \
 	(((_sc)->sc_init_ampdu)((_sc)))
-#define rtwn_init_rf_workaround(_sc) \
-	(((_sc)->sc_init_rf_workaround)((_sc)))
 #define rtwn_init_edca(_sc) \
 	(((_sc)->sc_init_edca)((_sc)))
 #define rtwn_init_bb(_sc) \

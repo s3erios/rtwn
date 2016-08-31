@@ -223,7 +223,6 @@ r12au_attach(struct rtwn_usb_softc *uc)
 	sc->sc_init_rx_agg		= r12au_init_rx_agg;
 	sc->sc_init_ampdu		= r12au_init_ampdu;
 	sc->sc_init_intr		= r12a_init_intr;
-	sc->sc_init_rf_workaround	= r12a_rf_init_workaround;
 	sc->sc_init_edca		= r12a_init_edca;
 	sc->sc_init_bb			= r12a_init_bb;
 	sc->sc_init_rf			= r12a_init_rf;

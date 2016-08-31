@@ -218,6 +218,22 @@ r12a_crystalcap_write(struct rtwn_softc *sc)
 	rtwn_bb_write(sc, R92C_MAC_PHY_CTRL, reg);
 }
 
+static void
+r12a_rf_init_workaround(struct rtwn_softc *sc)
+{
+
+	rtwn_write_1(sc, R92C_RF_CTRL,
+	    R92C_RF_CTRL_EN | R92C_RF_CTRL_SDMRSTB);
+	rtwn_write_1(sc, R92C_RF_CTRL,
+	    R92C_RF_CTRL_EN | R92C_RF_CTRL_RSTB |
+	    R92C_RF_CTRL_SDMRSTB);
+	rtwn_write_1(sc, R12A_RF_B_CTRL,
+	    R92C_RF_CTRL_EN | R92C_RF_CTRL_SDMRSTB);
+	rtwn_write_1(sc, R12A_RF_B_CTRL,
+	    R92C_RF_CTRL_EN | R92C_RF_CTRL_RSTB |
+	    R92C_RF_CTRL_SDMRSTB);
+}
+
 int
 r12a_power_on(struct rtwn_softc *sc)
 {
@@ -226,6 +242,8 @@ r12a_power_on(struct rtwn_softc *sc)
 		return (EIO);	\
 } while(0)
 	int ntries;
+
+	r12a_rf_init_workaround(sc);
 
 	/* Force PWM mode. */
 	RTWN_CHK(rtwn_setbits_1(sc, R92C_SPS0_CTRL + 1, 0, 0x01));
@@ -435,22 +453,6 @@ r12a_power_off(struct rtwn_softc *sc)
 	    1);
 
 	rs->rs_flags &= ~R12A_IQK_RUNNING;
-}
-
-void
-r12a_rf_init_workaround(struct rtwn_softc *sc)
-{
-
-	rtwn_write_1(sc, R92C_RF_CTRL,
-	    R92C_RF_CTRL_EN | R92C_RF_CTRL_SDMRSTB);
-	rtwn_write_1(sc, R92C_RF_CTRL,
-	    R92C_RF_CTRL_EN | R92C_RF_CTRL_RSTB |
-	    R92C_RF_CTRL_SDMRSTB);
-	rtwn_write_1(sc, R12A_RF_B_CTRL,
-	    R92C_RF_CTRL_EN | R92C_RF_CTRL_SDMRSTB);
-	rtwn_write_1(sc, R12A_RF_B_CTRL,
-	    R92C_RF_CTRL_EN | R92C_RF_CTRL_RSTB |
-	    R92C_RF_CTRL_SDMRSTB);
 }
 
 void

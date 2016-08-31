@@ -1809,8 +1809,6 @@ rtwn_init(struct rtwn_softc *sc)
 	}
 	sc->sc_flags |= RTWN_STARTED;
 
-	rtwn_init_rf_workaround(sc);
-
 	/* Power on adapter. */
 	error = rtwn_power_on(sc);
 	if (error != 0)

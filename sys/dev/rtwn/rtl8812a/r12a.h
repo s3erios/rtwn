@@ -95,7 +95,6 @@ void	r12a_init_rf(struct rtwn_softc *);
 void	r12a_crystalcap_write(struct rtwn_softc *);
 int	r12a_power_on(struct rtwn_softc *);
 void	r12a_power_off(struct rtwn_softc *);
-void	r12a_rf_init_workaround(struct rtwn_softc *);
 void	r12a_init_intr(struct rtwn_softc *);
 void	r12a_init_antsel(struct rtwn_softc *);
 
