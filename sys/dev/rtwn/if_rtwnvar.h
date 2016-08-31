@@ -95,7 +95,7 @@ struct rtwn_node {
 	int8_t			last_rssi;
 	int			avg_pwdb;
 };
-#define RTWN_NODE(ni)	((struct rtwn_node *)(ni))
+#define RTWN_NODE(ni)		((struct rtwn_node *)(ni))
 
 struct rtwn_vap {
 	struct ieee80211vap	vap;
@@ -201,7 +201,7 @@ struct rtwn_softc {
 	uint16_t	next_rom_addr;
 	uint8_t		keys_bmap[roundup2(RTWN_CAM_ENTRY_LIMIT, NBBY)];
 
-	struct rtwn_vap	*vaps[RTWN_PORT_COUNT];
+	struct rtwn_vap		*vaps[RTWN_PORT_COUNT];
 	struct ieee80211_node	*node_list[RTWN_MACID_LIMIT];
 	struct mtx		nt_mtx;
 

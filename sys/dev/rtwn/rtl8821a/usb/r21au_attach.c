@@ -12,8 +12,6 @@
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- * $FreeBSD$
  */
 
 #include <sys/cdefs.h>
@@ -129,17 +127,23 @@ r21au_attach(struct rtwn_usb_softc *uc)
 	/* Common part. */
 	sc->sc_flags			= RTWN_FLAG_EXT_HDR;
 
-	sc->sc_rf_read			= r12a_c_cut_rf_read;
-	sc->sc_rf_write			= r12a_rf_write;
-	sc->sc_check_condition		= r21a_check_condition;
-	sc->sc_efuse_postread		= rtwn_nop_softc;
-	sc->sc_parse_rom		= r21a_parse_rom;
+	sc->sc_set_chan			= r12a_set_chan;
+	sc->sc_fill_tx_desc		= r12a_fill_tx_desc;
+	sc->sc_fill_tx_desc_raw		= r12a_fill_tx_desc_raw;
+	sc->sc_fill_tx_desc_null	= r12au_fill_tx_desc_null;
+	sc->sc_tx_sgi_isset		= r12a_tx_sgi_isset;
+	sc->sc_rx_sgi_isset		= r12a_rx_sgi_isset;
 	sc->sc_get_rssi_cck		= r21a_get_rssi_cck;
 	sc->sc_get_rssi_ofdm		= r88e_get_rssi_ofdm;
 	sc->sc_classify_intr		= r12au_classify_intr;
 	sc->sc_handle_tx_report		= r12a_ratectl_tx_complete;
 	sc->sc_handle_c2h_report	= r12a_handle_c2h_report;
 	sc->sc_check_frame		= r12a_check_frame_checksum;
+	sc->sc_rf_read			= r12a_c_cut_rf_read;
+	sc->sc_rf_write			= r12a_rf_write;
+	sc->sc_check_condition		= r21a_check_condition;
+	sc->sc_efuse_postread		= rtwn_nop_softc;
+	sc->sc_parse_rom		= r21a_parse_rom;
 	sc->sc_power_on			= r21a_power_on;
 	sc->sc_power_off		= r21a_power_off;
 #ifndef RTWN_WITHOUT_UCODE
@@ -153,12 +157,6 @@ r21au_attach(struct rtwn_usb_softc *uc)
 	sc->sc_vap_preattach		= r12a_vap_preattach;
 	sc->sc_postattach		= r21a_postattach;
 	sc->sc_detach_private		= r12a_detach_private;
-	sc->sc_fill_tx_desc		= r12a_fill_tx_desc;
-	sc->sc_fill_tx_desc_raw		= r12a_fill_tx_desc_raw;
-	sc->sc_fill_tx_desc_null	= r12au_fill_tx_desc_null;
-	sc->sc_tx_sgi_isset		= r12a_tx_sgi_isset;
-	sc->sc_rx_sgi_isset		= r12a_rx_sgi_isset;
-	sc->sc_set_chan			= r12a_set_chan;
 #ifndef RTWN_WITHOUT_UCODE
 	sc->sc_set_media_status		= r12a_set_media_status;
 	sc->sc_set_rsvd_page		= r88e_set_rsvd_page;
@@ -227,4 +225,3 @@ r21au_attach(struct rtwn_usb_softc *uc)
 
 	r21a_attach_private(sc);
 }
-

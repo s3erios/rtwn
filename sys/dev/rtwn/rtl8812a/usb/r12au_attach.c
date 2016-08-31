@@ -273,4 +273,3 @@ r12au_attach(struct rtwn_usb_softc *uc)
 
 	r12a_attach_private(sc);
 }
-
