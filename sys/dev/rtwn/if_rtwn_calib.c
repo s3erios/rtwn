@@ -88,7 +88,7 @@ rtwn_temp_calib(struct rtwn_softc *sc)
 		rtwn_lc_calib(sc);
 
 		sc->thcal_temp = temp;
-	} else if (abs(temp - sc->thcal_temp) > RTWN_CALIB_THRESHOLD) {
+	} else if (abs(temp - sc->thcal_temp) > sc->temp_delta) {
 		RTWN_DPRINTF(sc, RTWN_DEBUG_TEMP,
 		    "%s: LC/IQ calib triggered by temp: %u -> %u\n",
 		    __func__, sc->thcal_temp, temp);

@@ -33,6 +33,8 @@
 #define R92C_MACID_MAX		31
 #define R92C_CAM_ENTRY_COUNT	32
 
+#define R92C_CALIB_THRESHOLD	2
+
 
 /*
  * Function declarations.

@@ -249,6 +249,7 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	sc->macid_limit			= R92C_MACID_MAX + 1;
 	sc->cam_entry_limit		= R92C_CAM_ENTRY_COUNT;
 	sc->fwsize_limit		= R92C_MAX_FW_SIZE;
+	sc->temp_delta			= R92C_CALIB_THRESHOLD;
 
 	sc->bcn_status_reg[0]		= R92C_TDECTRL;
 	sc->bcn_status_reg[1]		= R92C_TDECTRL;

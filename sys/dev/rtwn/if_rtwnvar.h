@@ -37,7 +37,6 @@
 #define RTWN_MACID_LIMIT	128
 
 #define RTWN_TX_TIMEOUT	5000	/* ms */
-#define RTWN_CALIB_THRESHOLD	6
 #define RTWN_MAX_EPOUT		4
 #define RTWN_PORT_COUNT		2
 
@@ -367,6 +366,7 @@ struct rtwn_softc {
 	int				macid_limit;
 	int				cam_entry_limit;
 	int				fwsize_limit;
+	int				temp_delta;
 
 	uint16_t			bcn_status_reg[RTWN_PORT_COUNT];
 	uint32_t			rcr;	/* Rx filter */

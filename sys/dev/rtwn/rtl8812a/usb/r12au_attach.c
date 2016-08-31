@@ -260,6 +260,7 @@ r12au_attach(struct rtwn_usb_softc *uc)
 	sc->macid_limit			= R12A_MACID_MAX + 1;
 	sc->cam_entry_limit		= R12A_CAM_ENTRY_COUNT;
 	sc->fwsize_limit		= R12A_MAX_FW_SIZE;
+	sc->temp_delta			= R88E_CALIB_THRESHOLD;
 
 	sc->bcn_status_reg[0]		= R92C_TDECTRL;
 	sc->bcn_status_reg[1]		= R92C_TDECTRL;

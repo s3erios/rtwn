@@ -33,6 +33,8 @@
 
 #define R88E_INTR_MSG_LEN	60
 
+#define R88E_CALIB_THRESHOLD	4
+
 
 /*
  * Function declarations.
