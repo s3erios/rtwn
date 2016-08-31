@@ -102,6 +102,7 @@ struct rtwn_vap {
 	struct ieee80211vap	vap;
 	int			id;
 #define RTWN_VAP_ID_INVALID	-1
+	int			curr_mode;
 
 	uint8_t			bcn_desc[RTWN_TX_DESC_SIZE];
 	struct mbuf		*bcn_mbuf;

@@ -44,8 +44,8 @@ int	r21a_iq_calib_fw_supported(struct rtwn_softc *);
 void	r21a_iq_calib_sw(struct rtwn_softc *);
 
 /* r21a_chan.c */
-void	r21a_set_band_2ghz(struct rtwn_softc *);
-void	r21a_set_band_5ghz(struct rtwn_softc *);
+void	r21a_set_band_2ghz(struct rtwn_softc *, uint32_t);
+void	r21a_set_band_5ghz(struct rtwn_softc *, uint32_t);
 
 /* r21a_fw.c */
 void	r21a_fw_reset(struct rtwn_softc *, int);

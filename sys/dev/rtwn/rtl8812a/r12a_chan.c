@@ -45,6 +45,7 @@ __FBSDID("$FreeBSD$");
 
 #include <dev/rtwn/if_rtwn_debug.h>
 #include <dev/rtwn/if_rtwn_ridx.h>
+#include <dev/rtwn/if_rtwn_rx.h>
 
 #include <dev/rtwn/rtl8812a/r12a.h>
 #include <dev/rtwn/rtl8812a/r12a_reg.h>
@@ -296,7 +297,9 @@ r12a_fix_spur(struct rtwn_softc *sc, struct ieee80211_channel *c)
 static void
 r12a_set_band(struct rtwn_softc *sc, struct ieee80211_channel *c)
 {
+	struct ieee80211com *ic = &sc->sc_ic;
 	struct r12a_softc *rs = sc->sc_priv;
+	uint32_t basicrates;
 	uint8_t swing;
 	int i;
 
@@ -306,11 +309,13 @@ r12a_set_band(struct rtwn_softc *sc, struct ieee80211_channel *c)
 	    !(rtwn_read_1(sc, R12A_CCK_CHECK) & R12A_CCK_CHECK_5GHZ))
 		return;
 
+	rtwn_get_rates(sc, ieee80211_get_suprates(ic, c), NULL, &basicrates,
+	    NULL, 1);
 	if (IEEE80211_IS_CHAN_2GHZ(c)) {
-		rtwn_r12a_set_band_2ghz(sc);
+		rtwn_r12a_set_band_2ghz(sc, basicrates);
 		swing = rs->tx_bbswing_2g;
 	} else if (IEEE80211_IS_CHAN_5GHZ(c)) {
-		rtwn_r12a_set_band_5ghz(sc);
+		rtwn_r12a_set_band_5ghz(sc, basicrates);
 		swing = rs->tx_bbswing_5g;
 	} else {
 		KASSERT(0, ("wrong channel flags %08X\n", c->ic_flags));
@@ -462,7 +467,7 @@ r12a_set_chan(struct rtwn_softc *sc, struct ieee80211_channel *c)
 }
 
 void
-r12a_set_band_2ghz(struct rtwn_softc *sc)
+r12a_set_band_2ghz(struct rtwn_softc *sc, uint32_t basicrates)
 {
 	struct r12a_softc *rs = sc->sc_priv;
 
@@ -511,19 +516,14 @@ r12a_set_band_2ghz(struct rtwn_softc *sc)
 	rtwn_bb_setbits(sc, R12A_TX_PATH, 0xf0, 0x10);
 	rtwn_bb_setbits(sc, R12A_CCK_RX_PATH, 0x0f000000, 0x01000000);
 
-	/* Write basic rates (1, 2, 5.5, 11, 6, 12, 24). */
-	/* XXX check ic_curmode. */
-	rtwn_setbits_4(sc, R92C_RRSR, R92C_RRSR_RATE_BITMAP_M,
-	   (1 << RTWN_RIDX_CCK1)  | (1 << RTWN_RIDX_CCK2) |
-	   (1 << RTWN_RIDX_CCK55) | (1 << RTWN_RIDX_CCK11) |
-	   (1 << RTWN_RIDX_OFDM6) | (1 << RTWN_RIDX_OFDM12) |
-	   (1 << RTWN_RIDX_OFDM24));
+	/* Write basic rates. */
+	rtwn_set_basicrates(sc, basicrates);
 
 	rtwn_write_1(sc, R12A_CCK_CHECK, 0);
 }
 
 void
-r12a_set_band_5ghz(struct rtwn_softc *sc)
+r12a_set_band_5ghz(struct rtwn_softc *sc, uint32_t basicrates)
 {
 	struct r12a_softc *rs = sc->sc_priv;
 	int ntries;
@@ -592,10 +592,7 @@ r12a_set_band_5ghz(struct rtwn_softc *sc)
 	rtwn_bb_setbits(sc, R12A_TX_PATH, 0xf0, 0);
 	rtwn_bb_setbits(sc, R12A_CCK_RX_PATH, 0, 0x0f000000);
 
-	/* Write basic rates (6, 12, 24). */
-	/* XXX obtain from net80211. */
-	rtwn_setbits_4(sc, R92C_RRSR, R92C_RRSR_RATE_BITMAP_M,
-	    (1 << RTWN_RIDX_OFDM6) | (1 << RTWN_RIDX_OFDM12) |
-	    (1 << RTWN_RIDX_OFDM24));
+	/* Write basic rates. */
+	rtwn_set_basicrates(sc, basicrates);
 }
 

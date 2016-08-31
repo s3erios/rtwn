@@ -57,8 +57,8 @@ __FBSDID("$FreeBSD$");
 
 
 void
-rtwn_get_rates(struct rtwn_softc *sc, struct ieee80211_rateset *rs,
-    struct ieee80211_htrateset *rs_ht, uint32_t *rates_p,
+rtwn_get_rates(struct rtwn_softc *sc, const struct ieee80211_rateset *rs,
+    const struct ieee80211_htrateset *rs_ht, uint32_t *rates_p,
     int *maxrate_p, int basic_rates)
 {
 	uint32_t rates;
@@ -99,12 +99,21 @@ rtwn_get_rates(struct rtwn_softc *sc, struct ieee80211_rateset *rs,
 	}
 
 	RTWN_DPRINTF(sc, RTWN_DEBUG_RA,
-	    "%s: rates 0x%08x, maxrate %d\n", __func__, rates, maxrate);
+	    "%s: rates 0x%08X, maxrate %d\n", __func__, rates, maxrate);
 
 	if (rates_p != NULL)
 		*rates_p = rates;
 	if (maxrate_p != NULL)
 		*maxrate_p = maxrate;
+}
+
+void
+rtwn_set_basicrates(struct rtwn_softc *sc, uint32_t rates)
+{
+
+	RTWN_DPRINTF(sc, RTWN_DEBUG_RA, "%s: rates 0x%08X\n", __func__, rates);
+
+	rtwn_setbits_4(sc, R92C_RRSR, R92C_RRSR_RATE_BITMAP_M, rates);
 }
 
 static void

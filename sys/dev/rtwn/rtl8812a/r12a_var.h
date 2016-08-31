@@ -70,8 +70,8 @@ struct r12a_softc {
 	void		(*rs_crystalcap_write)(struct rtwn_softc *);
 	void		(*rs_fix_spur)(struct rtwn_softc *,
 			    struct ieee80211_channel *);
-	void		(*rs_set_band_2ghz)(struct rtwn_softc *);
-	void		(*rs_set_band_5ghz)(struct rtwn_softc *);
+	void		(*rs_set_band_2ghz)(struct rtwn_softc *, uint32_t);
+	void		(*rs_set_band_5ghz)(struct rtwn_softc *, uint32_t);
 	void		(*rs_init_burstlen)(struct rtwn_softc *);
 	void		(*rs_init_ampdu_fwhw)(struct rtwn_softc *);
 #ifndef RTWN_WITHOUT_UCODE
@@ -87,10 +87,10 @@ struct r12a_softc {
 
 #define rtwn_r12a_fix_spur(_sc, _c) \
 	((R12A_SOFTC(_sc)->rs_fix_spur)((_sc), (_c)))
-#define rtwn_r12a_set_band_2ghz(_sc) \
-	((R12A_SOFTC(_sc)->rs_set_band_2ghz)((_sc)))
-#define rtwn_r12a_set_band_5ghz(_sc) \
-	((R12A_SOFTC(_sc)->rs_set_band_5ghz)((_sc)))
+#define rtwn_r12a_set_band_2ghz(_sc, _rates) \
+	((R12A_SOFTC(_sc)->rs_set_band_2ghz)((_sc), (_rates)))
+#define rtwn_r12a_set_band_5ghz(_sc, _rates) \
+	((R12A_SOFTC(_sc)->rs_set_band_5ghz)((_sc), (_rates)))
 #define rtwn_r12a_init_burstlen(_sc) \
 	((R12A_SOFTC(_sc)->rs_init_burstlen)((_sc)))
 #define rtwn_r12a_init_ampdu_fwhw(_sc) \

@@ -113,6 +113,7 @@ static int		rtwn_monitor_newstate(struct ieee80211vap *,
 			    enum ieee80211_state, int);
 static int		rtwn_newstate(struct ieee80211vap *,
 			    enum ieee80211_state, int);
+static void		rtwn_calc_basicrates(struct rtwn_softc *);
 static int		rtwn_run(struct rtwn_softc *,
 			    struct ieee80211vap *);
 #ifndef D4054
@@ -845,7 +846,7 @@ fail:
 	if (sc->bcn_vaps > 0 && sc->vaps[!uvp->id] != NULL) {
 		struct rtwn_vap *uvp2 = sc->vaps[!uvp->id];
 
-		if (uvp2->vap.iv_state >= IEEE80211_S_RUN)
+		if (uvp2->curr_mode != R92C_MSR_NOLINK)
 			error = rtwn_tx_beacon_check(sc, uvp2);
 	}
 
@@ -877,7 +878,7 @@ rtwn_tsf_sync_adhoc(void *arg)
 	struct ieee80211com *ic = vap->iv_ic;
 	struct rtwn_vap *uvp = RTWN_VAP(vap);
 
-	if (vap->iv_state == IEEE80211_S_RUN) {
+	if (uvp->curr_mode != R92C_MSR_NOLINK) {
 		/* Do it in process context. */
 		ieee80211_runtask(ic, &uvp->tsf_sync_adhoc_task);
 	}
@@ -889,6 +890,9 @@ rtwn_tsf_sync_adhoc(void *arg)
  * (and TSF synchronization is enabled), then any beacon may update it.
  * This routine synchronizes it when BSSID matching is enabled (IBSS merge
  * is not possible during this period).
+ *
+ * NOTE: there is no race with rtwn_newstate(), since it uses the same
+ * taskqueue.
  */
 static void
 rtwn_tsf_sync_adhoc_task(void *arg, int pending)
@@ -957,7 +961,10 @@ rtwn_tsf_sync_enable(struct rtwn_softc *sc, struct ieee80211vap *vap)
 static void
 rtwn_set_mode(struct rtwn_softc *sc, uint8_t mode, int id)
 {
+
 	rtwn_setbits_1(sc, R92C_MSR, R92C_MSR_MASK << id * 2, mode << id * 2);
+	if (sc->vaps[id] != NULL)
+		sc->vaps[id]->curr_mode = mode;
 }
 
 static int
@@ -1036,13 +1043,13 @@ rtwn_newstate(struct ieee80211vap *vap, enum ieee80211_state nstate, int arg)
 	if (ostate == IEEE80211_S_RUN) {
 		sc->vaps_running--;
 
+		/* Set media status to 'No Link'. */
+		rtwn_set_mode(sc, R92C_MSR_NOLINK, uvp->id);
+
 		if (vap->iv_opmode == IEEE80211_M_IBSS) {
 			/* Stop periodical TSF synchronization. */
 			callout_stop(&uvp->tsf_sync_adhoc);
 		}
-
-		/* Set media status to 'No Link'. */
-		rtwn_set_mode(sc, R92C_MSR_NOLINK, uvp->id);
 
 		/* Disable TSF synchronization / beaconing. */
 		rtwn_beacon_enable(sc, uvp->id, 0);
@@ -1063,6 +1070,10 @@ rtwn_newstate(struct ieee80211vap *vap, enum ieee80211_state nstate, int arg)
 			rtwn_set_pwrmode(sc, vap, 0);
 		}
 #endif
+		if (sc->vaps_running - sc->monvaps_running > 0) {
+			/* Recalculate basic rates bitmap. */
+			rtwn_calc_basicrates(sc);
+		}
 
 		if (sc->vaps_running == sc->monvaps_running) {
 			/* Stop calibration. */
@@ -1111,6 +1122,46 @@ rtwn_newstate(struct ieee80211vap *vap, enum ieee80211_state nstate, int arg)
 		return (error);
 
 	return (early_newstate ? 0 : uvp->newstate(vap, nstate, arg));
+}
+
+static void
+rtwn_calc_basicrates(struct rtwn_softc *sc)
+{
+	struct ieee80211com *ic = &sc->sc_ic;
+	uint32_t basicrates;
+	int i;
+
+	RTWN_ASSERT_LOCKED(sc);
+
+	if (ic->ic_flags & IEEE80211_F_SCAN)
+		return;		/* will be done by rtwn_scan_end(). */
+
+	basicrates = 0;
+	for (i = 0; i < nitems(sc->vaps); i++) {
+		struct rtwn_vap *rvp;
+		struct ieee80211vap *vap;
+		struct ieee80211_node *ni;
+		uint32_t rates;
+
+		rvp = sc->vaps[i];
+		if (rvp == NULL || rvp->curr_mode == R92C_MSR_NOLINK)
+			continue;
+
+		vap = &rvp->vap;
+		if (vap->iv_bss == NULL)
+			continue;
+
+		ni = ieee80211_ref_node(vap->iv_bss);
+		rtwn_get_rates(sc, &ni->ni_rates, NULL, &rates, NULL, 1);
+		basicrates |= rates;
+		ieee80211_free_node(ni);
+	}
+
+	if (basicrates == 0)
+		return;
+
+	/* XXX initial RTS rate? */
+	rtwn_set_basicrates(sc, basicrates);
 }
 
 static int
@@ -1216,6 +1267,9 @@ rtwn_run(struct rtwn_softc *sc, struct ieee80211vap *vap)
 
 	/* Enable TSF synchronization. */
 	rtwn_tsf_sync_enable(sc, vap);
+
+	/* Set basic rates mask. */
+	rtwn_calc_basicrates(sc);
 
 #ifdef RTWN_TODO
 	rtwn_write_1(sc, R92C_SIFS_CCK + 1, 10);
@@ -1485,6 +1539,9 @@ rtwn_scan_end(struct ieee80211com *ic)
 
 	/* Restore LED state. */
 	rtwn_set_led(sc, RTWN_LED_LINK, (sc->vaps_running != 0));
+
+	/* Restore basic rates mask. */
+	rtwn_calc_basicrates(sc);
 	RTWN_UNLOCK(sc);
 }
 
