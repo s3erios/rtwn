@@ -81,16 +81,6 @@ rtwn_pci_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
 		break;
 	}
 
-	if (ni == NULL) {	/* beacon frame */
-		qid = RTWN_PCI_BEACON_QUEUE;
-
-		m = m_dup(m, M_NOWAIT);
-		if (__predict_false(m == NULL)) {
-			device_printf(sc->sc_dev,
-			    "%s: could not copy beacon frame\n", __func__);
-		}
-	}
-
 	ring = &pc->tx_ring[qid];
 	data = &ring->tx_data[ring->cur];
 	if (ring->cur == ring->last || data->m != NULL)
@@ -105,6 +95,17 @@ rtwn_pci_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	memcpy(txd, tx_desc, sc->txdesc_len);
 	txd->pktlen = htole16(m->m_pkthdr.len);
 	txd->offset = sc->txdesc_len;
+
+	if (ni == NULL) {	/* beacon frame */
+		qid = RTWN_PCI_BEACON_QUEUE;
+
+		m = m_dup(m, M_NOWAIT);
+		if (__predict_false(m == NULL)) {
+			device_printf(sc->sc_dev,
+			    "%s: could not copy beacon frame\n", __func__);
+			return (ENOMEM);
+		}
+	}
 
 	error = bus_dmamap_load_mbuf_sg(ring->data_dmat, data->map, m, segs,
 	    &nsegs, BUS_DMA_NOWAIT);
