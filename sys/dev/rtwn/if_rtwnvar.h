@@ -301,6 +301,7 @@ struct rtwn_softc {
 			    void *, const struct ieee80211_bpf_params *);
 	void		(*sc_fill_tx_desc_null)(struct rtwn_softc *,
 			    void *, int, int, int);
+	void		(*sc_dump_tx_desc)(struct rtwn_softc *, const void *);
 	int		(*sc_tx_sgi_isset)(void *);
 	int		(*sc_rx_sgi_isset)(void *);
 	void		(*sc_beacon_init)(struct rtwn_softc *, void *, int);
@@ -487,6 +488,8 @@ void	rtwn_suspend(struct rtwn_softc *);
 #define rtwn_fill_tx_desc_null(_sc, _buf, _11b, _qos, _id) \
 	(((_sc)->sc_fill_tx_desc_null)((_sc), \
 	    (_buf), (_11b), (_qos), (_id)))
+#define rtwn_dump_tx_desc(_sc, _desc) \
+	(((_sc)->sc_dump_tx_desc)((_sc), (_desc)))
 #define rtwn_tx_sgi_isset(_sc, _buf) \
 	(((_sc)->sc_tx_sgi_isset)((_buf)))
 #define rtwn_rx_sgi_isset(_sc, _buf) \

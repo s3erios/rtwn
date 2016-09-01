@@ -78,6 +78,13 @@ rtwn_rx_copy_to_mbuf(struct rtwn_softc *sc, struct r92c_rx_stat *stat,
 
 	RTWN_ASSERT_LOCKED(sc);
 
+	/* Dump Rx descriptor. */
+	RTWN_DPRINTF(sc, RTWN_DEBUG_RECV_DESC,
+	    "%s: dw: 0 %08X, 1 %08X, 2 %08X, 3 %08X, 4 %08X, tsfl %08X\n",
+	    __func__, le32toh(stat->rxdw0), le32toh(stat->rxdw1),
+	    le32toh(stat->rxdw2), le32toh(stat->rxdw3), le32toh(stat->rxdw4),
+	    le32toh(stat->tsf_low));
+
 	/*
 	 * don't pass packets to the ieee80211 framework if the driver isn't
 	 * RUNNING.

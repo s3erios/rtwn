@@ -69,5 +69,6 @@ void	r92ce_setup_tx_desc(struct rtwn_pci_softc *, void *, uint32_t);
 void	r92ce_tx_postsetup(struct rtwn_pci_softc *, void *,
 	    bus_dma_segment_t[]);
 void	r92ce_reset_tx_desc(void *);
+void	r92ce_dump_tx_desc(struct rtwn_softc *, const void *);
 
 #endif	/* RTL8192CE_H */

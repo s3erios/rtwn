@@ -134,6 +134,9 @@ rtwn_pci_tx_start_common(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	rtwn_pci_tx_postsetup(pc, txd, segs);
 	txd->flags0 |= RTWN_FLAGS0_OWN;
 
+	/* Dump Tx descriptor. */
+	rtwn_dump_tx_desc(sc, tx_desc);
+
 	bus_dmamap_sync(ring->desc_dmat, ring->desc_map,
 	    BUS_DMASYNC_POSTWRITE);
 	bus_dmamap_sync(ring->data_dmat, data->map, BUS_DMASYNC_POSTWRITE);

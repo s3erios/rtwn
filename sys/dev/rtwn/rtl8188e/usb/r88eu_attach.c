@@ -124,6 +124,7 @@ r88eu_attach(struct rtwn_usb_softc *uc)
 	sc->sc_fill_tx_desc		= r92c_fill_tx_desc;
 	sc->sc_fill_tx_desc_raw 	= r92c_fill_tx_desc_raw;
 	sc->sc_fill_tx_desc_null	= r92cu_fill_tx_desc_null;
+	sc->sc_dump_tx_desc		= r92cu_dump_tx_desc;
 	sc->sc_tx_sgi_isset		= r92c_tx_sgi_isset;
 	sc->sc_rx_sgi_isset		= r92c_rx_sgi_isset;
 	sc->sc_get_rssi_cck		= r88e_get_rssi_cck;

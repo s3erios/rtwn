@@ -246,6 +246,9 @@ rtwn_usb_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	txd->flags0 |= RTWN_FLAGS0_OWN;
 	rtwn_usb_tx_checksum(uc, txd);
 
+	/* Dump Tx descriptor. */
+	rtwn_dump_tx_desc(sc, tx_desc);
+
 	memcpy(data->buf, tx_desc, sc->txdesc_len);
 	m_copydata(m, 0, m->m_pkthdr.len,
 	    (caddr_t)(data->buf + sc->txdesc_len));

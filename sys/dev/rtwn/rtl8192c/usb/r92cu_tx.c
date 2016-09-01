@@ -41,6 +41,7 @@ __FBSDID("$FreeBSD$");
 #include <net80211/ieee80211_radiotap.h>
 
 #include <dev/rtwn/if_rtwnvar.h>
+#include <dev/rtwn/if_rtwn_debug.h>
 
 #include <dev/rtwn/usb/rtwn_usb_reg.h>
 
@@ -55,6 +56,22 @@ r92cu_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b,
 
 	r92c_fill_tx_desc_null(sc, buf, is11b, qos, id);
 	r92cu_tx_checksum(buf);
+}
+
+void
+r92cu_dump_tx_desc(struct rtwn_softc *sc, const void *desc)
+{
+#ifdef RTWN_DEBUG
+	const struct r92cu_tx_desc *txd = desc;
+
+	RTWN_DPRINTF(sc, RTWN_DEBUG_XMIT_DESC,
+	    "%s: len %d, off %d, flags0 %02X, dw: 1 %08X, 2 %08X, 3 %04X "
+	    "(seq %04X), 4 %08X, 5 %08X, 6 %08X, sum %04X, pad %04X\n",
+	    __func__, le16toh(txd->pktlen), txd->offset, txd->flags0,
+	    le32toh(txd->txdw1), le32toh(txd->txdw2), le16toh(txd->txdw3),
+	    le16toh(txd->txdseq), le32toh(txd->txdw4), le32toh(txd->txdw5),
+	    le32toh(txd->txdw6), le16toh(txd->txdsum), le16toh(txd->pad));
+#endif
 }
 
 void

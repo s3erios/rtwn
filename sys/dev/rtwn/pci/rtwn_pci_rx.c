@@ -98,6 +98,15 @@ rtwn_pci_rx_frame(struct rtwn_softc *sc, struct r92ce_rx_stat *rx_desc,
 	int8_t rssi = 0, nf;
 	int infosz, nsegs, pktlen, shift, error;
 
+	/* Dump Rx descriptor. */
+	RTWN_DPRINTF(sc, RTWN_DEBUG_RECV_DESC,
+	    "%s: dw: 0 %08X, 1 %08X, 2 %08X, 3 %08X, 4 %08X, tsfl %08X, "
+	    "addr: %08X (64: %08X)\n",
+	    __func__, le32toh(rx_desc->rxdw0), le32toh(rx_desc->rxdw1),
+	    le32toh(rx_desc->rxdw2), le32toh(rx_desc->rxdw3),
+	    le32toh(rx_desc->rxdw4), le32toh(rx_desc->tsf_low),
+	    le32toh(rx_desc->rxbufaddr), le32toh(rx_desc->rxbufaddr64));
+
 	rxdw0 = le32toh(rx_desc->rxdw0);
 	if (__predict_false(rxdw0 & (R92C_RXDW0_CRCERR | R92C_RXDW0_ICVERR))) {
 		/*
