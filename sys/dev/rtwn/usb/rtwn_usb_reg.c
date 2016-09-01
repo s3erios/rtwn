@@ -78,6 +78,9 @@ rtwn_do_request(struct rtwn_softc *sc, struct usb_device_request *req,
 		RTWN_DPRINTF(sc, RTWN_DEBUG_USB,
 		    "%s: control request failed, %s (retries left: %d)\n",
 		    __func__, usbd_errstr(err), ntries);
+		if (err == USB_ERR_NOT_CONFIGURED)
+			return (ENXIO);
+
 		usb_pause_mtx(&sc->sc_mtx, hz / 100);
 	}
 	return (EIO);

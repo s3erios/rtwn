@@ -483,7 +483,7 @@ rtwn_vap_create(struct ieee80211com *ic, const char name[IFNAMSIZ], int unit,
 	KASSERT(sc->ap_vaps <= RTWN_PORT_COUNT,
 	    ("ap_vaps overflow (%d > %d)\n", sc->ap_vaps, RTWN_PORT_COUNT));
 	KASSERT(sc->bcn_vaps <= RTWN_PORT_COUNT,
-	    ("bcn_vaps overflow (%d > 2)\n", sc->bcn_vaps, RTWN_PORT_COUNT));
+	    ("bcn_vaps overflow (%d > %d)\n", sc->bcn_vaps, RTWN_PORT_COUNT));
 
 	if (opmode != IEEE80211_M_MONITOR) {
 		switch (sc->nvaps) {

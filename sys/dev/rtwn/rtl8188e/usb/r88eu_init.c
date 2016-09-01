@@ -58,14 +58,16 @@ void
 r88eu_power_off(struct rtwn_softc *sc)
 {
 	uint8_t reg;
-	int ntries;
+	int error, ntries;
 
 	/* Turn off LED. */
 	r88e_set_led(sc, RTWN_LED_LINK, 0);
 
 	/* Disable any kind of TX reports. */
-	rtwn_setbits_1(sc, R88E_TX_RPT_CTRL,
+	error = rtwn_setbits_1(sc, R88E_TX_RPT_CTRL,
 	    R88E_TX_RPT1_ENA | R88E_TX_RPT2_ENA, 0);
+	if (error == ENXIO)	/* hardware gone */
+		return;
 
 	/* Stop Rx. */
 	rtwn_write_1(sc, R92C_CR, 0);
@@ -74,14 +76,14 @@ r88eu_power_off(struct rtwn_softc *sc)
 	/* Block all Tx queues. */
 	rtwn_write_1(sc, R92C_TXPAUSE, R92C_TX_QUEUE_ALL);
 
-	for (ntries = 0; ntries < 5000; ntries++) {
+	for (ntries = 0; ntries < 10; ntries++) {
 		/* Should be zero if no packet is transmitting. */
 		if (rtwn_read_4(sc, R88E_SCH_TXCMD) == 0)
 			break;
 
-		rtwn_delay(sc, 10);
+		rtwn_delay(sc, 5000);
 	}
-	if (ntries == 5000) {
+	if (ntries == 10) {
 		device_printf(sc->sc_dev, "%s: failed to block Tx queues\n",
 		    __func__);
 		return;
@@ -127,15 +129,15 @@ r88eu_power_off(struct rtwn_softc *sc)
 	rtwn_setbits_1_shift(sc, R92C_APS_FSMCO, 0,
 	    R92C_APS_FSMCO_APFM_OFF, 1);
 
-	for (ntries = 0; ntries < 5000; ntries++) {
+	for (ntries = 0; ntries < 10; ntries++) {
 		/* Wait until it will be disabled. */
 		if ((rtwn_read_2(sc, R92C_APS_FSMCO) &
 		    R92C_APS_FSMCO_APFM_OFF) == 0)
 			break;
 
-		rtwn_delay(sc, 10);
+		rtwn_delay(sc, 5000);
 	}
-	if (ntries == 5000) {
+	if (ntries == 10) {
 		device_printf(sc->sc_dev, "%s: could not turn off MAC\n",
 		    __func__);
 		return;

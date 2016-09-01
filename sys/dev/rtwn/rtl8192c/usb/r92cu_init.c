@@ -188,6 +188,7 @@ r92cu_power_off(struct rtwn_softc *sc)
 	struct r92c_softc *rs = sc->sc_priv;
 #endif
 	uint32_t reg;
+	int error;
 
 	/* Deinit C2H event handler. */
 #ifndef RTWN_WITHOUT_UCODE
@@ -198,7 +199,9 @@ r92cu_power_off(struct rtwn_softc *sc)
 #endif
 
 	/* Block all Tx queues. */
-	rtwn_write_1(sc, R92C_TXPAUSE, R92C_TX_QUEUE_ALL);
+	error = rtwn_write_1(sc, R92C_TXPAUSE, R92C_TX_QUEUE_ALL);
+	if (error == ENXIO)	/* hardware gone */
+		return;
 
 	/* Disable RF */
 	rtwn_rf_write(sc, 0, 0, 0);
