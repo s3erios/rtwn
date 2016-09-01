@@ -486,7 +486,7 @@ rtwn_pci_attach(device_t dev)
 	uint32_t lcsr;
 	int cap_off, i, error, rid;
 
-	if (matched_chip > RTWN_CHIP_MAX_PCI)
+	if (matched_chip >= RTWN_CHIP_MAX_PCI)
 		return (ENXIO);
 
 	/*
