@@ -213,8 +213,11 @@ rtwn_tx_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	if (params->ibp_flags & IEEE80211_BPF_CRYPTO) {
 		/* Retrieve key for TX. */
 		k = ieee80211_crypto_encap(ni, m);
-		if (k == NULL)
+		if (k == NULL) {
+			device_printf(sc->sc_dev,
+			    "ieee80211_crypto_encap returns NULL.\n");
 			return (ENOBUFS);
+		}
 		if (!(k->wk_flags & IEEE80211_KEY_SWCRYPT))
 			cipher = k->wk_cipher->ic_cipher;
 	}
