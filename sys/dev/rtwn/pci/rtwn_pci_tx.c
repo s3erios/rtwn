@@ -57,8 +57,8 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/rtl8192c/pci/r92ce_reg.h>
 
 
-int
-rtwn_pci_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
+static int
+rtwn_pci_tx_start_common(struct rtwn_softc *sc, struct ieee80211_node *ni,
     struct mbuf *m, uint8_t *tx_desc, uint8_t type, int id)
 {
 	struct rtwn_pci_softc *pc = RTWN_PCI_SOFTC(sc);
@@ -81,6 +81,9 @@ rtwn_pci_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
 		break;
 	}
 
+	if (ni == NULL)		/* beacon frame */
+		qid = RTWN_PCI_BEACON_QUEUE;
+
 	ring = &pc->tx_ring[qid];
 	data = &ring->tx_data[ring->cur];
 	if (ring->cur == ring->last || data->m != NULL)
@@ -95,17 +98,6 @@ rtwn_pci_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	memcpy(txd, tx_desc, sc->txdesc_len);
 	txd->pktlen = htole16(m->m_pkthdr.len);
 	txd->offset = sc->txdesc_len;
-
-	if (ni == NULL) {	/* beacon frame */
-		qid = RTWN_PCI_BEACON_QUEUE;
-
-		m = m_dup(m, M_NOWAIT);
-		if (__predict_false(m == NULL)) {
-			device_printf(sc->sc_dev,
-			    "%s: could not copy beacon frame\n", __func__);
-			return (ENOMEM);
-		}
-	}
 
 	error = bus_dmamap_load_mbuf_sg(ring->data_dmat, data->map, m, segs,
 	    &nsegs, BUS_DMA_NOWAIT);
@@ -166,4 +158,27 @@ rtwn_pci_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	rtwn_write_2(sc, R92C_PCIE_CTRL_REG, (1 << qid));
 
 	return (0);
+}
+
+int
+rtwn_pci_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
+    struct mbuf *m, uint8_t *tx_desc, uint8_t type, int id)
+{
+	int error = 0;
+
+	if (ni == NULL) {	/* beacon frame */
+		m = m_dup(m, M_NOWAIT);
+		if (__predict_false(m == NULL)) {
+			device_printf(sc->sc_dev,
+			    "%s: could not copy beacon frame\n", __func__);
+			return (ENOMEM);
+		}
+
+		error = rtwn_pci_tx_start_common(sc, ni, m, tx_desc, type, id);
+		if (error != 0)
+			m_freem(m);
+	} else
+		error = rtwn_pci_tx_start_common(sc, ni, m, tx_desc, type, id);
+
+	return (error);
 }
