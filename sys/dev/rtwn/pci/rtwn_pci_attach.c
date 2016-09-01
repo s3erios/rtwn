@@ -66,6 +66,7 @@ __FBSDID("$FreeBSD$");
 static device_probe_t	rtwn_pci_probe;
 static device_attach_t	rtwn_pci_attach;
 static device_detach_t	rtwn_pci_detach;
+static device_shutdown_t rtwn_pci_shutdown;
 static device_suspend_t	rtwn_pci_suspend;
 static device_resume_t	rtwn_pci_resume;
 
@@ -614,6 +615,15 @@ rtwn_pci_detach(device_t dev)
 }
 
 static int
+rtwn_pci_shutdown(device_t self)
+{
+	struct rtwn_pci_softc *pc = device_get_softc(self);
+
+	ieee80211_stop_all(&pc->pc_sc.sc_ic);
+	return (0);
+}
+
+static int
 rtwn_pci_suspend(device_t self)
 {
 	struct rtwn_pci_softc *pc = device_get_softc(self);
@@ -638,6 +648,7 @@ static device_method_t rtwn_pci_methods[] = {
 	DEVMETHOD(device_probe,		rtwn_pci_probe),
 	DEVMETHOD(device_attach,	rtwn_pci_attach),
 	DEVMETHOD(device_detach,	rtwn_pci_detach),
+	DEVMETHOD(device_shutdown,	rtwn_pci_shutdown),
 	DEVMETHOD(device_suspend,	rtwn_pci_suspend),
 	DEVMETHOD(device_resume,	rtwn_pci_resume),
 

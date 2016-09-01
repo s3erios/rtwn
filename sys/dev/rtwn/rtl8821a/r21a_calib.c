@@ -66,9 +66,13 @@ r21a_iq_calib_fw_supported(struct rtwn_softc *sc)
 void
 r21a_iq_calib_sw(struct rtwn_softc *sc)
 {
+#define R21A_MAX_NRXCHAINS	2
 	uint32_t saved_bb_vals[nitems(r21a_iq_bb_regs)];
 	uint32_t saved_afe_vals[nitems(r21a_iq_afe_regs)];
-	uint32_t saved_rf_vals[nitems(r21a_iq_rf_regs) * sc->nrxchains];
+	uint32_t saved_rf_vals[nitems(r21a_iq_rf_regs) * R21A_MAX_NRXCHAINS];
+
+	KASSERT(sc->nrxchains <= R21A_MAX_NRXCHAINS,
+	    ("nrxchains > %d (%d)\n", R21A_MAX_NRXCHAINS, sc->nrxchains));
 
 	RTWN_DPRINTF(sc, RTWN_DEBUG_CALIB, "%s: SW IQ calibration: TODO\n",
 	    __func__);
@@ -108,5 +112,6 @@ r21a_iq_calib_sw(struct rtwn_softc *sc)
 
 	r12a_restore_bb_afe_vals(sc, saved_bb_vals, r21a_iq_bb_regs,
 	    nitems(r21a_iq_bb_regs));
+#undef R21A_MAX_NRXCHAINS
 }
 

@@ -189,16 +189,16 @@ r12a_get_txpower(struct rtwn_softc *sc, int chain,
 			uint8_t min_mcs;
 			uint8_t pwr_diff;
 
-			if (IEEE80211_IS_CHAN_HT20(c))
-				pwr_diff = rs->bw20_tx_pwr_diff_2g[chain][i];
-			else if (IEEE80211_IS_CHAN_HT40(c))
-				pwr_diff = rs->bw40_tx_pwr_diff_2g[chain][i];
 #ifdef notyet
-			else if (IEEE80211_IS_CHAN_HT80(c)) {
+			if (IEEE80211_IS_CHAN_HT80(c)) {
 				/* Vendor driver uses HT40 values here. */
 				pwr_diff = rs->bw40_tx_pwr_diff_2g[chain][i];
-			}
+			} else
 #endif
+			if (IEEE80211_IS_CHAN_HT40(c))
+				pwr_diff = rs->bw40_tx_pwr_diff_2g[chain][i];
+			else
+				pwr_diff = rs->bw20_tx_pwr_diff_2g[chain][i];
 
 			min_mcs = RTWN_RIDX_MCS(i * 8 + 7);
 			for (ridx = min_mcs; ridx <= max_mcs; ridx++)
@@ -212,16 +212,16 @@ r12a_get_txpower(struct rtwn_softc *sc, int chain,
 			uint8_t min_mcs;
 			uint8_t pwr_diff;
 
-			if (IEEE80211_IS_CHAN_HT20(c))
-				pwr_diff = rs->bw20_tx_pwr_diff_5g[chain][i];
-			else if (IEEE80211_IS_CHAN_HT40(c))
-				pwr_diff = rs->bw40_tx_pwr_diff_5g[chain][i];
 #ifdef notyet
-			else if (IEEE80211_IS_CHAN_HT80(c)) {
+			if (IEEE80211_IS_CHAN_HT80(c)) {
 				/* TODO: calculate base value. */
 				pwr_diff = rs->bw80_tx_pwr_diff_5g[chain][i];
-			}
+			} else
 #endif
+			if (IEEE80211_IS_CHAN_HT40(c))
+				pwr_diff = rs->bw40_tx_pwr_diff_5g[chain][i];
+			else
+				pwr_diff = rs->bw20_tx_pwr_diff_5g[chain][i];
 
 			min_mcs = RTWN_RIDX_MCS(i * 8 + 7);
 			for (ridx = min_mcs; ridx <= max_mcs; ridx++)

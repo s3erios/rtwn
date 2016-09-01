@@ -200,10 +200,14 @@ r12a_iq_config_mac(struct rtwn_softc *sc)
 void
 r12a_iq_calib_sw(struct rtwn_softc *sc)
 {
+#define R12A_MAX_NRXCHAINS	2
 	uint32_t bb_vals[nitems(r12a_iq_bb_regs)];
 	uint32_t afe_vals[nitems(r12a_iq_afe_regs)];
-	uint32_t rf_vals[nitems(r12a_iq_rf_regs) * sc->nrxchains];
+	uint32_t rf_vals[nitems(r12a_iq_rf_regs) * R12A_MAX_NRXCHAINS];
 	uint32_t rfe[2];
+
+	KASSERT(sc->nrxchains <= R12A_MAX_NRXCHAINS,
+	    ("nrxchains > %d (%d)\n", R12A_MAX_NRXCHAINS, sc->nrxchains));
 
 	/* Save registers. */
 	r12a_save_bb_afe_vals(sc, bb_vals, r12a_iq_bb_regs,
@@ -256,6 +260,7 @@ r12a_iq_calib_sw(struct rtwn_softc *sc)
 
 	r12a_restore_bb_afe_vals(sc, bb_vals, r12a_iq_bb_regs,
 	    nitems(r12a_iq_bb_regs));
+#undef R12A_MAX_NRXCHAINS
 }
 
 void
