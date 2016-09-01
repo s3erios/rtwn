@@ -50,6 +50,7 @@ __FBSDID("$FreeBSD$");
 
 #include <dev/rtwn/if_rtwnreg.h>
 #include <dev/rtwn/if_rtwnvar.h>
+#include <dev/rtwn/if_rtwn_debug.h>
 
 #include <dev/rtwn/pci/rtwn_pci_var.h>
 #include <dev/rtwn/pci/rtwn_pci_tx.h>
@@ -86,15 +87,22 @@ rtwn_pci_tx_start_common(struct rtwn_softc *sc, struct ieee80211_node *ni,
 
 	ring = &pc->tx_ring[qid];
 	data = &ring->tx_data[ring->cur];
-	if (ring->cur == ring->last || data->m != NULL)
+	if (data->m != NULL) {
+		RTWN_DPRINTF(sc, RTWN_DEBUG_XMIT,
+		    "%s: ring #%d is full (m %p)\n", __func__, qid, data->m);
 		return (ENOBUFS);
+	}
 
-	/* Copy Tx descriptor. */
 	txd = (struct rtwn_tx_desc_common *)
 	    ((uint8_t *)ring->desc + sc->txdesc_len * ring->cur);
-	if (txd->flags0 & RTWN_FLAGS0_OWN)
+	if (txd->flags0 & RTWN_FLAGS0_OWN) {
+		device_printf(sc->sc_dev,
+		    "%s: OWN bit is set (tx desc %d, ring %d)!\n",
+		    __func__, ring->cur, qid);
 		return (ENOBUFS);
+	}
 
+	/* Copy Tx descriptor. */
 	rtwn_pci_copy_tx_desc(pc, txd, tx_desc);
 	txd->pktlen = htole16(m->m_pkthdr.len);
 	txd->offset = sc->txdesc_len;
@@ -147,7 +155,7 @@ rtwn_pci_tx_start_common(struct rtwn_softc *sc, struct ieee80211_node *ni,
 
 	ring->cur = (ring->cur + 1) % RTWN_PCI_TX_LIST_COUNT;
 
-	if (qid < RTWN_PCI_BEACON_QUEUE) {
+	if (qid != RTWN_PCI_BEACON_QUEUE) {
 		ring->queued++;
 		if (ring->queued >= (RTWN_PCI_TX_LIST_COUNT - 1))
 			sc->qfullmsk |= (1 << qid);

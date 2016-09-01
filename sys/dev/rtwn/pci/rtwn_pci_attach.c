@@ -389,7 +389,7 @@ rtwn_pci_free_tx_list(struct rtwn_softc *sc, int qid)
 
 	sc->qfullmsk &= ~(1 << qid);
 	tx_ring->queued = 0;
-	tx_ring->cur = 0;
+	tx_ring->last = tx_ring->cur = 0;
 }
 
 static void
