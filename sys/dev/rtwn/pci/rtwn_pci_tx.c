@@ -95,7 +95,7 @@ rtwn_pci_tx_start_common(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	if (txd->flags0 & RTWN_FLAGS0_OWN)
 		return (ENOBUFS);
 
-	memcpy(txd, tx_desc, sc->txdesc_len);
+	rtwn_pci_copy_tx_desc(pc, txd, tx_desc);
 	txd->pktlen = htole16(m->m_pkthdr.len);
 	txd->offset = sc->txdesc_len;
 

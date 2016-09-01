@@ -80,13 +80,16 @@ r92ce_tx_postsetup(struct rtwn_pci_softc *pc, void *desc,
 }
 
 void
-r92ce_reset_tx_desc(void *desc)
+r92ce_copy_tx_desc(void *dest, const void *src)
 {
-	struct r92ce_tx_desc *txd = desc;
+	struct r92ce_tx_desc *txd = dest;
+	size_t len = sizeof(struct r92c_tx_desc_common) +
+	    sizeof(txd->txbufsize) + sizeof(txd->pad);
 
-	memset(desc, 0, sizeof(*txd) -
-	    (sizeof(txd->reserved) + sizeof(txd->nextdescaddr64) +
-	    sizeof(txd->nextdescaddr)));
+	if (src != NULL)
+		memcpy(dest, src, len);
+	else
+		memset(dest, 0, len);
 }
 
 void

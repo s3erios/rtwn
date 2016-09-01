@@ -124,7 +124,7 @@ struct rtwn_pci_softc {
 				    void *, uint32_t);
 	void			(*pc_tx_postsetup)(struct rtwn_pci_softc *,
 				    void *, bus_dma_segment_t *);
-	void			(*pc_reset_tx_desc)(void *);
+	void			(*pc_copy_tx_desc)(void *, const void *);
 	void			(*pc_enable_intr)(struct rtwn_pci_softc *);
 };
 #define RTWN_PCI_SOFTC(sc)	((struct rtwn_pci_softc *)(sc))
@@ -133,8 +133,8 @@ struct rtwn_pci_softc {
 	(((_pc)->pc_setup_tx_desc)((_pc), (_desc), (_addr)))
 #define rtwn_pci_tx_postsetup(_pc, _txd, _segs) \
 	(((_pc)->pc_tx_postsetup)((_pc), (_txd), (_segs)))
-#define rtwn_pci_reset_tx_desc(_pc, _txd) \
-	(((_pc)->pc_reset_tx_desc)((_txd)))
+#define rtwn_pci_copy_tx_desc(_pc, _dest, _src) \
+	(((_pc)->pc_copy_tx_desc)((_dest), (_src)))
 #define rtwn_pci_enable_intr(_pc) \
 	(((_pc)->pc_enable_intr)((_pc)))
 

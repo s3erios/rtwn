@@ -326,7 +326,7 @@ rtwn_pci_reset_tx_list(struct rtwn_softc *sc, struct ieee80211vap *vap,
 			void *tx_desc =
 			    (uint8_t *)tx_ring->desc + sc->txdesc_len * i;
 
-			rtwn_pci_reset_tx_desc(pc, tx_desc);
+			rtwn_pci_copy_tx_desc(pc, tx_desc, NULL);
 
 			if (tx_data->m != NULL) {
 				bus_dmamap_sync(tx_ring->data_dmat,

@@ -157,7 +157,7 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	/* PCIe part. */
 	pc->pc_setup_tx_desc		= r92ce_setup_tx_desc;
 	pc->pc_tx_postsetup		= r92ce_tx_postsetup;
-	pc->pc_reset_tx_desc		= r92ce_reset_tx_desc;
+	pc->pc_copy_tx_desc		= r92ce_copy_tx_desc;
 	pc->pc_enable_intr		= r92ce_enable_intr;
 
 	pc->pc_qmap			= 0xf771;
