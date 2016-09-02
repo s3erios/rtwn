@@ -99,7 +99,6 @@ void	r12a_init_intr(struct rtwn_softc *);
 void	r12a_init_antsel(struct rtwn_softc *);
 
 /* r12a_led.c */
-void	r12a_set_led_mini(struct rtwn_softc *, int, int);
 void	r12a_set_led(struct rtwn_softc *, int, int);
 
 /* r12a_rf.c */

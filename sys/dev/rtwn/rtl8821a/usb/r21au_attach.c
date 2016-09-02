@@ -72,7 +72,7 @@ r21a_postattach(struct rtwn_softc *sc)
 	if (rs->board_type == R92C_BOARD_TYPE_MINICARD ||
 	    rs->board_type == R92C_BOARD_TYPE_SOLO ||
 	    rs->board_type == R92C_BOARD_TYPE_COMBO)
-		sc->sc_set_led = r12a_set_led_mini;
+		sc->sc_set_led = r88e_set_led;
 	else
 		sc->sc_set_led = r21a_set_led;
 

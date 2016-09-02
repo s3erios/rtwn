@@ -63,5 +63,7 @@ r88e_set_led(struct rtwn_softc *sc, int led, int on)
 			rtwn_setbits_1(sc, R92C_LEDCFG2, 0x0f, 0x60);
 		sc->ledlink = on;       /* Save LED state. */
 	}
+
+	/* XXX led #1? */
 }
 

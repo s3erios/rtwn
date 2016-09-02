@@ -47,22 +47,6 @@ __FBSDID("$FreeBSD$");
 
 
 void
-r12a_set_led_mini(struct rtwn_softc *sc, int led, int on)
-{
-	if (led == RTWN_LED_LINK) {
-		if (on)
-			rtwn_setbits_1(sc, R92C_LEDCFG2, 0x0f, 0x60);
-		else {
-			rtwn_setbits_1(sc, R92C_LEDCFG2, 0x6f, 0x08);
-			rtwn_setbits_1(sc, R92C_MAC_PINMUX_CFG, 0x01, 0);
-		}
-		sc->ledlink = on;	/* Save LED state. */
-	}
-
-	/* XXX led #1? */
-}
-
-void
 r12a_set_led(struct rtwn_softc *sc, int led, int on)
 {
 	/* XXX assume led #0 == LED_LINK */
