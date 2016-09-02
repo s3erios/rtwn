@@ -206,13 +206,13 @@ rtwn_key_set_cb0(struct rtwn_softc *sc, const struct ieee80211_key *k)
 		algo = R92C_CAM_ALGO_AES;
 		break;
 	default:
-		device_printf(sc->sc_dev, "%s: unknown cipher %d\n",
+		device_printf(sc->sc_dev, "%s: unknown cipher %u\n",
 		    __func__, k->wk_cipher->ic_cipher);
 		return (EINVAL);
 	}
 
 	RTWN_DPRINTF(sc, RTWN_DEBUG_KEY,
-	    "%s: keyix %d, keyid %d, algo %d/%d, flags %04X, len %d, "
+	    "%s: keyix %u, keyid %u, algo %u/%u, flags %04X, len %u, "
 	    "macaddr %s\n", __func__, k->wk_keyix, keyid,
 	    k->wk_cipher->ic_cipher, algo, k->wk_flags, k->wk_keylen,
 	    ether_sprintf(k->wk_macaddr));
@@ -284,7 +284,7 @@ rtwn_key_del_cb(struct rtwn_softc *sc, union sec_param *data)
 	int i;
 
 	RTWN_DPRINTF(sc, RTWN_DEBUG_KEY,
-	    "%s: keyix %d, flags %04X, macaddr %s\n", __func__,
+	    "%s: keyix %u, flags %04X, macaddr %s\n", __func__,
 	    k->wk_keyix, k->wk_flags, ether_sprintf(k->wk_macaddr));
 
 	rtwn_cam_write(sc, R92C_CAM_CTL0(k->wk_keyix), 0);

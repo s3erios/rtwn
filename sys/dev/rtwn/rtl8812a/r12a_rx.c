@@ -68,7 +68,7 @@ r12a_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 	rpt = (struct r12a_c2h_tx_rpt *)buf;
 	if (len != sizeof(*rpt)) {
 		device_printf(sc->sc_dev,
-		    "%s: wrong report size (%d, must be %d)\n",
+		    "%s: wrong report size (%d, must be %u)\n",
 		    __func__, len, sizeof(*rpt));
 		return;
 	}
@@ -85,7 +85,7 @@ r12a_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 	ni = sc->node_list[rpt->macid];
 	if (ni != NULL) {
 		vap = ni->ni_vap;
-		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: frame for macid %d was"
+		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: frame for macid %u was"
 		    "%s sent (%d retries)\n", __func__, rpt->macid,
 		    (rpt->txrptb0 & (R12A_TXRPTB0_RETRY_OVER |
 		    R12A_TXRPTB0_LIFE_EXPIRE)) ? " not" : "", ntries);
@@ -99,7 +99,7 @@ r12a_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 		}
 	} else {
 		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR,
-		    "%s: macid %d, ni is NULL\n", __func__, rpt->macid);
+		    "%s: macid %u, ni is NULL\n", __func__, rpt->macid);
 	}
 }
 
@@ -132,7 +132,7 @@ r12a_handle_c2h_report(struct rtwn_softc *sc, uint8_t *buf, int len)
 		break;
 	default:
 		device_printf(sc->sc_dev,
-		    "%s: C2H report %d was not handled\n",
+		    "%s: C2H report %u was not handled\n",
 		    __func__, buf[0]);
 	}
 }

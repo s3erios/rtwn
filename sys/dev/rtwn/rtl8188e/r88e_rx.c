@@ -70,7 +70,7 @@ r88e_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 	rpt = (struct r88e_tx_rpt_ccx *)buf;
 	if (len != sizeof(*rpt)) {
 		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR,
-		    "%s: wrong report size (%d, must be %d)\n",
+		    "%s: wrong report size (%d, must be %zu)\n",
 		    __func__, len, sizeof(*rpt));
 		return;
 	}
@@ -88,7 +88,7 @@ r88e_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 	ni = sc->node_list[macid];
 	if (ni != NULL) {
 		vap = ni->ni_vap;
-		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: frame for macid %d was"
+		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: frame for macid %u was"
 		    "%s sent (%d retries)\n", __func__, macid,
 		    (rpt->rptb1 & R88E_RPTB1_PKT_OK) ? "" : " not",
 		    ntries);
@@ -101,7 +101,7 @@ r88e_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 			    IEEE80211_RATECTL_TX_FAILURE, &ntries, NULL);
 		}
 	} else {
-		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: macid %d, ni is NULL\n",
+		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: macid %u, ni is NULL\n",
 		    __func__, macid);
 	}
 }

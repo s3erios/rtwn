@@ -61,6 +61,8 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/rtl8188e/usb/r88eu.h>
 
 
+static struct rtwn_r88e_txpwr r88e_txpwr;
+
 void	r88eu_attach(struct rtwn_usb_softc *);
 
 static void

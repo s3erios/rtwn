@@ -35,7 +35,7 @@ struct r92c_fw_cmd {
 #define R92C_CMD_FLAG_EXT		0x80
 
 	uint8_t	msg[5];
-} __packed;
+} __packed __attribute__((aligned(4)));
 
 /* Structure for R92C_CMD_JOINBSS_RPT. */
 struct r92c_fw_cmd_joinbss_rpt {

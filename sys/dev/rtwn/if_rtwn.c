@@ -206,8 +206,8 @@ rtwn_attach(struct rtwn_softc *sc)
 	}
 	if (sc->txdesc_len > RTWN_TX_DESC_SIZE) {
 		device_printf(sc->sc_dev,
-		    "adjust size for beacon descriptor (current %d, "
-		    "needed %d)\n", RTWN_TX_DESC_SIZE, sc->txdesc_len);
+		    "adjust size for Tx descriptor (current %d, needed %d)\n",
+		    RTWN_TX_DESC_SIZE, sc->txdesc_len);
 		goto detach;
 	}
 
@@ -552,7 +552,7 @@ rtwn_vap_create(struct ieee80211com *ic, const char name[IFNAMSIZ], int unit,
 		return (NULL);
 	}
 
-	rtwn_beacon_init(sc, uvp->bcn_desc, uvp->id);
+	rtwn_beacon_init(sc, &uvp->bcn_desc.txd[0], uvp->id);
 	rtwn_vap_preattach(sc, vap);
 
 	/* override state transition machine */
@@ -790,7 +790,7 @@ rtwn_push_nulldata(struct rtwn_softc *sc, struct ieee80211vap *vap)
 		return (ENOMEM);
 
 	/* Setup beacon descriptor. */
-	rtwn_beacon_set_rate(sc, &uvp->bcn_desc[0],
+	rtwn_beacon_set_rate(sc, &uvp->bcn_desc.txd[0],
 	    IEEE80211_IS_CHAN_5GHZ(c));
 
 	ptr = mtod(m, uint8_t *);
@@ -1402,9 +1402,9 @@ rtwn_dma_init(struct rtwn_softc *sc)
 		return (EIO);	\
 } while(0)
 	uint16_t reg;
+	uint8_t tx_boundary;
 	int hasnq, haslq, nqueues;
 	int error, nqpages, nrempages;
-	int tx_boundary = sc->page_count + 1;
 
 	/* Initialize LLT table. */
 	error = rtwn_llt_init(sc);
@@ -1447,6 +1447,9 @@ rtwn_dma_init(struct rtwn_softc *sc)
 	    R92C_RQPN_LD));
 
 	/* Initialize TX buffer boundary. */
+	KASSERT(sc->page_count < 255 && sc->page_count > 0,
+	    ("page_count is %d\n", sc->page_count));
+	tx_boundary = sc->page_count + 1;
 	RTWN_CHK(rtwn_write_1(sc, R92C_TXPKTBUF_BCNQ_BDNY, tx_boundary));
 	RTWN_CHK(rtwn_write_1(sc, R92C_TXPKTBUF_MGQ_BDNY, tx_boundary));
 	RTWN_CHK(rtwn_write_1(sc, R92C_TXPKTBUF_WMAC_LBK_BF_HD, tx_boundary));

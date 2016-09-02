@@ -26,12 +26,12 @@
 /*
  * Parsed Tx power (diff) values.
  */
-static struct rtwn_r88e_txpwr {
+struct rtwn_r88e_txpwr {
 	uint8_t		cck_tx_pwr[R88E_GROUP_2G];
 	uint8_t		ht40_tx_pwr[R88E_GROUP_2G - 1];
 	int8_t		ofdm_tx_pwr_diff;
 	int8_t		bw20_tx_pwr_diff;
-} r88e_txpwr;
+};
 
 
 /*

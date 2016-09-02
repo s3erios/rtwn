@@ -86,7 +86,7 @@ rtwn_fw_loadpage(struct rtwn_softc *sc, int page, const uint8_t *buf,
 
 	if (error != 0) {
 		RTWN_DPRINTF(sc, RTWN_DEBUG_FIRMWARE,
-		    "%s: could not load firmware page %d (offset %d)\n",
+		    "%s: could not load firmware page %d (offset %u)\n",
 		    __func__, page, off);
 	}
 
@@ -133,7 +133,7 @@ rtwn_load_firmware(struct rtwn_softc *sc)
 
 	len = fw->datasize;
 	if (len < sizeof(*hdr) || len > sc->fwsize_limit) {
-		device_printf(sc->sc_dev, "wrong firmware size (%d)\n", len);
+		device_printf(sc->sc_dev, "wrong firmware size (%zu)\n", len);
 		error = EINVAL;
 		goto fail;
 	}
@@ -144,7 +144,7 @@ rtwn_load_firmware(struct rtwn_softc *sc)
 		sc->fwver = le16toh(hdr->version);
 
 		RTWN_DPRINTF(sc, RTWN_DEBUG_FIRMWARE,
-		    "FW V%d.%d %02d-%02d %02d:%02d\n",
+		    "FW V%u.%u %02u-%02u %02u:%02u\n",
 		    le16toh(hdr->version), le16toh(hdr->subversion),
 		    hdr->month, hdr->date, hdr->hour, hdr->minute);
 		ptr += sizeof(*hdr);

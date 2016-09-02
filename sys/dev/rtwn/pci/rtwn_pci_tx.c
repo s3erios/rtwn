@@ -89,7 +89,7 @@ rtwn_pci_tx_start_common(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	data = &ring->tx_data[ring->cur];
 	if (data->m != NULL) {
 		RTWN_DPRINTF(sc, RTWN_DEBUG_XMIT,
-		    "%s: ring #%d is full (m %p)\n", __func__, qid, data->m);
+		    "%s: ring #%u is full (m %p)\n", __func__, qid, data->m);
 		return (ENOBUFS);
 	}
 
@@ -97,7 +97,7 @@ rtwn_pci_tx_start_common(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	    ((uint8_t *)ring->desc + sc->txdesc_len * ring->cur);
 	if (txd->flags0 & RTWN_FLAGS0_OWN) {
 		device_printf(sc->sc_dev,
-		    "%s: OWN bit is set (tx desc %d, ring %d)!\n",
+		    "%s: OWN bit is set (tx desc %d, ring %u)!\n",
 		    __func__, ring->cur, qid);
 		return (ENOBUFS);
 	}

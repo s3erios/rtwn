@@ -74,7 +74,7 @@ r92c_fw_cmd(struct rtwn_softc *sc, uint8_t id, const void *buf, int len)
 
 	if (!(sc->sc_flags & RTWN_FW_LOADED)) {
 		RTWN_DPRINTF(sc, RTWN_DEBUG_FIRMWARE, "%s: firmware "
-		    "was not loaded; command (id %d) will be discarded\n",
+		    "was not loaded; command (id %u) will be discarded\n",
 		    __func__, id);
 		return (0);
 	}
@@ -361,7 +361,7 @@ r92c_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 	rpt = (struct r92c_c2h_tx_rpt *)buf;
 	if (len != sizeof(*rpt)) {
 		device_printf(sc->sc_dev,
-		    "%s: wrong report size (%d, must be %d)\n",
+		    "%s: wrong report size (%d, must be %zu)\n",
 		    __func__, len, sizeof(*rpt));
 		return;
 	}
@@ -380,7 +380,7 @@ r92c_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 	ni = sc->node_list[macid];
 	if (ni != NULL) {
 		vap = ni->ni_vap;
-		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: frame for macid %d was"
+		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: frame for macid %u was"
 		    "%s sent (%d retries)\n", __func__, macid,
 		    (rpt->rptb7 & R92C_RPTB7_PKT_OK) ? "" : " not",
 		    ntries);
@@ -393,7 +393,7 @@ r92c_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 			    IEEE80211_RATECTL_TX_FAILURE, &ntries, NULL);
 		}
 	} else {
-		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: macid %d, ni is NULL\n",
+		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: macid %u, ni is NULL\n",
 		    __func__, macid);
 	}
 	RTWN_NT_UNLOCK(sc);
@@ -409,7 +409,7 @@ r92c_handle_c2h_task(struct rtwn_softc *sc, union sec_param *data)
 {
 	const uint16_t off = R92C_C2H_EVT_MSG + sizeof(struct r92c_c2h_evt);
 	struct r92c_softc *rs = sc->sc_priv;
-	uint8_t buf[R92C_C2H_MSG_MAX_LEN];
+	uint32_t buf[R92C_C2H_MSG_MAX_LEN / 4 + 1];
 	uint8_t id, len, status;
 	int i;
 
@@ -429,17 +429,17 @@ r92c_handle_c2h_task(struct rtwn_softc *sc, union sec_param *data)
 		memset(buf, 0, sizeof(buf));
 		/* Try to optimize event reads. */
 		for (i = 0; i < len; i += 4)
-			*(uint32_t *)&buf[i] = rtwn_read_4(sc, off + i);
+			buf[i / 4] = rtwn_read_4(sc, off + i);
 		KASSERT(i < sizeof(buf), ("%s: buffer overrun (%d >= %d)!",
 		    __func__, i, sizeof(buf)));
 
 		switch (id) {
 		case R92C_C2H_EVT_TX_REPORT:
-			r92c_ratectl_tx_complete(sc, buf, len);
+			r92c_ratectl_tx_complete(sc, (uint8_t *)buf, len);
 			break;
 		default:
 			device_printf(sc->sc_dev,
-			    "%s: C2H report %d (len %d) was not handled\n",
+			    "%s: C2H report %u (len %u) was not handled\n",
 			    __func__, id, len);
 			break;
 		}

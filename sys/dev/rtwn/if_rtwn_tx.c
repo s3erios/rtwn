@@ -119,7 +119,7 @@ rtwn_tx_data(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	struct ieee80211_channel *chan;
 	struct ieee80211_frame *wh;
 	struct rtwn_tx_desc_common *txd;
-	uint8_t tx_desc[RTWN_TX_DESC_SIZE];
+	struct rtwn_tx_buf buf;
 	uint8_t rate, ridx, type;
 	u_int cipher;
 	int ismcast, maxretry;
@@ -176,11 +176,12 @@ rtwn_tx_data(struct rtwn_softc *sc, struct ieee80211_node *ni,
 		wh = mtod(m, struct ieee80211_frame *);
 	}
 
-	txd = (struct rtwn_tx_desc_common *)tx_desc;
+	/* Fill Tx descriptor. */
+	txd = (struct rtwn_tx_desc_common *)&buf;
 	memset(txd, 0, sc->txdesc_len);
 	txd->txdw1 = htole32(SM(RTWN_TXDW1_CIPHER, rtwn_get_cipher(cipher)));
 
-	rtwn_fill_tx_desc(sc, ni, m, tx_desc, ridx, maxretry);
+	rtwn_fill_tx_desc(sc, ni, m, txd, ridx, maxretry);
 
 	if (ieee80211_radiotap_active_vap(vap)) {
 		struct rtwn_tx_radiotap_header *tap = &sc->sc_txtap;
@@ -188,12 +189,12 @@ rtwn_tx_data(struct rtwn_softc *sc, struct ieee80211_node *ni,
 		tap->wt_flags = 0;
 		if (k != NULL)
 			tap->wt_flags |= IEEE80211_RADIOTAP_F_WEP;
-		if (rtwn_tx_sgi_isset(sc, tx_desc))
+		if (rtwn_tx_sgi_isset(sc, txd))
 			tap->wt_flags |= IEEE80211_RADIOTAP_F_SHORTGI;
 		ieee80211_radiotap_tx(vap, m);
 	}
 
-	return (rtwn_tx_start(sc, ni, m, tx_desc, type, 0));
+	return (rtwn_tx_start(sc, ni, m, (uint8_t *)txd, type, 0));
 }
 
 static int
@@ -204,7 +205,7 @@ rtwn_tx_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	struct ieee80211_key *k = NULL;
 	struct ieee80211_frame *wh;
 	struct rtwn_tx_desc_common *txd;
-	uint8_t tx_desc[RTWN_TX_DESC_SIZE];
+	struct rtwn_tx_buf buf;
 	uint8_t type;
 	u_int cipher;
 
@@ -226,11 +227,11 @@ rtwn_tx_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	type = wh->i_fc[0] & IEEE80211_FC0_TYPE_MASK;
 
 	/* Fill Tx descriptor. */
-	txd = (struct rtwn_tx_desc_common *)tx_desc;
+	txd = (struct rtwn_tx_desc_common *)&buf;
 	memset(txd, 0, sc->txdesc_len);
 	txd->txdw1 = htole32(SM(RTWN_TXDW1_CIPHER, rtwn_get_cipher(cipher)));
 
-	rtwn_fill_tx_desc_raw(sc, ni, m, tx_desc, params);
+	rtwn_fill_tx_desc_raw(sc, ni, m, txd, params);
 
 	if (ieee80211_radiotap_active_vap(vap)) {
 		struct rtwn_tx_radiotap_header *tap = &sc->sc_txtap;
@@ -238,12 +239,12 @@ rtwn_tx_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 		tap->wt_flags = 0;
 		if (k != NULL)
 			tap->wt_flags |= IEEE80211_RADIOTAP_F_WEP;
-		if (rtwn_tx_sgi_isset(sc, tx_desc))
+		if (rtwn_tx_sgi_isset(sc, txd))
 			tap->wt_flags |= IEEE80211_RADIOTAP_F_SHORTGI;
 		ieee80211_radiotap_tx(vap, m);
 	}
 
-	return (rtwn_tx_start(sc, ni, m, tx_desc, type, 0));
+	return (rtwn_tx_start(sc, ni, m, (uint8_t *)txd, type, 0));
 }
 
 int

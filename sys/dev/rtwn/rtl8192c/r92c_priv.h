@@ -26,7 +26,7 @@
 /*
  * Parsed Tx power (diff) values.
  */
-static struct rtwn_r92c_txpwr {
+struct rtwn_r92c_txpwr {
 	uint8_t		cck_tx_pwr[R92C_MAX_CHAINS][R92C_GROUP_2G];
 	uint8_t		ht40_1s_tx_pwr[R92C_MAX_CHAINS][R92C_GROUP_2G];
 	int8_t		ht40_2s_tx_pwr_diff[R92C_MAX_CHAINS][R92C_GROUP_2G];
@@ -34,7 +34,7 @@ static struct rtwn_r92c_txpwr {
 	int8_t		ofdm_tx_pwr_diff[R92C_MAX_CHAINS][R92C_GROUP_2G];
 	int8_t		ht40_max_pwr[R92C_MAX_CHAINS][R92C_GROUP_2G];
 	int8_t		ht20_max_pwr[R92C_MAX_CHAINS][R92C_GROUP_2G];
-} r92c_txpwr;
+};
 
 
 /*

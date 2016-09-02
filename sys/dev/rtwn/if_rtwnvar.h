@@ -73,6 +73,10 @@ struct rtwn_tx_radiotap_header {
 	(1 << IEEE80211_RADIOTAP_FLAGS |		\
 	 1 << IEEE80211_RADIOTAP_CHANNEL)
 
+struct rtwn_tx_buf {
+	uint8_t		txd[RTWN_TX_DESC_SIZE];
+} __attribute__((aligned(4)));
+
 struct rtwn_softc;
 
 union sec_param {
@@ -103,7 +107,7 @@ struct rtwn_vap {
 #define RTWN_VAP_ID_INVALID	-1
 	int			curr_mode;
 
-	uint8_t			bcn_desc[RTWN_TX_DESC_SIZE];
+	struct rtwn_tx_buf	bcn_desc;
 	struct mbuf		*bcn_mbuf;
 
 	struct callout		tsf_sync_adhoc;

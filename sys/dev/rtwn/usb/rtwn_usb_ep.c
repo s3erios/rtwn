@@ -145,7 +145,7 @@ rtwn_usb_setup_endpoints(struct rtwn_usb_softc *uc)
 
 		eaddr = ep->edesc->bEndpointAddress;
 		RTWN_DPRINTF(sc, RTWN_DEBUG_USB,
-		    "%s: endpoint: addr %d, direction %s\n", __func__,
+		    "%s: endpoint: addr %u, direction %s\n", __func__,
 		    UE_GET_ADDR(eaddr), UE_GET_DIR(eaddr) == UE_DIR_OUT ?
 		    "output" : "input");
 

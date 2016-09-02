@@ -128,7 +128,7 @@ rtwn_setup_beacon(struct rtwn_softc *sc, struct ieee80211_node *ni)
 
 	uvp->bcn_mbuf = m;
 
-	rtwn_beacon_set_rate(sc, &uvp->bcn_desc[0],
+	rtwn_beacon_set_rate(sc, &uvp->bcn_desc.txd[0],
 	    IEEE80211_IS_CHAN_5GHZ(ni->ni_chan));
 
 	return (rtwn_tx_beacon_check(sc, uvp));
@@ -148,7 +148,7 @@ rtwn_tx_beacon(struct rtwn_softc *sc, struct rtwn_vap *uvp)
 	RTWN_DPRINTF(sc, RTWN_DEBUG_BEACON,
 	    "%s: sending beacon for vap %d\n", __func__, uvp->id);
 
-	error = rtwn_tx_start(sc, NULL, uvp->bcn_mbuf, uvp->bcn_desc,
+	error = rtwn_tx_start(sc, NULL, uvp->bcn_mbuf, &uvp->bcn_desc.txd[0],
 	    IEEE80211_FC0_TYPE_MGT, uvp->id);
 
 	return (error);

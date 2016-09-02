@@ -39,7 +39,7 @@ struct rtwn_tx_desc_common {
 #define RTWN_TXDW1_CIPHER_RC4	1
 #define RTWN_TXDW1_CIPHER_SM4	2
 #define RTWN_TXDW1_CIPHER_AES	3
-} __packed;
+} __packed __attribute__((aligned(4)));
 
 /*
  * Macros to access subfields in registers.

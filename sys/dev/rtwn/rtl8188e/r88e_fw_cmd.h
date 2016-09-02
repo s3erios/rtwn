@@ -31,7 +31,7 @@ struct r88e_fw_cmd {
 #define R88E_CMD_SET_PWRMODE		0x20
 
 	uint8_t msg[7];
-} __packed;
+} __packed __attribute__((aligned(4)));
 
 /* Structure for R88E_CMD_RSVD_PAGE. */
 struct r88e_fw_cmd_rsvdpage {
