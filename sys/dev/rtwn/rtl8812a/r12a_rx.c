@@ -68,7 +68,7 @@ r12a_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 	rpt = (struct r12a_c2h_tx_rpt *)buf;
 	if (len != sizeof(*rpt)) {
 		device_printf(sc->sc_dev,
-		    "%s: wrong report size (%d, must be %u)\n",
+		    "%s: wrong report size (%d, must be %zu)\n",
 		    __func__, len, sizeof(*rpt));
 		return;
 	}
