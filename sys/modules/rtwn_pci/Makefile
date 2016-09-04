@@ -19,9 +19,10 @@ SRCS	+= r92ce_attach.c r92ce_calib.c r92ce_fw.c r92ce_init.c r92ce_led.c \
 	   r92ce_rx.c r92ce_tx.c \
 	   r92ce.h r92ce_priv.h r92ce_reg.h r92ce_rx_desc.h r92ce_tx_desc.h
 
-.if ${MK_SOURCELESS_UCODE} == "no"
 opt_rtwn.h:
-	@echo "#define RTWN_WITHOUT_UCODE 1" > ${.TARGET}
+	@echo "#define RTWN_DEBUG 1" > ${.TARGET}
+.if ${MK_SOURCELESS_UCODE} == "no"
+	@echo "#define RTWN_WITHOUT_UCODE 1" >> ${.TARGET}
 .endif
 
 .include <bsd.kmod.mk>

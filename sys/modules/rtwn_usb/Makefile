@@ -30,9 +30,10 @@ SRCS	+= r12au_attach.c r12au_init.c r12au_rx.c r12au_tx.c \
 SRCS	+= r21au_attach.c r21au_init.c \
 	   r21au.h r21au_reg.h
 
-.if ${MK_SOURCELESS_UCODE} == "no"
 opt_rtwn.h:
-	@echo "#define RTWN_WITHOUT_UCODE 1" > ${.TARGET}
+	@echo "#define RTWN_DEBUG 1" > ${.TARGET}
+.if ${MK_SOURCELESS_UCODE} == "no"
+	@echo "#define RTWN_WITHOUT_UCODE 1" >> ${.TARGET}
 .endif
 
 .include <bsd.kmod.mk>

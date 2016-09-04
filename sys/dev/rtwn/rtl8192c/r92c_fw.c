@@ -430,7 +430,7 @@ r92c_handle_c2h_task(struct rtwn_softc *sc, union sec_param *data)
 		/* Try to optimize event reads. */
 		for (i = 0; i < len; i += 4)
 			buf[i / 4] = rtwn_read_4(sc, off + i);
-		KASSERT(i < sizeof(buf), ("%s: buffer overrun (%d >= %d)!",
+		KASSERT(i < sizeof(buf), ("%s: buffer overrun (%d >= %zu)!",
 		    __func__, i, sizeof(buf)));
 
 		switch (id) {

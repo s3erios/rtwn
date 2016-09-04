@@ -38,9 +38,10 @@ SRCS	+= r12a_beacon.c r12a_calib.c r12a_caps.c r12a_chan.c r12a_fw.c \
 SRCS	+= r21a_beacon.c r21a_calib.c r21a_chan.c r21a_fw.c r21a_init.c \
 	   r21a_led.c r21a_rom.c r21a_rx.c r21a.h r21a_priv.h r21a_reg.h
 
-.if ${MK_SOURCELESS_UCODE} == "no"
 opt_rtwn.h:
-	@echo "#define RTWN_WITHOUT_UCODE 1" > ${.TARGET}
+	@echo "#define RTWN_DEBUG 1" > ${.TARGET}
+.if ${MK_SOURCELESS_UCODE} == "no"
+	@echo "#define RTWN_WITHOUT_UCODE 1" >> ${.TARGET}
 .endif
 
 .include <bsd.kmod.mk>
