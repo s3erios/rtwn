@@ -124,6 +124,41 @@ static struct usb_config rtwn_config[RTWN_N_TRANSFER] = {
 	},
 };
 
+static void
+rtwn_usb_setup_queues(struct rtwn_usb_softc *uc)
+{
+	struct rtwn_softc *sc = &uc->uc_sc;
+	int hasnq, haslq, nqueues, nqpages, nrempages;
+
+	/* Get Tx queues to USB endpoints mapping. */
+	hasnq = haslq = 0;
+	switch (uc->ntx) {
+	case 4:
+	case 3:
+		haslq = 1;
+		/* FALLTHROUGH */
+	case 2:
+		hasnq = 1;
+		/* FALLTHROUGH */
+	default:
+		break;
+	}
+	nqueues = 1 + hasnq + haslq;
+
+	/* Get the number of pages for each queue. */
+	nqpages = (sc->page_count - sc->npubqpages) / nqueues;
+
+	/*
+	 * The remaining pages are assigned to the high priority
+	 * queue.
+	 */
+	nrempages = (sc->page_count - sc->npubqpages) % nqueues;
+
+	sc->nhqpages = nqpages + nrempages;
+	sc->nnqpages = (hasnq ? nqpages : 0);
+	sc->nlqpages = (haslq ? nqpages : 0);
+}
+
 int
 rtwn_usb_setup_endpoints(struct rtwn_usb_softc *uc)
 {
@@ -134,7 +169,7 @@ rtwn_usb_setup_endpoints(struct rtwn_usb_softc *uc)
 	int error;
 
 	/* Determine the number of bulk-out pipes. */
-	sc->ntx = 0;
+	uc->ntx = 0;
 	ep = uc->uc_udev->endpoints;
 	ep_end = uc->uc_udev->endpoints + uc->uc_udev->endpoints_max;
 	for (; ep != ep_end; ep++) {
@@ -150,22 +185,22 @@ rtwn_usb_setup_endpoints(struct rtwn_usb_softc *uc)
 		    "output" : "input");
 
 		if (UE_GET_DIR(eaddr) == UE_DIR_OUT) {
-			if (sc->ntx == RTWN_MAX_EPOUT)
+			if (uc->ntx == RTWN_MAX_EPOUT)
 				break;
 
-			addr[sc->ntx++] = UE_GET_ADDR(eaddr);
+			addr[uc->ntx++] = UE_GET_ADDR(eaddr);
 		}
 	}
-	if (sc->ntx == 0 || sc->ntx > RTWN_MAX_EPOUT) {
+	if (uc->ntx == 0 || uc->ntx > RTWN_MAX_EPOUT) {
 		device_printf(sc->sc_dev,
 		    "%s: invalid number of Tx bulk pipes (%d)\n", __func__,
-		    sc->ntx);
+		    uc->ntx);
 		return (EINVAL);
 	}
 
 	/* NB: keep in sync with rtwn_dma_init(). */
 	rtwn_config[RTWN_BULK_TX_VO].endpoint = addr[0];
-	switch (sc->ntx) {
+	switch (uc->ntx) {
 	case 4:
 	case 3:
 		rtwn_config[RTWN_BULK_TX_BE].endpoint = addr[2];
@@ -183,7 +218,7 @@ rtwn_usb_setup_endpoints(struct rtwn_usb_softc *uc)
 		rtwn_config[RTWN_BULK_TX_VI].endpoint = addr[0];
 		break;
 	default:
-		KASSERT(0, ("unhandled number of endpoints %d\n", sc->ntx));
+		KASSERT(0, ("unhandled number of endpoints %d\n", uc->ntx));
 		break;
 	}
 
@@ -195,14 +230,19 @@ rtwn_usb_setup_endpoints(struct rtwn_usb_softc *uc)
 		return (error);
 	}
 
+	/* Assign pages for each queue (if not done). */
+	if (sc->nhqpages == 0 && sc->nnqpages == 0 && sc->nlqpages == 0)
+		rtwn_usb_setup_queues(uc);
+
 	return (0);
 }
 
 uint16_t
-rtwn_usb_get_qmap(struct rtwn_softc *sc, int nqueues)
+rtwn_usb_get_qmap(struct rtwn_softc *sc)
 {
+	struct rtwn_usb_softc *uc = RTWN_USB_SOFTC(sc);
 
-	switch (nqueues) {
+	switch (uc->ntx) {
 	case 1:
 		return (R92C_TRXDMA_CTRL_QMAP_HQ);
 	case 2:

@@ -188,8 +188,6 @@ struct rtwn_softc {
 	const char		*name;
 	int			sc_ant;
 
-	int			ntx;
-
 	int8_t			last_rssi;
 	uint8_t			thcal_temp;
 	int			cur_bcnq_id;
@@ -269,7 +267,7 @@ struct rtwn_softc {
 	void		(*sc_abort_xfers)(struct rtwn_softc *);
 	int		(*sc_fw_write_block)(struct rtwn_softc *,
 			    const uint8_t *, uint16_t, int);
-	uint16_t	(*sc_get_qmap)(struct rtwn_softc *, int);
+	uint16_t	(*sc_get_qmap)(struct rtwn_softc *);
 	void		(*sc_set_desc_addr)(struct rtwn_softc *);
 	void		(*sc_drop_incorrect_tx)(struct rtwn_softc *);
 
@@ -360,7 +358,10 @@ struct rtwn_softc {
 
 	int				ackto;
 
-	int				npubqpages;  /* XXX for each queue? */
+	int				npubqpages;
+	int				nhqpages;
+	int				nnqpages;
+	int				nlqpages;
 	int				page_size;
 
 	int				txdesc_len;
@@ -429,8 +430,8 @@ void	rtwn_suspend(struct rtwn_softc *);
 	(((_sc)->sc_abort_xfers)((_sc)))
 #define rtwn_fw_write_block(_sc, _buf, _reg, _len) \
 	(((_sc)->sc_fw_write_block)((_sc), (_buf), (_reg), (_len)))
-#define rtwn_get_qmap(_sc, _nqueues) \
-	(((_sc)->sc_get_qmap)((_sc), (_nqueues)))
+#define rtwn_get_qmap(_sc) \
+	(((_sc)->sc_get_qmap)((_sc)))
 #define rtwn_set_desc_addr(_sc) \
 	(((_sc)->sc_set_desc_addr)((_sc)))
 #define rtwn_drop_incorrect_tx(_sc) \

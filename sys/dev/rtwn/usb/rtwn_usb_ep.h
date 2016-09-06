@@ -20,6 +20,6 @@
 #define IF_RTWN_EP_H
 
 int		rtwn_usb_setup_endpoints(struct rtwn_usb_softc *);
-uint16_t	rtwn_usb_get_qmap(struct rtwn_softc *, int);
+uint16_t	rtwn_usb_get_qmap(struct rtwn_softc *);
 
 #endif	/* IF_RTWN_EP_H */

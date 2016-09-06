@@ -237,12 +237,14 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	sc->agc_size			= nitems(rtl8192ce_agc);
 	sc->rf_prog			= &rtl8192c_rf[0];
 
-	sc->ntx				= 2;	/* XXX TODO: static configuration */
 	sc->page_count			= R92CE_TX_PAGE_COUNT;
 	sc->pktbuf_count		= R92C_TXPKTBUF_COUNT;
 
 	sc->ackto			= 0x40;
 	sc->npubqpages			= R92CE_PUBQ_NPAGES;
+	sc->nhqpages			= R92CE_HPQ_NPAGES;
+	sc->nnqpages			= 0;
+	sc->nlqpages			= R92CE_LPQ_NPAGES;
 	sc->page_size			= R92C_TX_PAGE_SIZE;
 
 	sc->txdesc_len			= sizeof(struct r92ce_tx_desc);

@@ -1403,46 +1403,27 @@ rtwn_dma_init(struct rtwn_softc *sc)
 } while(0)
 	uint16_t reg;
 	uint8_t tx_boundary;
-	int hasnq, haslq, nqueues;
-	int error, nqpages, nrempages;
+	int error;
 
 	/* Initialize LLT table. */
 	error = rtwn_llt_init(sc);
 	if (error != 0)
 		return (error);
 
-	/* Get Tx queues to USB endpoints mapping. */
-	hasnq = haslq = 0;
-	switch (sc->ntx) {
-	case 4:
-	case 3:
-		haslq = 1;
-		/* FALLTHROUGH */
-	case 2:
-		hasnq = 1;
-		/* FALLTHROUGH */
-	default:
-		break;
-	}
-	nqueues = 1 + hasnq + haslq;
+	/* Set the number of pages for each queue. */
+	RTWN_DPRINTF(sc, RTWN_DEBUG_RESET,
+	    "%s: pages per queue: high %d, normal %d, low %d, public %d\n",
+	    __func__, sc->nhqpages, sc->nnqpages, sc->nlqpages,
+	    sc->npubqpages);
 
-	/* Get the number of pages for each queue. */
-	nqpages = (sc->page_count - sc->npubqpages) / nqueues;
-
-	/*
-	 * The remaining pages are assigned to the high priority
-	 * queue.
-	 */
-	nrempages = (sc->page_count - sc->npubqpages) % nqueues;
-
-	RTWN_CHK(rtwn_write_1(sc, R92C_RQPN_NPQ, hasnq ? nqpages : 0));
+	RTWN_CHK(rtwn_write_1(sc, R92C_RQPN_NPQ, sc->nnqpages));
 	RTWN_CHK(rtwn_write_4(sc, R92C_RQPN,
 	    /* Set number of pages for public queue. */
 	    SM(R92C_RQPN_PUBQ, sc->npubqpages) |
 	    /* Set number of pages for high priority queue. */
-	    SM(R92C_RQPN_HPQ, nqpages + nrempages) |
+	    SM(R92C_RQPN_HPQ, sc->nhqpages) |
 	    /* Set number of pages for low priority queue. */
-	    SM(R92C_RQPN_LPQ, haslq ? nqpages : 0) |
+	    SM(R92C_RQPN_LPQ, sc->nlqpages) |
 	    /* Load values. */
 	    R92C_RQPN_LD));
 
@@ -1462,7 +1443,7 @@ rtwn_dma_init(struct rtwn_softc *sc)
 
 	/* Set queue to USB pipe mapping. */
 	/* Note: PCIe devices are using some magic number here. */
-	reg = rtwn_get_qmap(sc, nqueues);
+	reg = rtwn_get_qmap(sc);
 	RTWN_CHK(rtwn_setbits_2(sc, R92C_TRXDMA_CTRL,
 	    R92C_TRXDMA_CTRL_QMAP_M, reg));
 
