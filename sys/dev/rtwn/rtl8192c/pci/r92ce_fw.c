@@ -69,9 +69,6 @@ r92ce_fw_reset(struct rtwn_softc *sc, int reason)
 	 * We must sleep for one second to let the firmware settle.
 	 * Accessing registers too early will hang the whole system.
 	 */
-	if (msleep(&reason, &sc->sc_mtx, 0, "rtwnrst", hz)) {
-		device_printf(sc->sc_dev, "timeout waiting for firmware "
-		    "initialization to complete\n");
-	}
+	rtwn_delay(sc, 1000 * 1000);
 }
 #endif
