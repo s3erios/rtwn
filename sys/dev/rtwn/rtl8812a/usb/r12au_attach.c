@@ -197,6 +197,7 @@ r12au_attach(struct rtwn_usb_softc *uc)
 	sc->sc_power_off		= r12a_power_off;
 #ifndef RTWN_WITHOUT_UCODE
 	sc->sc_fw_reset			= r12a_fw_reset;
+	sc->sc_fw_download_enable	= r12a_fw_download_enable;
 #endif
 	sc->sc_set_page_size		= r12a_set_page_size;
 	sc->sc_lc_calib			= r12a_lc_calib;

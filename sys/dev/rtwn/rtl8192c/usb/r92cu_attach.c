@@ -184,6 +184,7 @@ r92cu_attach(struct rtwn_usb_softc *uc)
 	sc->sc_power_off		= r92cu_power_off;
 #ifndef RTWN_WITHOUT_UCODE
 	sc->sc_fw_reset			= r92c_fw_reset;
+	sc->sc_fw_download_enable	= r92c_fw_download_enable;
 #endif
 	sc->sc_set_page_size		= r92c_set_page_size;
 	sc->sc_lc_calib			= r92c_lc_calib;

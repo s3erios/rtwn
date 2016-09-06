@@ -139,6 +139,26 @@ r92c_fw_reset(struct rtwn_softc *sc, int reason)
 	rtwn_setbits_1_shift(sc, R92C_SYS_FUNC_EN,
 	    R92C_SYS_FUNC_EN_CPUEN, 0, 1);
 }
+
+void
+r92c_fw_download_enable(struct rtwn_softc *sc, int enable)
+{
+	if (enable) {
+		/* 8051 enable. */
+		rtwn_setbits_1_shift(sc, R92C_SYS_FUNC_EN, 0,
+		    R92C_SYS_FUNC_EN_CPUEN, 1);
+		/* MCU firmware download enable. */
+		rtwn_setbits_1(sc, R92C_MCUFWDL, 0, R92C_MCUFWDL_EN);
+		/* 8051 reset. */
+		rtwn_setbits_1_shift(sc, R92C_MCUFWDL, R92C_MCUFWDL_ROM_DLEN,
+		    0, 2);
+	} else {
+		/* MCU download disable. */
+		rtwn_setbits_1(sc, R92C_MCUFWDL, R92C_MCUFWDL_EN, 0);
+		/* Reserved for f/w extension. */
+		rtwn_write_1(sc, R92C_MCUFWDL + 1, 0);
+	}
+}
 #endif
 
 /*

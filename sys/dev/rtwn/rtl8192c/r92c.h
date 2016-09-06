@@ -65,6 +65,7 @@ void	r92c_scan_end(struct ieee80211com *);
 /* r92c_fw.c */
 #ifndef RTWN_WITHOUT_UCODE
 void	r92c_fw_reset(struct rtwn_softc *, int);
+void	r92c_fw_download_enable(struct rtwn_softc *, int);
 #endif
 void	r92c_joinbss_rpt(struct rtwn_softc *, int);
 #ifndef RTWN_WITHOUT_UCODE

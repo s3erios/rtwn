@@ -156,10 +156,8 @@ rtwn_load_firmware(struct rtwn_softc *sc)
 		rtwn_fw_reset(sc, RTWN_FW_RESET_DOWNLOAD);
 	}
 
-	/* MCU firmware download enable. */
-	rtwn_setbits_1(sc, R92C_MCUFWDL, 0, R92C_MCUFWDL_EN);
-	/* 8051 reset. */
-	rtwn_setbits_1_shift(sc, R92C_MCUFWDL, R92C_MCUFWDL_ROM_DLEN, 0, 2);
+	/* Enable firmware download. */
+	rtwn_fw_download_enable(sc, 1);
 
 	error = 0;	/* compiler warning */
 	for (ntries = 0; ntries < 3; ntries++) {
@@ -199,8 +197,8 @@ rtwn_load_firmware(struct rtwn_softc *sc)
 		goto fail;
 	}
 
-	/* MCU download disable. */
-	rtwn_setbits_1(sc, R92C_MCUFWDL, R92C_MCUFWDL_EN, 0);
+	/* Disable firmware download. */
+	rtwn_fw_download_enable(sc, 0);
 
 	rtwn_setbits_4(sc, R92C_MCUFWDL, R92C_MCUFWDL_WINTINI_RDY,
 	    R92C_MCUFWDL_RDY);

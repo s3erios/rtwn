@@ -73,6 +73,21 @@ r12a_fw_reset(struct rtwn_softc *sc, int reason)
 }
 
 void
+r12a_fw_download_enable(struct rtwn_softc *sc, int enable)
+{
+	if (enable) {
+		/* MCU firmware download enable. */
+		rtwn_setbits_1(sc, R92C_MCUFWDL, 0, R92C_MCUFWDL_EN);
+		/* 8051 reset. */
+		rtwn_setbits_1_shift(sc, R92C_MCUFWDL, R92C_MCUFWDL_ROM_DLEN,
+		    0, 2);
+	} else {
+		/* MCU download disable. */
+		rtwn_setbits_1(sc, R92C_MCUFWDL, R92C_MCUFWDL_EN, 0);
+	}
+}
+
+void
 r12a_set_media_status(struct rtwn_softc *sc, int macid)
 {
 	struct r12a_fw_cmd_msrrpt status;

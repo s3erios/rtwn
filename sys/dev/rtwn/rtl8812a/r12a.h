@@ -80,11 +80,14 @@ void	r12a_set_band_2ghz(struct rtwn_softc *, uint32_t);
 void	r12a_set_band_5ghz(struct rtwn_softc *, uint32_t);
 
 /* r12a_fw.c */
+#ifndef RTWN_WITHOUT_UCODE
 void	r12a_fw_reset(struct rtwn_softc *, int);
+void	r12a_fw_download_enable(struct rtwn_softc *, int);
 void	r12a_set_media_status(struct rtwn_softc *, int);
 int	r12a_set_pwrmode(struct rtwn_softc *, struct ieee80211vap *,
 	    int);
 void	r12a_iq_calib_fw(struct rtwn_softc *);
+#endif
 
 /* r12a_init.c */
 int	r12a_check_condition(struct rtwn_softc *, const uint8_t[]);

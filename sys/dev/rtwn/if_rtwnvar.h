@@ -286,6 +286,7 @@ struct rtwn_softc {
 	void		(*sc_power_off)(struct rtwn_softc *);
 #ifndef RTWN_WITHOUT_UCODE
 	void		(*sc_fw_reset)(struct rtwn_softc *, int);
+	void		(*sc_fw_download_enable)(struct rtwn_softc *, int);
 #endif
 	int		(*sc_set_page_size)(struct rtwn_softc *);
 	void		(*sc_lc_calib)(struct rtwn_softc *);
@@ -464,6 +465,8 @@ void	rtwn_suspend(struct rtwn_softc *);
 #ifndef RTWN_WITHOUT_UCODE
 #define rtwn_fw_reset(_sc, _reason) \
 	(((_sc)->sc_fw_reset)((_sc), (_reason)))
+#define rtwn_fw_download_enable(_sc, _enable) \
+	(((_sc)->sc_fw_download_enable)((_sc), (_enable)))
 #endif
 #define rtwn_set_page_size(_sc) \
 	(((_sc)->sc_set_page_size)((_sc)))
