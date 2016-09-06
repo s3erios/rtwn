@@ -195,6 +195,9 @@ rtwn_pci_tx_done(struct rtwn_softc *sc, int qid)
 	struct rtwn_tx_desc_common *desc;
 	struct rtwn_tx_data *data;
 
+	RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: qid %d, last %d, cur %d\n",
+	    __func__, qid, ring->last, ring->cur);
+
 	bus_dmamap_sync(ring->desc_dmat, ring->desc_map, BUS_DMASYNC_POSTREAD);
 
 	while(ring->last != ring->cur) {
@@ -249,6 +252,8 @@ rtwn_pci_intr(void *arg)
 
 	RTWN_LOCK(sc);
 	status = rtwn_classify_intr(sc, &tx_rings, 0);
+	RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: status %08X, tx_rings %08X\n",
+	    __func__, status, tx_rings);
 	if (status == 0) {
 		RTWN_UNLOCK(sc);
 		return;
