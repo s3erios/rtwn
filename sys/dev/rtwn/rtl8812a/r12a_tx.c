@@ -51,8 +51,10 @@ __FBSDID("$FreeBSD$");
 
 static void
 r12a_tx_protection(struct rtwn_softc *sc, struct r12au_tx_desc *txd,
-    enum ieee80211_protmode mode)
+    enum ieee80211_protmode mode, uint8_t ridx)
 {
+	struct ieee80211com *ic = &sc->sc_ic;
+	uint8_t rate;
 
 	switch (mode) {
 	case IEEE80211_PROT_CTSONLY:
@@ -67,10 +69,13 @@ r12a_tx_protection(struct rtwn_softc *sc, struct r12au_tx_desc *txd,
 
 	if (mode == IEEE80211_PROT_CTSONLY ||
 	    mode == IEEE80211_PROT_RTSCTS) {
-		/* XXX TODO: rtsrate is configurable? 24mbit may
-		 * be a bit high for RTS rate? */
-		txd->txdw4 |= htole32(SM(R12A_TXDW4_RTSRATE,
-		    RTWN_RIDX_OFDM24));
+		if (ridx >= RTWN_RIDX_MCS(0))
+			rate = rtwn_ctl_mcsrate(ic->ic_rt, ridx);
+		else
+			rate = ieee80211_ctl_rate(ic->ic_rt, ridx2rate[ridx]);
+		ridx = rate2ridx(rate);
+
+		txd->txdw4 |= htole32(SM(R12A_TXDW4_RTSRATE, ridx));
 		/* RTS rate fallback limit (max). */
 		txd->txdw4 |= htole32(SM(R12A_TXDW4_RTSRATE_FB_LMT, 0xf));
 	}
@@ -244,7 +249,7 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 				prot = IEEE80211_PROT_RTSCTS;
 
 			if (prot != IEEE80211_PROT_NONE)
-				r12a_tx_protection(sc, txd, prot);
+				r12a_tx_protection(sc, txd, prot, ridx);
 		} else	/* IEEE80211_FC0_TYPE_MGT */
 			qsel = R12A_TXDW1_QSEL_MGNT;
 	} else {
@@ -303,6 +308,7 @@ r12a_fill_tx_desc_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 
 	wh = mtod(m, struct ieee80211_frame *);
 	ismcast = IEEE80211_IS_MULTICAST(wh->i_addr1);
+	ridx = rate2ridx(params->ibp_rate0);
 
 	/* Fill Tx descriptor. */
 	txd = (struct r12au_tx_desc *)buf;
@@ -316,15 +322,14 @@ r12a_fill_tx_desc_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 		    params->ibp_try0));
 	}
 	if (params->ibp_flags & IEEE80211_BPF_RTS)
-		r12a_tx_protection(sc, txd, IEEE80211_PROT_RTSCTS);
+		r12a_tx_protection(sc, txd, IEEE80211_PROT_RTSCTS, ridx);
 	if (params->ibp_flags & IEEE80211_BPF_CTS)
-		r12a_tx_protection(sc, txd, IEEE80211_PROT_CTSONLY);
+		r12a_tx_protection(sc, txd, IEEE80211_PROT_CTSONLY, ridx);
 
 	txd->txdw1 |= htole32(SM(R12A_TXDW1_MACID, RTWN_MACID_BC));
 	txd->txdw1 |= htole32(SM(R12A_TXDW1_QSEL, R12A_TXDW1_QSEL_MGNT));
 
-	/* Choose a TX rate index. */
-	ridx = rate2ridx(params->ibp_rate0);
+	/* Set TX rate index. */
 	txd->txdw4 |= htole32(SM(R12A_TXDW4_DATARATE, ridx));
 	txd->txdw4 |= htole32(SM(R12A_TXDW4_DATARATE_FB_LMT, 0x1f));
 	txd->txdw6 |= htole32(SM(R21A_TXDW6_MBSSID, uvp->id));

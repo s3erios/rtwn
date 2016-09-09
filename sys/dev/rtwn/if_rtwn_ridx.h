@@ -26,10 +26,10 @@
 /* HW rate indices. */
 #define RTWN_RIDX_CCK1		0
 #define RTWN_RIDX_CCK2		1
-#define RTWN_RIDX_CCK55	2
-#define RTWN_RIDX_CCK11	3
-#define RTWN_RIDX_OFDM6	4
-#define RTWN_RIDX_OFDM9	5
+#define RTWN_RIDX_CCK55		2
+#define RTWN_RIDX_CCK11		3
+#define RTWN_RIDX_OFDM6		4
+#define RTWN_RIDX_OFDM9		5
 #define RTWN_RIDX_OFDM12	6
 #define RTWN_RIDX_OFDM18	7
 #define RTWN_RIDX_OFDM24	8
@@ -38,7 +38,7 @@
 #define RTWN_RIDX_OFDM54	11
 #define RTWN_RIDX_MCS(i)	(12 + (i))
 
-#define RTWN_RIDX_COUNT	28
+#define RTWN_RIDX_COUNT		28
 #define RTWN_RIDX_UNKNOWN	(uint8_t)-1
 
 #define RTWN_RATE_IS_CCK(rate)  ((rate) <= RTWN_RIDX_CCK11)
@@ -73,6 +73,22 @@ rate2ridx(uint8_t rate)
 	case 22:	return 3;
 	default:	return RTWN_RIDX_UNKNOWN;
 	}
+}
+
+/* XXX move to net80211 */
+static __inline__ uint8_t
+rtwn_ctl_mcsrate(const struct ieee80211_rate_table *rt, uint8_t ridx)
+{
+	uint8_t cix, rate;
+
+	/* Check if we are using MCS rate. */
+	KASSERT(ridx >= RTWN_RIDX_MCS(0) && ridx != RTWN_RIDX_UNKNOWN,
+	    ("bad mcs rate index %d", ridx));
+
+	rate = (ridx - RTWN_RIDX_MCS(0)) | IEEE80211_RATE_MCS;
+	cix = rt->info[rt->rateCodeToIndex[rate]].ctlRateIndex;
+	KASSERT(cix != (uint8_t)-1, ("rate %d (%d) has no info", rate, ridx));
+	return rt->info[cix].dot11Rate;
 }
 
 #endif	/* IF_RTWN_RIDX_H */

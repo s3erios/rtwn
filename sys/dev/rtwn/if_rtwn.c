@@ -1482,8 +1482,10 @@ rtwn_mrr_init(struct rtwn_softc *sc)
 	int i;
 
 	/* Drop rate index by 1 per retry. */
-	for (i = 0; i < R92C_DARFRC_SIZE; i++)
+	for (i = 0; i < R92C_DARFRC_SIZE; i++) {
 		rtwn_write_1(sc, R92C_DARFRC + i, i + 1);
+		rtwn_write_1(sc, R92C_RARFRC + i, i + 1);
+	}
 }
 
 static void
