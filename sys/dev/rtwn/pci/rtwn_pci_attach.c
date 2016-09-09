@@ -401,8 +401,10 @@ rtwn_pci_reset_lists(struct rtwn_softc *sc, struct ieee80211vap *vap)
 	for (i = 0; i < RTWN_PCI_NTXQUEUES; i++)
 		rtwn_pci_reset_tx_list(sc, vap, i);
 
-	if (vap == NULL)
+	if (vap == NULL) {
+		sc->qfullmsk = 0;
 		rtwn_pci_reset_rx_list(sc);
+	}
 }
 
 static int

@@ -222,6 +222,8 @@ rtwn_usb_reset_lists(struct rtwn_softc *sc, struct ieee80211vap *vap)
 
 	rtwn_usb_reset_tx_list(uc, &uc->uc_tx_active, vap);
 	rtwn_usb_reset_tx_list(uc, &uc->uc_tx_pending, vap);
+	if (vap == NULL)
+		sc->qfullmsk = 0;
 }
 
 static void
