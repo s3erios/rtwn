@@ -150,12 +150,12 @@ r92c_tx_set_sgi(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 
 	if ((vap->iv_flags_ht & IEEE80211_FHT_SHORTGI20) &&	/* HT20 */
 	    (ni->ni_htcap & IEEE80211_HTCAP_SHORTGI20))
-		txd->txdw5 |= R92C_TXDW5_SGI;
+		txd->txdw5 |= htole32(R92C_TXDW5_SGI);
 	else if (ni->ni_chan != IEEE80211_CHAN_ANYC &&		/* HT40 */
 	    IEEE80211_IS_CHAN_HT40(ni->ni_chan) &&
 	    (ni->ni_htcap & IEEE80211_HTCAP_SHORTGI40) &&
 	    (vap->iv_flags_ht & IEEE80211_FHT_SHORTGI40))
-		txd->txdw5 |= R92C_TXDW5_SGI;
+		txd->txdw5 |= htole32(R92C_TXDW5_SGI);
 }
 
 void
