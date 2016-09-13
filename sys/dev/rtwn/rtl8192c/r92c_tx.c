@@ -248,7 +248,8 @@ r92c_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 #endif
 			}
 
-			if (ic->ic_flags & IEEE80211_F_SHPREAMBLE)
+			if (RTWN_RATE_IS_CCK(ridx) && ridx != RTWN_RIDX_CCK1 &&
+			    (ic->ic_flags & IEEE80211_F_SHPREAMBLE))
 				txd->txdw4 |= htole32(R92C_TXDW4_SHPRE);
 
 			prot = IEEE80211_PROT_NONE;
@@ -388,10 +389,16 @@ r92c_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b,
 	}
 }
 
-int
-r92c_tx_sgi_isset(void *buf)
+uint8_t
+r92c_tx_radiotap_flags(const void *buf)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	const struct r92c_tx_desc_common *txd = buf;
+	uint8_t flags;
 
-	return ((txd->txdw5 & htole32(R92C_TXDW5_SGI)) != 0);
+	flags = 0;
+	if (txd->txdw4 & htole32(R92C_TXDW4_SHPRE))
+		flags |= IEEE80211_RADIOTAP_F_SHORTPRE;
+	if (txd->txdw5 & htole32(R92C_TXDW5_SGI))
+		flags |= IEEE80211_RADIOTAP_F_SHORTGI;
+	return (flags);
 }

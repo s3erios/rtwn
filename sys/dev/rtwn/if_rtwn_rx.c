@@ -242,15 +242,12 @@ rtwn_rx_common(struct rtwn_softc *sc, struct mbuf *m, void *desc,
 		struct rtwn_rx_radiotap_header *tap = &sc->sc_rxtap;
 		int id = RTWN_VAP_ID_INVALID;
 
-		tap->wr_flags = 0;
-		if (rtwn_rx_sgi_isset(sc, desc))
-			tap->wr_flags |= IEEE80211_RADIOTAP_F_SHORTGI;
-
 		if (ni != NULL)
 			id = RTWN_VAP(ni->ni_vap)->id;
 		if (id == RTWN_VAP_ID_INVALID)
 			id = 0;
 
+		tap->wr_flags = rtwn_rx_radiotap_flags(sc, desc);
 		tap->wr_tsft = rtwn_get_tsf_high(sc, id);
 		if (le32toh(stat->tsf_low) > rtwn_get_tsf_low(sc, id))
 			tap->wr_tsft--;

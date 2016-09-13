@@ -117,7 +117,7 @@ void	r12a_parse_rom(struct rtwn_softc *, uint8_t *);
 void	r12a_ratectl_tx_complete(struct rtwn_softc *, uint8_t *, int);
 void	r12a_handle_c2h_report(struct rtwn_softc *, uint8_t *, int);
 int	r12a_check_frame_checksum(struct rtwn_softc *, struct mbuf *);
-int	r12a_rx_sgi_isset(void *);
+uint8_t	r12a_rx_radiotap_flags(const void *);
 
 /* r12a_tx.c */
 void	r12a_fill_tx_desc(struct rtwn_softc *, struct ieee80211_node *,
@@ -125,6 +125,6 @@ void	r12a_fill_tx_desc(struct rtwn_softc *, struct ieee80211_node *,
 void	r12a_fill_tx_desc_raw(struct rtwn_softc *, struct ieee80211_node *,
 	    struct mbuf *, void *, const struct ieee80211_bpf_params *);
 void	r12a_fill_tx_desc_null(struct rtwn_softc *, void *, int, int, int);
-int	r12a_tx_sgi_isset(void *);
+uint8_t	r12a_tx_radiotap_flags(const void *);
 
 #endif	/* RTL8812A_H */

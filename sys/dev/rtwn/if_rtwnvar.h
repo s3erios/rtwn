@@ -305,8 +305,8 @@ struct rtwn_softc {
 	void		(*sc_fill_tx_desc_null)(struct rtwn_softc *,
 			    void *, int, int, int);
 	void		(*sc_dump_tx_desc)(struct rtwn_softc *, const void *);
-	int		(*sc_tx_sgi_isset)(void *);
-	int		(*sc_rx_sgi_isset)(void *);
+	uint8_t		(*sc_tx_radiotap_flags)(const void *);
+	uint8_t		(*sc_rx_radiotap_flags)(const void *);
 	void		(*sc_beacon_init)(struct rtwn_softc *, void *, int);
 	void		(*sc_beacon_enable)(struct rtwn_softc *, int, int);
 	void		(*sc_beacon_set_rate)(void *, int);
@@ -498,10 +498,10 @@ void	rtwn_suspend(struct rtwn_softc *);
 	    (_buf), (_11b), (_qos), (_id)))
 #define rtwn_dump_tx_desc(_sc, _desc) \
 	(((_sc)->sc_dump_tx_desc)((_sc), (_desc)))
-#define rtwn_tx_sgi_isset(_sc, _buf) \
-	(((_sc)->sc_tx_sgi_isset)((_buf)))
-#define rtwn_rx_sgi_isset(_sc, _buf) \
-	(((_sc)->sc_rx_sgi_isset)((_buf)))
+#define rtwn_tx_radiotap_flags(_sc, _buf) \
+	(((_sc)->sc_tx_radiotap_flags)((_buf)))
+#define rtwn_rx_radiotap_flags(_sc, _buf) \
+	(((_sc)->sc_rx_radiotap_flags)((_buf)))
 #define rtwn_set_chan(_sc, _c) \
 	(((_sc)->sc_set_chan)((_sc), (_c)))
 #ifndef RTWN_WITHOUT_UCODE

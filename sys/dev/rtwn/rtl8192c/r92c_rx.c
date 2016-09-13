@@ -44,7 +44,9 @@ __FBSDID("$FreeBSD$");
 #include <net80211/ieee80211_var.h>
 #include <net80211/ieee80211_radiotap.h>
 
+#include <dev/rtwn/if_rtwnreg.h>
 #include <dev/rtwn/if_rtwnvar.h>
+#include <dev/rtwn/if_rtwn_ridx.h>
 
 #include <dev/rtwn/rtl8192c/r92c.h>
 #include <dev/rtwn/rtl8192c/r92c_rx_desc.h>
@@ -82,10 +84,19 @@ r92c_get_rssi_ofdm(struct rtwn_softc *sc, void *physt)
 	return (rssi);
 }
 
-int
-r92c_rx_sgi_isset(void *buf)
+uint8_t
+r92c_rx_radiotap_flags(const void *buf)
 {
-	struct r92c_rx_stat *stat = buf;
+	const struct r92c_rx_stat *stat = buf;
+	uint8_t flags, rate;
 
-	return ((stat->rxdw3 & htole32(R92C_RXDW3_SGI)) != 0);
+	if (!(stat->rxdw3 & htole32(R92C_RXDW3_SPLCP)))
+		return (0);
+
+	rate = MS(le32toh(stat->rxdw3), R92C_RXDW3_RATE);
+	if (RTWN_RATE_IS_CCK(rate))
+		flags = IEEE80211_RADIOTAP_F_SHORTPRE;
+	else
+		flags = IEEE80211_RADIOTAP_F_SHORTGI;
+	return (flags);
 }

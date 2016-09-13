@@ -45,6 +45,7 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/if_rtwnvar.h>
 
 #include <dev/rtwn/if_rtwn_debug.h>
+#include <dev/rtwn/if_rtwn_ridx.h>
 
 #include <dev/rtwn/rtl8812a/r12a.h>
 #include <dev/rtwn/rtl8812a/r12a_var.h>
@@ -183,10 +184,18 @@ r12a_check_frame_checksum(struct rtwn_softc *sc, struct mbuf *m)
 	return (0);
 }
 
-int
-r12a_rx_sgi_isset(void *buf)
+uint8_t
+r12a_rx_radiotap_flags(const void *buf)
 {
-	struct r92c_rx_stat *stat = buf;
+	const struct r92c_rx_stat *stat = buf;
+	uint8_t flags, rate;
 
-	return ((stat->rxdw4 & htole32(R12A_RXDW4_SGI)) != 0);
+	if (!(stat->rxdw4 & htole32(R12A_RXDW4_SPLCP)))
+		return (0);
+	rate = MS(le32toh(stat->rxdw3), R92C_RXDW3_RATE);
+	if (RTWN_RATE_IS_CCK(rate))
+		flags = IEEE80211_RADIOTAP_F_SHORTPRE;
+	else
+		flags = IEEE80211_RADIOTAP_F_SHORTGI;
+	return (flags);
 }

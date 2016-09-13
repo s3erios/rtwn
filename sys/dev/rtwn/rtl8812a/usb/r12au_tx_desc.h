@@ -89,7 +89,7 @@ struct r12au_tx_desc {
 #define R12A_TXDW4_RTSRATE_S		24
 
 	uint32_t	txdw5;
-#define R12A_TXDW5_SGI		0x00000010
+#define R12A_TXDW5_SHORT	0x00000010
 #define R12A_TXDW5_DATA_LDPC	0x00000080
 
 	uint32_t	txdw6;

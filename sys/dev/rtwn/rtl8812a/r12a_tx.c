@@ -164,12 +164,12 @@ r12a_tx_set_sgi(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 
 	if ((vap->iv_flags_ht & IEEE80211_FHT_SHORTGI20) &&	/* HT20 */
 	    (ni->ni_htcap & IEEE80211_HTCAP_SHORTGI20))
-		txd->txdw5 |= htole32(R12A_TXDW5_SGI);
+		txd->txdw5 |= htole32(R12A_TXDW5_SHORT);
 	else if (ni->ni_chan != IEEE80211_CHAN_ANYC &&		/* HT40 */
 	    IEEE80211_IS_CHAN_HT40(ni->ni_chan) &&
 	    (ni->ni_htcap & IEEE80211_HTCAP_SHORTGI40) &&
 	    (vap->iv_flags_ht & IEEE80211_FHT_SHORTGI40))
-		txd->txdw5 |= htole32(R12A_TXDW5_SGI);
+		txd->txdw5 |= htole32(R12A_TXDW5_SHORT);
 }
 
 void
@@ -234,6 +234,10 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 				sc->sc_tx_n_active++;
 			}
 
+			if (RTWN_RATE_IS_CCK(ridx) && ridx != RTWN_RIDX_CCK1 &&
+			    (ic->ic_flags & IEEE80211_F_SHPREAMBLE))
+				txd->txdw5 |= htole32(R12A_TXDW5_SHORT);
+
 			prot = IEEE80211_PROT_NONE;
 			if (ridx >= RTWN_RIDX_MCS(0)) {
 				r12a_tx_set_sgi(sc, txd, ni);
@@ -260,7 +264,6 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	txd->txdw1 |= htole32(SM(R12A_TXDW1_QSEL, qsel));
 
 	/* XXX TODO: 40MHZ flag? */
-	/* XXX Short preamble? */
 
 	txd->txdw1 |= htole32(SM(R12A_TXDW1_MACID, macid));
 	txd->txdw4 |= htole32(SM(R12A_TXDW4_DATARATE, ridx));
@@ -374,10 +377,19 @@ r12a_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b, int qos,
 	}
 }
 
-int
-r12a_tx_sgi_isset(void *buf)
+uint8_t
+r12a_tx_radiotap_flags(const void *buf)
 {
-	struct r12au_tx_desc *txd = (struct r12au_tx_desc *)buf; /* XXX */
+	const struct r12au_tx_desc *txd = buf; /* XXX */
+	uint8_t flags, rate;
 
-	return ((txd->txdw5 & htole32(R12A_TXDW5_SGI)) != 0);
+	if (!(txd->txdw5 & htole32(R12A_TXDW5_SHORT)))
+		return (0);
+
+	rate = MS(le32toh(txd->txdw4), R12A_TXDW4_DATARATE);
+	if (RTWN_RATE_IS_CCK(rate))
+		flags = IEEE80211_RADIOTAP_F_SHORTPRE;
+	else
+		flags = IEEE80211_RADIOTAP_F_SHORTGI;
+	return (flags);
 }

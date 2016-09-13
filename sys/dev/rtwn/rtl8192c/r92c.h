@@ -99,7 +99,7 @@ void	r92c_parse_rom(struct rtwn_softc *, uint8_t *);
 /* r92c_rx.c */
 int8_t	r92c_get_rssi_cck(struct rtwn_softc *, void *);
 int8_t	r92c_get_rssi_ofdm(struct rtwn_softc *, void *);
-int	r92c_rx_sgi_isset(void *);
+uint8_t	r92c_rx_radiotap_flags(const void *);
 
 /* r92c_tx.c */
 void	r92c_tx_setup_ampdu(void *, int, int);
@@ -110,6 +110,6 @@ void	r92c_fill_tx_desc(struct rtwn_softc *, struct ieee80211_node *,
 void	r92c_fill_tx_desc_raw(struct rtwn_softc *, struct ieee80211_node *,
 	    struct mbuf *, void *, const struct ieee80211_bpf_params *);
 void	r92c_fill_tx_desc_null(struct rtwn_softc *, void *, int, int, int);
-int	r92c_tx_sgi_isset(void *);
+uint8_t	r92c_tx_radiotap_flags(const void *);
 
 #endif	/* RTL8192C_H */
