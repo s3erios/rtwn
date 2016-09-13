@@ -108,6 +108,7 @@ static void		rtwn_tsf_sync_adhoc(void *);
 static void		rtwn_tsf_sync_adhoc_task(void *, int);
 static void		rtwn_tsf_sync_enable(struct rtwn_softc *,
 			    struct ieee80211vap *);
+static void		rtwn_set_ack_preamble(struct rtwn_softc *);
 static void		rtwn_set_mode(struct rtwn_softc *, uint8_t, int);
 static int		rtwn_monitor_newstate(struct ieee80211vap *,
 			    enum ieee80211_state, int);
@@ -959,6 +960,20 @@ rtwn_tsf_sync_enable(struct rtwn_softc *sc, struct ieee80211vap *vap)
 }
 
 static void
+rtwn_set_ack_preamble(struct rtwn_softc *sc)
+{
+	struct ieee80211com *ic = &sc->sc_ic;
+	uint32_t reg;
+
+	reg = rtwn_read_4(sc, R92C_WMAC_TRXPTCL_CTL);
+	if (ic->ic_flags & IEEE80211_F_SHPREAMBLE)
+		reg |= R92C_WMAC_TRXPTCL_SHPRE;
+	else
+		reg &= ~R92C_WMAC_TRXPTCL_SHPRE;
+	rtwn_write_4(sc, R92C_WMAC_TRXPTCL_CTL, reg);
+}
+
+static void
 rtwn_set_mode(struct rtwn_softc *sc, uint8_t mode, int id)
 {
 
@@ -1264,6 +1279,9 @@ rtwn_run(struct rtwn_softc *sc, struct ieee80211vap *vap)
 			goto fail;
 		}
 	}
+
+	/* Set ACK preamble type. */
+	rtwn_set_ack_preamble(sc);
 
 	/* Enable TSF synchronization. */
 	rtwn_tsf_sync_enable(sc, vap);

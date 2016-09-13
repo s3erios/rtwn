@@ -39,8 +39,6 @@
 #define R12A_DATA_SEC			0x483
 #define R12A_ARFR_2G(i)			(0x48c + (i) * 8)
 #define R12A_HT_SINGLE_AMPDU		0x4c7
-/* WMAC Configuration. */
-#define R12A_WMAC_TRXPTCL_CTL		0x668
 
 
 /* Bits for R92C_MAC_PHY_CTRL. */

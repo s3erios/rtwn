@@ -206,6 +206,7 @@
 #define R92C_T2T_SIFS			0x63e
 #define R92C_ACKTO			0x640
 #define R92C_NAV_UPPER			0x652
+#define R92C_WMAC_TRXPTCL_CTL		0x668
 #define R92C_CAMCMD			0x670
 #define R92C_CAMWRITE			0x674
 #define R92C_CAMREAD			0x678
@@ -592,6 +593,9 @@
 
 /* Bits for R92C_RX_DRVINFO_SZ. */
 #define R92C_RX_DRVINFO_SZ_DEF	4	/* XXX other values will not work */
+
+/* Bits for R92C_WMAC_TRXPTCL_CTL. */
+#define R92C_WMAC_TRXPTCL_SHPRE	0x00020000
 
 /* Bits for R92C_CAMCMD. */
 #define R92C_CAMCMD_ADDR_M	0x0000ffff

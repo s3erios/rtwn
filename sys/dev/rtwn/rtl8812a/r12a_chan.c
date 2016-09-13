@@ -394,7 +394,7 @@ r12a_set_chan(struct rtwn_softc *sc, struct ieee80211_channel *c)
 
 #ifdef notyet
 	if (IEEE80211_IS_CHAN_HT80(c)) {	/* 80 MHz */
-		rtwn_setbits_2(sc, R12A_WMAC_TRXPTCL_CTL, 0x80, 0x100);
+		rtwn_setbits_2(sc, R92C_WMAC_TRXPTCL_CTL, 0x80, 0x100);
 
 		/* TODO */
 
@@ -409,7 +409,7 @@ r12a_set_chan(struct rtwn_softc *sc, struct ieee80211_channel *c)
 		else
 			ext_chan = R12A_DATA_SEC_PRIM_UP_20;
 
-		rtwn_setbits_2(sc, R12A_WMAC_TRXPTCL_CTL, 0x100, 0x80);
+		rtwn_setbits_2(sc, R92C_WMAC_TRXPTCL_CTL, 0x100, 0x80);
 		rtwn_write_1(sc, R12A_DATA_SEC, ext_chan);
 
 		rtwn_bb_setbits(sc, R12A_RFMOD, 0x003003c3, 0x00300201);
@@ -440,7 +440,7 @@ r12a_set_chan(struct rtwn_softc *sc, struct ieee80211_channel *c)
 
 		val = 0x400;
 	} else {	/* 20 MHz */
-		rtwn_setbits_2(sc, R12A_WMAC_TRXPTCL_CTL, 0x180, 0);
+		rtwn_setbits_2(sc, R92C_WMAC_TRXPTCL_CTL, 0x180, 0);
 		rtwn_write_1(sc, R12A_DATA_SEC, R12A_DATA_SEC_NO_EXT);
 
 		rtwn_bb_setbits(sc, R12A_RFMOD, 0x003003c3, 0x00300200);
