@@ -34,6 +34,8 @@
 #define R12A_RXDW4_SPLCP	0x00000001
 #define R12A_RXDW4_LDPC		0x00000002
 #define R12A_RXDW4_STBC		0x00000004
+#define R12A_RXDW4_BW_M		0x00000030
+#define R12A_RXDW4_BW_S		4
 
 /* Rx PHY descriptor. */
 struct r12a_rx_phystat {

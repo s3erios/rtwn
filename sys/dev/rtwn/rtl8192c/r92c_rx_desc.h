@@ -54,6 +54,7 @@ struct r92c_rx_stat {
 #define R92C_RXDW3_RATE_S	0
 #define R92C_RXDW3_HT		0x00000040
 #define R92C_RXDW3_SPLCP	0x00000100
+#define R92C_RXDW3_HT40		0x00000200
 #define R92C_RXDW3_HTC		0x00000400
 
 	uint32_t	rxdw4;

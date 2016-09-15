@@ -95,3 +95,17 @@ struct rtwn_rf_prog {
 	const uint8_t	cond[RTWN_MAX_CONDITIONS];
 	const struct rtwn_rf_prog *next;
 };
+
+
+/* XXX move to net80211. */
+static __inline int
+rtwn_chan2centieee(const struct ieee80211_channel *c)
+{
+	int chan;
+
+	chan = c->ic_ieee;
+	if (c->ic_extieee != 0)
+		chan = (chan + c->ic_extieee) / 2;
+
+	return (chan);
+}

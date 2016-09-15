@@ -107,12 +107,10 @@ r12a_write_txpower(struct rtwn_softc *sc, int chain,
 static int
 r12a_get_power_group(struct rtwn_softc *sc, struct ieee80211_channel *c)
 {
-	struct ieee80211com *ic = &sc->sc_ic;
 	uint8_t chan;
 	int group;
 
-	chan = ieee80211_chan2ieee(ic, c);
-
+	chan = rtwn_chan2centieee(c);
 	if (IEEE80211_IS_CHAN_2GHZ(c)) {
 		if (chan <= 2)			group = 0;
 		else if (chan <= 5)		group = 1;
@@ -264,7 +262,7 @@ void
 r12a_fix_spur(struct rtwn_softc *sc, struct ieee80211_channel *c)
 {
 	struct r12a_softc *rs = sc->sc_priv;
-	uint16_t chan = IEEE80211_CHAN2IEEE(c);
+	uint16_t chan = rtwn_chan2centieee(c);
 
 	if (rs->chip & R12A_CHIP_C_CUT) {
 		if (IEEE80211_IS_CHAN_HT40(c) && chan == 11) {
@@ -349,17 +347,13 @@ r12a_set_band(struct rtwn_softc *sc, struct ieee80211_channel *c)
 void
 r12a_set_chan(struct rtwn_softc *sc, struct ieee80211_channel *c)
 {
-	struct ieee80211com *ic = &sc->sc_ic;
 	uint32_t val;
 	uint16_t chan;
 	int i;
 
 	r12a_set_band(sc, c);
 
-	chan = ieee80211_chan2ieee(ic, c);	/* XXX center freq! */
-	KASSERT(chan != 0 && chan != IEEE80211_CHAN_ANY,
-	    ("invalid channel %x\n", chan));
-
+	chan = rtwn_chan2centieee(c);
 	if (36 <= chan && chan <= 48)
 		val = 0x09280000;
 	else if (50 <= chan && chan <= 64)

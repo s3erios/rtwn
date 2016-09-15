@@ -217,9 +217,6 @@ r92cu_attach(struct rtwn_usb_softc *uc)
 	sc->sc_post_init		= r92cu_post_init;
 	sc->sc_init_bcnq1_boundary	= rtwn_nop_int_softc;
 
-	sc->chan_list_5ghz		= NULL;
-	sc->chan_num_5ghz		= 0;
-
 	sc->mac_prog			= &rtl8192cu_mac[0];
 	sc->mac_size			= nitems(rtl8192cu_mac);
 	sc->bb_prog			= &rtl8192cu_bb[0];

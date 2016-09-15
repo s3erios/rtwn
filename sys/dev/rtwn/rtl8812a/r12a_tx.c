@@ -49,6 +49,34 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/rtl8812a/usb/r12au_tx_desc.h>	/* XXX */
 
 
+static int
+r12a_get_primary_channel(struct rtwn_softc *sc, struct ieee80211_channel *c)
+{
+	/* XXX 80 MHz */
+	if (IEEE80211_IS_CHAN_HT40U(c))
+		return (R12A_TXDW5_PRIM_CHAN_20_80_2);
+	else
+		return (R12A_TXDW5_PRIM_CHAN_20_80_3);
+}
+
+static void
+r12a_tx_set_ht40(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
+{
+	struct r12au_tx_desc *txd = (struct r12au_tx_desc *)buf; /* XXX */
+
+	/* XXX 80 Mhz */
+	if (ni->ni_chan != IEEE80211_CHAN_ANYC &&
+	    IEEE80211_IS_CHAN_HT40(ni->ni_chan)) {
+		int prim_chan;
+
+		prim_chan = r12a_get_primary_channel(sc, ni->ni_chan);
+		txd->txdw5 |= htole32(SM(R12A_TXDW5_DATA_BW,
+		    R12A_TXDW5_DATA_BW40));
+		txd->txdw5 |= htole32(SM(R12A_TXDW5_DATA_PRIM_CHAN,
+		    prim_chan));
+        }
+}
+
 static void
 r12a_tx_protection(struct rtwn_softc *sc, struct r12au_tx_desc *txd,
     enum ieee80211_protmode mode, uint8_t ridx)
@@ -78,6 +106,10 @@ r12a_tx_protection(struct rtwn_softc *sc, struct r12au_tx_desc *txd,
 		txd->txdw4 |= htole32(SM(R12A_TXDW4_RTSRATE, ridx));
 		/* RTS rate fallback limit (max). */
 		txd->txdw4 |= htole32(SM(R12A_TXDW4_RTSRATE_FB_LMT, 0xf));
+
+		if (RTWN_RATE_IS_CCK(ridx) && ridx != RTWN_RIDX_CCK1 &&
+		    (ic->ic_flags & IEEE80211_F_SHPREAMBLE))
+			txd->txdw5 |= htole32(R12A_TXDW5_RTS_SHORT);
 	}
 }
 
@@ -164,12 +196,12 @@ r12a_tx_set_sgi(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 
 	if ((vap->iv_flags_ht & IEEE80211_FHT_SHORTGI20) &&	/* HT20 */
 	    (ni->ni_htcap & IEEE80211_HTCAP_SHORTGI20))
-		txd->txdw5 |= htole32(R12A_TXDW5_SHORT);
+		txd->txdw5 |= htole32(R12A_TXDW5_DATA_SHORT);
 	else if (ni->ni_chan != IEEE80211_CHAN_ANYC &&		/* HT40 */
 	    IEEE80211_IS_CHAN_HT40(ni->ni_chan) &&
 	    (ni->ni_htcap & IEEE80211_HTCAP_SHORTGI40) &&
 	    (vap->iv_flags_ht & IEEE80211_FHT_SHORTGI40))
-		txd->txdw5 |= htole32(R12A_TXDW5_SHORT);
+		txd->txdw5 |= htole32(R12A_TXDW5_DATA_SHORT);
 }
 
 void
@@ -236,10 +268,11 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 
 			if (RTWN_RATE_IS_CCK(ridx) && ridx != RTWN_RIDX_CCK1 &&
 			    (ic->ic_flags & IEEE80211_F_SHPREAMBLE))
-				txd->txdw5 |= htole32(R12A_TXDW5_SHORT);
+				txd->txdw5 |= htole32(R12A_TXDW5_DATA_SHORT);
 
 			prot = IEEE80211_PROT_NONE;
 			if (ridx >= RTWN_RIDX_MCS(0)) {
+				r12a_tx_set_ht40(sc, txd, ni);
 				r12a_tx_set_sgi(sc, txd, ni);
 				prot = ic->ic_htprotmode;
 			} else if (ic->ic_flags & IEEE80211_F_USEPROT)
@@ -262,9 +295,6 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	}
 
 	txd->txdw1 |= htole32(SM(R12A_TXDW1_QSEL, qsel));
-
-	/* XXX TODO: 40MHZ flag? */
-
 	txd->txdw1 |= htole32(SM(R12A_TXDW1_MACID, macid));
 	txd->txdw4 |= htole32(SM(R12A_TXDW4_DATARATE, ridx));
 	/* Data rate fallback limit (max). */
@@ -383,7 +413,7 @@ r12a_tx_radiotap_flags(const void *buf)
 	const struct r12au_tx_desc *txd = buf; /* XXX */
 	uint8_t flags, rate;
 
-	if (!(txd->txdw5 & htole32(R12A_TXDW5_SHORT)))
+	if (!(txd->txdw5 & htole32(R12A_TXDW5_DATA_SHORT)))
 		return (0);
 
 	rate = MS(le32toh(txd->txdw4), R12A_TXDW4_DATARATE);

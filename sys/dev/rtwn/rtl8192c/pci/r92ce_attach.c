@@ -226,9 +226,6 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	sc->sc_post_init		= r92ce_post_init;
 	sc->sc_init_bcnq1_boundary	= rtwn_nop_int_softc;
 
-	sc->chan_list_5ghz		= NULL;
-	sc->chan_num_5ghz		= 0;
-
 	sc->mac_prog			= &rtl8192ce_mac[0];
 	sc->mac_size			= nitems(rtl8192ce_mac);
 	sc->bb_prog			= &rtl8192ce_bb[0];

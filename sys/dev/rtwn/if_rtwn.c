@@ -248,10 +248,6 @@ rtwn_attach(struct rtwn_softc *sc)
 
 	ic->ic_htcaps =
 	      IEEE80211_HTCAP_SHORTGI20		/* short GI in 20MHz */
-#ifdef RTWN_TODO	/* no HT40 just yet */
-	    | IEEE80211_HTCAP_CHWIDTH40		/* 40 MHz channel width */
-	    | IEEE80211_HTCAP_SHORTGI40		/* short GI in 40MHz */
-#endif
 	    | IEEE80211_HTCAP_MAXAMSDU_3839	/* max A-MSDU length */
 	    | IEEE80211_HTCAP_SMPS_OFF		/* SM PS mode disabled */
 	    /* s/w capabilities */
@@ -259,6 +255,13 @@ rtwn_attach(struct rtwn_softc *sc)
 	    | IEEE80211_HTC_AMPDU		/* A-MPDU tx */
 	    | IEEE80211_HTC_AMSDU		/* A-MSDU tx */
 	    ;
+
+	if (sc->sc_ht40) {
+		ic->ic_htcaps |=
+		      IEEE80211_HTCAP_CHWIDTH40	/* 40 MHz channel width */
+		    | IEEE80211_HTCAP_SHORTGI40	/* short GI in 40MHz */
+		    ;
+	}
 
 	ic->ic_txstream = sc->ntxchains;
 	ic->ic_rxstream = sc->nrxchains;
@@ -268,13 +271,13 @@ rtwn_attach(struct rtwn_softc *sc)
 	ic->ic_flags_ext |= IEEE80211_FEXT_WATCHDOG;
 #endif
 
+	/* Adjust capabilities. */
+	rtwn_adj_devcaps(sc);
+
 	rtwn_getradiocaps(ic, IEEE80211_CHAN_MAX, &ic->ic_nchans,
 	    ic->ic_channels);
 
 	/* XXX TODO: setup regdomain if R92C_CHANNEL_PLAN_BY_HW bit is set. */
-
-	/* Adjust capabilities. */
-	rtwn_adj_devcaps(sc);
 
 	ieee80211_ifattach(ic);
 	ic->ic_raw_xmit = rtwn_raw_xmit;
@@ -326,6 +329,13 @@ rtwn_sysctlattach(struct rtwn_softc *sc)
 {
 	struct sysctl_ctx_list *ctx = device_get_sysctl_ctx(sc->sc_dev);
 	struct sysctl_oid *tree = device_get_sysctl_tree(sc->sc_dev);
+
+#if 1
+	sc->sc_ht40 = 0;
+	SYSCTL_ADD_INT(ctx, SYSCTL_CHILDREN(tree), OID_AUTO,
+	    "ht40", CTLFLAG_RDTUN, &sc->sc_ht40,
+	    sc->sc_ht40, "Enable 40 MHz mode support");
+#endif
 
 #ifdef RTWN_DEBUG
 	SYSCTL_ADD_U32(ctx, SYSCTL_CHILDREN(tree), OID_AUTO,
@@ -1555,19 +1565,26 @@ rtwn_getradiocaps(struct ieee80211com *ic,
 {
 	struct rtwn_softc *sc = ic->ic_softc;
 	uint8_t bands[IEEE80211_MODE_BYTES];
+	int i;
 
 	memset(bands, 0, sizeof(bands));
 	setbit(bands, IEEE80211_MODE_11B);
 	setbit(bands, IEEE80211_MODE_11G);
 	setbit(bands, IEEE80211_MODE_11NG);
 	ieee80211_add_channel_list_2ghz(chans, maxchans, nchans,
-	    rtwn_chan_2ghz, nitems(rtwn_chan_2ghz), bands, 0);
+	    rtwn_chan_2ghz, nitems(rtwn_chan_2ghz), bands,
+	    !!(ic->ic_htcaps & IEEE80211_HTCAP_CHWIDTH40));
 
-	if (sc->chan_num_5ghz != 0) {
-		setbit(bands, IEEE80211_MODE_11A);
-		setbit(bands, IEEE80211_MODE_11NA);
+	/* XXX workaround add_channel_list() limitations */
+	setbit(bands, IEEE80211_MODE_11A);
+	setbit(bands, IEEE80211_MODE_11NA);
+	for (i = 0; i < nitems(sc->chan_num_5ghz); i++) {
+		if (sc->chan_num_5ghz[i] == 0)
+			continue;
+
 		ieee80211_add_channel_list_5ghz(chans, maxchans, nchans,
-		    sc->chan_list_5ghz, sc->chan_num_5ghz, bands, 0);
+		    sc->chan_list_5ghz[i], sc->chan_num_5ghz[i], bands,
+		    !!(ic->ic_htcaps & IEEE80211_HTCAP_CHWIDTH40));
 	}
 }
 

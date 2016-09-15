@@ -158,8 +158,7 @@ r12a_iq_calib_fw(struct rtwn_softc *sc)
 
 	RTWN_DPRINTF(sc, RTWN_DEBUG_CALIB, "Starting IQ calibration (FW)\n");
 
-	cmd.chan = IEEE80211_CHAN2IEEE(c);
-
+	cmd.chan = rtwn_chan2centieee(c);
 	if (IEEE80211_IS_CHAN_5GHZ(c))
 		cmd.band_bw = RTWN_CMD_IQ_BAND_5GHZ;
 	else

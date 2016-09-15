@@ -59,12 +59,10 @@ __FBSDID("$FreeBSD$");
 static int
 r92c_get_power_group(struct rtwn_softc *sc, struct ieee80211_channel *c)
 {
-	struct ieee80211com *ic = &sc->sc_ic;
 	uint8_t chan;
 	int group;
 
-	chan = ieee80211_chan2ieee(ic, c);
-
+	chan = rtwn_chan2centieee(c);
 	if (IEEE80211_IS_CHAN_2GHZ(c)) {
 		if (chan <= 3)			group = 0;
 		else if (chan <= 9)		group = 1;
@@ -295,17 +293,11 @@ r92c_set_bw20(struct rtwn_softc *sc, uint8_t chan)
 void
 r92c_set_chan(struct rtwn_softc *sc, struct ieee80211_channel *c)
 {
-	struct ieee80211com *ic = &sc->sc_ic;
 	struct r92c_softc *rs = sc->sc_priv;
 	u_int chan;
 	int i;
 
-	chan = ieee80211_chan2ieee(ic, c);	/* XXX center freq! */
-	if (chan == 0 || chan == IEEE80211_CHAN_ANY) {
-		device_printf(sc->sc_dev,
-		    "%s: invalid channel %x\n", __func__, chan);
-		return;
-	}
+	chan = rtwn_chan2centieee(c);
 
 	/* Set Tx power for this new channel. */
 	r92c_set_txpower(sc, c);

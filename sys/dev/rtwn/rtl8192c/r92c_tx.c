@@ -55,6 +55,30 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/rtl8192c/r92c_tx_desc.h>
 
 
+static int
+r92c_tx_get_sco(struct rtwn_softc *sc, struct ieee80211_channel *c)
+{
+	if (IEEE80211_IS_CHAN_HT40U(c))
+		return (R92C_TXDW4_SCO_SCA);
+	else
+		return (R92C_TXDW4_SCO_SCB);
+}
+
+static void
+r92c_tx_set_ht40(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
+{
+	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+
+	if (ni->ni_chan != IEEE80211_CHAN_ANYC &&
+	    IEEE80211_IS_CHAN_HT40(ni->ni_chan)) {
+		int extc_offset;
+
+		extc_offset = r92c_tx_get_sco(sc, ni->ni_chan);
+		txd->txdw4 |= htole32(R92C_TXDW4_DATA_BW40);
+		txd->txdw4 |= htole32(SM(R92C_TXDW4_DATA_SCO, extc_offset));
+	}
+}
+
 static void
 r92c_tx_protection(struct rtwn_softc *sc, struct r92c_tx_desc_common *txd,
     enum ieee80211_protmode mode, uint8_t ridx)
@@ -84,6 +108,10 @@ r92c_tx_protection(struct rtwn_softc *sc, struct r92c_tx_desc_common *txd,
 		txd->txdw4 |= htole32(SM(R92C_TXDW4_RTSRATE, ridx));
 		/* RTS rate fallback limit (max). */
 		txd->txdw5 |= htole32(SM(R92C_TXDW5_RTSRATE_FB_LMT, 0xf));
+
+		if (RTWN_RATE_IS_CCK(ridx) && ridx != RTWN_RIDX_CCK1 &&
+		    (ic->ic_flags & IEEE80211_F_SHPREAMBLE))
+			txd->txdw4 |= htole32(R92C_TXDW4_RTS_SHORT);
 	}
 }
 
@@ -250,10 +278,11 @@ r92c_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 
 			if (RTWN_RATE_IS_CCK(ridx) && ridx != RTWN_RIDX_CCK1 &&
 			    (ic->ic_flags & IEEE80211_F_SHPREAMBLE))
-				txd->txdw4 |= htole32(R92C_TXDW4_SHPRE);
+				txd->txdw4 |= htole32(R92C_TXDW4_DATA_SHPRE);
 
 			prot = IEEE80211_PROT_NONE;
 			if (ridx >= RTWN_RIDX_MCS(0)) {
+				r92c_tx_set_ht40(sc, txd, ni);
 				r92c_tx_set_sgi(sc, txd, ni);
 				prot = ic->ic_htprotmode;
 			} else if (ic->ic_flags & IEEE80211_F_USEPROT)
@@ -266,6 +295,7 @@ r92c_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 			    vap->iv_rtsthreshold != IEEE80211_RTS_MAX)
 				prot = IEEE80211_PROT_RTSCTS;
 
+			/* NB: checks for ht40 / short bits (set above). */
 			if (prot != IEEE80211_PROT_NONE)
 				r92c_tx_protection(sc, txd, prot, ridx);
 		} else	/* IEEE80211_FC0_TYPE_MGT */
@@ -276,8 +306,6 @@ r92c_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	}
 
 	txd->txdw1 |= htole32(SM(R92C_TXDW1_QSEL, qsel));
-
-	/* XXX TODO: 40MHZ flag? */
 
 	rtwn_r92c_tx_setup_macid(sc, txd, macid);
 	txd->txdw5 |= htole32(SM(R92C_TXDW5_DATARATE, ridx));
@@ -396,7 +424,7 @@ r92c_tx_radiotap_flags(const void *buf)
 	uint8_t flags;
 
 	flags = 0;
-	if (txd->txdw4 & htole32(R92C_TXDW4_SHPRE))
+	if (txd->txdw4 & htole32(R92C_TXDW4_DATA_SHPRE))
 		flags |= IEEE80211_RADIOTAP_F_SHORTPRE;
 	if (txd->txdw5 & htole32(R92C_TXDW5_SGI))
 		flags |= IEEE80211_RADIOTAP_F_SHORTGI;

@@ -167,6 +167,9 @@ struct rtwn_softc {
 	struct mbufq		sc_snd;
 	device_t		sc_dev;
 
+#if 1
+	int			sc_ht40;
+#endif
 	uint32_t		sc_debug;
 	int			sc_hwcrypto;
 	int			sc_ratectl_sysctl;
@@ -342,8 +345,8 @@ struct rtwn_softc {
 	void		(*sc_post_init)(struct rtwn_softc *);
 	int		(*sc_init_bcnq1_boundary)(struct rtwn_softc *);
 
-	const uint8_t			*chan_list_5ghz;
-	int				chan_num_5ghz;
+	const uint8_t			*chan_list_5ghz[3];
+	int				chan_num_5ghz[3];
 
 	const struct rtwn_mac_prog	*mac_prog;
 	int				mac_size;

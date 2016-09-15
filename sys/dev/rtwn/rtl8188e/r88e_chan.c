@@ -60,12 +60,10 @@ __FBSDID("$FreeBSD$");
 static int
 r88e_get_power_group(struct rtwn_softc *sc, struct ieee80211_channel *c)
 {
-	struct ieee80211com *ic = &sc->sc_ic;
 	uint8_t chan;
 	int group;
 
-	chan = ieee80211_chan2ieee(ic, c);
-
+	chan = rtwn_chan2centieee(c);
 	if (IEEE80211_IS_CHAN_2GHZ(c)) {
 		if (chan <= 2)			group = 0;
 		else if (chan <= 5)		group = 1;

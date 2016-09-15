@@ -178,9 +178,6 @@ r88eu_attach(struct rtwn_usb_softc *uc)
 	sc->sc_post_init		= r88eu_post_init;
 	sc->sc_init_bcnq1_boundary	= rtwn_nop_int_softc;
 
-	sc->chan_list_5ghz		= NULL;
-	sc->chan_num_5ghz		= 0;
-
 	sc->mac_prog			= &rtl8188eu_mac[0];
 	sc->mac_size			= nitems(rtl8188eu_mac);
 	sc->bb_prog			= &rtl8188eu_bb[0];

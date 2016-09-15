@@ -184,8 +184,12 @@ r21au_attach(struct rtwn_usb_softc *uc)
 	sc->sc_post_init		= r12au_post_init;
 	sc->sc_init_bcnq1_boundary	= r21a_init_bcnq1_boundary;
 
-	sc->chan_list_5ghz		= r12a_chan_5ghz;
-	sc->chan_num_5ghz		= nitems(r12a_chan_5ghz);
+	sc->chan_list_5ghz[0]		= r12a_chan_5ghz_0;
+	sc->chan_list_5ghz[1]		= r12a_chan_5ghz_1;
+	sc->chan_list_5ghz[2]		= r12a_chan_5ghz_2;
+	sc->chan_num_5ghz[0]		= nitems(r12a_chan_5ghz_0);
+	sc->chan_num_5ghz[1]		= nitems(r12a_chan_5ghz_1);
+	sc->chan_num_5ghz[2]		= nitems(r12a_chan_5ghz_2);
 
 	sc->mac_prog			= &rtl8821au_mac[0];
 	sc->mac_size			= nitems(rtl8821au_mac);
