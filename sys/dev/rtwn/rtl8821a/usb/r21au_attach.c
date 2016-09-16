@@ -94,7 +94,7 @@ r21a_attach_private(struct rtwn_softc *sc)
 {
 	struct r12a_softc *rs;
 
-	rs = malloc(sizeof(struct r12a_softc), M_TEMP, M_WAITOK | M_ZERO);
+	rs = malloc(sizeof(struct r12a_softc), M_RTWN_PRIV, M_WAITOK | M_ZERO);
 
 	rs->rs_flags			= R12A_RXCKSUM_EN | R12A_RXCKSUM6_EN;
 

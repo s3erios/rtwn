@@ -82,7 +82,7 @@ r88eu_attach_private(struct rtwn_softc *sc)
 {
 	struct r92c_softc *rs;
 
-	rs = malloc(sizeof(struct r92c_softc), M_TEMP, M_WAITOK | M_ZERO);
+	rs = malloc(sizeof(struct r92c_softc), M_RTWN_PRIV, M_WAITOK | M_ZERO);
 
 	rs->rs_txpwr			= &r88e_txpwr;
 	rs->rs_txagc			= &r88e_txagc;

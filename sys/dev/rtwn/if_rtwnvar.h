@@ -382,6 +382,7 @@ struct rtwn_softc {
 	uint32_t			rcr;	/* Rx filter */
 	uint32_t			rrsr;	/* Response Rate Set */
 };
+MALLOC_DECLARE(M_RTWN_PRIV);
 
 #define	RTWN_LOCK(sc)			mtx_lock(&(sc)->sc_mtx)
 #define	RTWN_UNLOCK(sc)		mtx_unlock(&(sc)->sc_mtx)

@@ -57,7 +57,7 @@ r92c_detach_private(struct rtwn_softc *sc)
 {
 	struct r92c_softc *rs = sc->sc_priv;
 
-	free(rs, M_TEMP);
+	free(rs, M_RTWN_PRIV);
 }
 
 void

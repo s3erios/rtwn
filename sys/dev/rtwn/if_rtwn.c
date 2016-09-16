@@ -154,6 +154,8 @@ static void		rtwn_init_beacon_reg(struct rtwn_softc *);
 static int		rtwn_init(struct rtwn_softc *);
 static void		rtwn_stop(struct rtwn_softc *);
 
+MALLOC_DEFINE(M_RTWN_PRIV, "rtwn_priv", "rtwn driver private state");
+
 static const uint8_t rtwn_chan_2ghz[] =
 	{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
 
