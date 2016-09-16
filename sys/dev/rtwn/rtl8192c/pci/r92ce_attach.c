@@ -265,5 +265,5 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 		    __func__);
 	}
 
-	r92ce_attach_private(sc);	
+	r92ce_attach_private(sc);
 }

@@ -65,7 +65,7 @@ r92ce_fw_reset(struct rtwn_softc *sc, int reason)
 
 	r92c_fw_reset(sc, reason);
 
-	/* 
+	/*
 	 * We must sleep for one second to let the firmware settle.
 	 * Accessing registers too early will hang the whole system.
 	 */

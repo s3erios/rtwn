@@ -251,7 +251,7 @@ r92ce_iq_calib_run(struct rtwn_softc *sc, int n, uint16_t tx[2][2],
 	}
 
 	rtwn_bb_write(sc, R92C_OFDM0_TRXPATHENA,
-	    iq_cal_regs.ofdm0_trxpathena); 
+	    iq_cal_regs.ofdm0_trxpathena);
 	rtwn_bb_write(sc, R92C_FPGA0_RFIFACESW(1),
 	    iq_cal_regs.fpga0_rfifacesw1);
 	rtwn_bb_write(sc, R92C_OFDM0_TRMUXPAR, iq_cal_regs.ofdm0_trmuxpar);
@@ -316,7 +316,7 @@ r92ce_iq_calib_write_results(struct rtwn_softc *sc, uint16_t tx[2],
 	if (tx[0] == 0xff || tx[1] == 0xff)
 		return;
 
-	reg = rtwn_bb_read(sc, R92C_OFDM0_TXIQIMBALANCE(chain)); 
+	reg = rtwn_bb_read(sc, R92C_OFDM0_TXIQIMBALANCE(chain));
 	val = ((reg >> 22) & 0x3ff);
 	x = tx[0];
 	if (x & 0x0200)

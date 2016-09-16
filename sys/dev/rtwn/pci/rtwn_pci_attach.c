@@ -316,7 +316,7 @@ rtwn_pci_reset_tx_list(struct rtwn_softc *sc, struct ieee80211vap *vap,
 	struct rtwn_tx_ring *tx_ring = &pc->tx_ring[qid];
 	int i, id;
 
-	id = (uvp != NULL ? uvp->id : RTWN_VAP_ID_INVALID);		
+	id = (uvp != NULL ? uvp->id : RTWN_VAP_ID_INVALID);
 
 	for (i = 0; i < RTWN_PCI_TX_LIST_COUNT; i++) {
 		struct rtwn_tx_data *tx_data = &tx_ring->tx_data[i];

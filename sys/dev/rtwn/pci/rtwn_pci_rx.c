@@ -145,7 +145,7 @@ rtwn_pci_rx_frame(struct rtwn_softc *sc, struct r92ce_rx_stat *rx_desc,
 		m_freem(m1);
 
 		if (bus_dmamap_load_mbuf_sg(ring->data_dmat, rx_data->map,
-		    rx_data->m, segs, &nsegs, 0)) 
+		    rx_data->m, segs, &nsegs, 0))
 			panic("%s: could not load old RX mbuf",
 			    device_get_name(sc->sc_dev));
 
