@@ -87,7 +87,7 @@ int8_t	r88e_get_rssi_cck(struct rtwn_softc *, void *);
 int8_t	r88e_get_rssi_ofdm(struct rtwn_softc *, void *);
 
 /* r88e_tx.c */
-void	r88e_tx_setup_ampdu(void *, int, int);
+void	r88e_tx_enable_ampdu(void *, int);
 void	r88e_tx_setup_hwseq(void *);
 void	r88e_tx_setup_macid(void *, int);
 

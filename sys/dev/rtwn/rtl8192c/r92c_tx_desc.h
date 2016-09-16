@@ -61,6 +61,8 @@ struct r92c_tx_desc_common {
 
 	uint32_t	txdw2;
 #define R92C_TXDW2_CCX_RPT	0x00080000
+#define R92C_TXDW2_AMPDU_DEN_M	0x00700000
+#define R92C_TXDW2_AMPDU_DEN_S	20
 
 	uint16_t	txdw3;
 	uint16_t	txdseq;
@@ -103,6 +105,8 @@ struct r92c_tx_desc_common {
 #define R92C_TXDW5_AGGNUM_S		24
 
 	uint32_t	txdw6;
+#define R92C_TXDW6_MAX_AGG_M		0x0000f800
+#define R92C_TXDW6_MAX_AGG_S		11
 } __packed __attribute__((aligned(4)));
 
 

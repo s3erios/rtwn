@@ -90,7 +90,7 @@ r88eu_attach_private(struct rtwn_softc *sc)
 	rs->rs_set_bw20			= r88e_set_bw20;
 	rs->rs_get_txpower		= r88e_get_txpower;
 	rs->rs_set_gain			= r88e_set_gain;
-	rs->rs_tx_setup_ampdu		= r88e_tx_setup_ampdu;
+	rs->rs_tx_enable_ampdu		= r88e_tx_enable_ampdu;
 	rs->rs_tx_setup_hwseq		= r88e_tx_setup_hwseq;
 	rs->rs_tx_setup_macid		= r88e_tx_setup_macid;
 	rs->rs_set_name			= rtwn_nop_softc;	/* not used */

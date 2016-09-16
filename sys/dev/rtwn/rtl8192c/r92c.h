@@ -102,7 +102,7 @@ int8_t	r92c_get_rssi_ofdm(struct rtwn_softc *, void *);
 uint8_t	r92c_rx_radiotap_flags(const void *);
 
 /* r92c_tx.c */
-void	r92c_tx_setup_ampdu(void *, int, int);
+void	r92c_tx_enable_ampdu(void *, int);
 void	r92c_tx_setup_hwseq(void *);
 void	r92c_tx_setup_macid(void *, int);
 void	r92c_fill_tx_desc(struct rtwn_softc *, struct ieee80211_node *,

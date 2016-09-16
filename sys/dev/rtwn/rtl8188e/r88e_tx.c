@@ -52,16 +52,13 @@ __FBSDID("$FreeBSD$");
 
 
 void
-r88e_tx_setup_ampdu(void *buf, int density, int ampdu)
+r88e_tx_enable_ampdu(void *buf, int enable)
 {
 	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
 
-	if (ampdu) {
+	if (enable)
 		txd->txdw2 |= htole32(R88E_TXDW2_AGGEN);
-		txd->txdw2 |= htole32(SM(R88E_TXDW2_AMPDU_DEN, density));
-		/* XXX */
-		txd->txdw6 |= htole32(SM(R88E_TXDW6_MAX_AGG, 0x1f));
-	} else
+	else
 		txd->txdw2 |= htole32(R88E_TXDW2_AGGBK);
 }
 

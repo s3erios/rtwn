@@ -122,7 +122,7 @@ r92cu_attach_private(struct rtwn_softc *sc)
 	rs->rs_set_bw20			= r92c_set_bw20;
 	rs->rs_get_txpower		= r92c_get_txpower;
 	rs->rs_set_gain			= r92c_set_gain;
-	rs->rs_tx_setup_ampdu		= r92c_tx_setup_ampdu;
+	rs->rs_tx_enable_ampdu		= r92c_tx_enable_ampdu;
 	rs->rs_tx_setup_hwseq		= r92c_tx_setup_hwseq;
 	rs->rs_tx_setup_macid		= r92c_tx_setup_macid;
 	rs->rs_set_name			= r92cu_set_name;

@@ -187,14 +187,13 @@ r92c_tx_set_sgi(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 }
 
 void
-r92c_tx_setup_ampdu(void *buf, int density, int ampdu)
+r92c_tx_enable_ampdu(void *buf, int enable)
 {
 	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
 
-	if (ampdu) {
+	if (enable)
 		txd->txdw1 |= htole32(R92C_TXDW1_AGGEN);
-		/* XXX density shift? */
-	} else
+	else
 		txd->txdw1 |= htole32(R92C_TXDW1_AGGBK);
 }
 
@@ -265,9 +264,14 @@ r92c_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 		if (type == IEEE80211_FC0_TYPE_DATA) {
 			qsel = tid % RTWN_MAX_TID;
 
-			rtwn_r92c_tx_setup_ampdu(sc, buf,
-			    vap->iv_ampdu_density,
+			rtwn_r92c_tx_enable_ampdu(sc, buf,
 			    (m->m_flags & M_AMPDU_MPDU) != 0);
+			if (m->m_flags & M_AMPDU_MPDU) {
+				txd->txdw2 |= htole32(SM(R92C_TXDW2_AMPDU_DEN,
+				    vap->iv_ampdu_density));
+				txd->txdw6 |= htole32(SM(R92C_TXDW6_MAX_AGG,
+				    0x1f));	/* XXX */
+			}
 			if (sc->sc_ratectl == RTWN_RATECTL_NET80211) {
 				txd->txdw2 |= htole32(R92C_TXDW2_CCX_RPT);
 				sc->sc_tx_n_active++;

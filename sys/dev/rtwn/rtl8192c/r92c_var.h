@@ -55,7 +55,7 @@ struct r92c_softc {
 	void		(*rs_get_txpower)(struct rtwn_softc *, int,
 			    struct ieee80211_channel *, uint16_t[]);
 	void		(*rs_set_gain)(struct rtwn_softc *, uint8_t);
-	void		(*rs_tx_setup_ampdu)(void *, int, int);
+	void		(*rs_tx_enable_ampdu)(void *, int);
 	void		(*rs_tx_setup_hwseq)(void *);
 	void		(*rs_tx_setup_macid)(void *, int);
 	void		(*rs_set_name)(struct rtwn_softc *);
@@ -71,8 +71,8 @@ struct r92c_softc {
 	((R92C_SOFTC(_sc)->rs_get_txpower)((_sc), (_chain), (_c), (_power)))
 #define rtwn_r92c_set_gain(_sc, _gain) \
 	((R92C_SOFTC(_sc)->rs_set_gain)((_sc), (_gain)))
-#define rtwn_r92c_tx_setup_ampdu(_sc, _buf, _den, _ampdu) \
-	((R92C_SOFTC(_sc)->rs_tx_setup_ampdu)((_buf), (_den), (_ampdu)))
+#define rtwn_r92c_tx_enable_ampdu(_sc, _buf, _enable) \
+	((R92C_SOFTC(_sc)->rs_tx_enable_ampdu)((_buf), (_enable)))
 #define rtwn_r92c_tx_setup_hwseq(_sc, _buf) \
 	((R92C_SOFTC(_sc)->rs_tx_setup_hwseq)((_buf)))
 #define rtwn_r92c_tx_setup_macid(_sc, _buf, _id) \

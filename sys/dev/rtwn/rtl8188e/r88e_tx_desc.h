@@ -31,14 +31,8 @@
 /* Tx dword 2. */
 #define R88E_TXDW2_AGGEN	0x00001000
 #define R88E_TXDW2_AGGBK	0x00010000
-#define R88E_TXDW2_AMPDU_DEN_M	0x00700000
-#define R88E_TXDW2_AMPDU_DEN_S	20
 
 /* Tx dword 3. */
 #define R88E_TXDSEQ_HWSEQ_EN	0x8000
-
-/* Tx dword 6. */
-#define R88E_TXDW6_MAX_AGG_M	0x0000f800
-#define R88E_TXDW6_MAX_AGG_S	11
 
 #endif	/* R88E_TX_DESC_H */
