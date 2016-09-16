@@ -433,8 +433,8 @@ r92c_handle_c2h_task(struct rtwn_softc *sc, union sec_param *data)
 	uint8_t id, len, status;
 	int i;
 
-	/* Do not reschedule the task if device is detached. */
-	if (sc->sc_flags & RTWN_DETACHED)
+	/* Do not reschedule the task if device is not running. */
+	if (!(sc->sc_flags & RTWN_RUNNING))
 		return;
 
 	/* Read current status. */

@@ -60,9 +60,6 @@ r88eu_power_off(struct rtwn_softc *sc)
 	uint8_t reg;
 	int error, ntries;
 
-	/* Turn off LED. */
-	r88e_set_led(sc, RTWN_LED_LINK, 0);
-
 	/* Disable any kind of TX reports. */
 	error = rtwn_setbits_1(sc, R88E_TX_RPT_CTRL,
 	    R88E_TX_RPT1_ENA | R88E_TX_RPT2_ENA, 0);

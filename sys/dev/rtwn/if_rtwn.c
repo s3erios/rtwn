@@ -373,20 +373,12 @@ rtwn_detach(struct rtwn_softc *sc)
 {
 	struct ieee80211com *ic = &sc->sc_ic;
 
-	/* Prevent further ioctls. */
-	RTWN_LOCK(sc);
-	sc->sc_flags |= RTWN_DETACHED;
-	RTWN_UNLOCK(sc);
-
-	callout_drain(&sc->sc_calib_to);
-
-	rtwn_stop(sc);
+	/* Stop command queue. */
+	RTWN_CMDQ_LOCK(sc);
+	sc->sc_detached = 1;
+	RTWN_CMDQ_UNLOCK(sc);
 
 	if (ic->ic_softc == sc) {
-		callout_drain(&sc->sc_pwrmode_init);
-#ifndef D4054
-		callout_drain(&sc->sc_watchdog_to);
-#endif
 		ieee80211_draintask(ic, &sc->cmdq_task);
 		ieee80211_ifdetach(ic);
 	}
@@ -627,9 +619,10 @@ rtwn_vap_delete(struct ieee80211vap *vap)
 	struct rtwn_softc *sc = ic->ic_softc;
 	struct rtwn_vap *uvp = RTWN_VAP(vap);
 
-	/* Guarantee that nothing will go through this vap. */
-	ieee80211_new_state(vap, IEEE80211_S_INIT, -1);
+	/* Put vap into INIT state + stop device if needed. */
+	ieee80211_stop(vap);
 	ieee80211_draintask(ic, &vap->iv_nstate_task);
+	ieee80211_draintask(ic, &ic->ic_parent_task);
 
 	RTWN_LOCK(sc);
 	if (uvp->bcn_mbuf != NULL)
@@ -1356,13 +1349,6 @@ rtwn_parent(struct ieee80211com *ic)
 {
 	struct rtwn_softc *sc = ic->ic_softc;
 	struct ieee80211vap *vap;
-
-	RTWN_LOCK(sc);
-	if (sc->sc_flags & RTWN_DETACHED) {
-		RTWN_UNLOCK(sc);
-		return;
-	}
-	RTWN_UNLOCK(sc);
 
 	if (ic->ic_nrunning > 0) {
 		if (rtwn_init(sc) != 0) {

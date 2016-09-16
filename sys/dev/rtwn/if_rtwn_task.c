@@ -97,6 +97,11 @@ rtwn_cmd_sleepable(struct rtwn_softc *sc, const void *ptr, size_t len,
 	KASSERT(len <= sizeof(union sec_param), ("buffer overflow"));
 
 	RTWN_CMDQ_LOCK(sc);
+	if (sc->sc_detached) {
+		RTWN_CMDQ_UNLOCK(sc);
+		return (ESHUTDOWN);
+	}
+
 	if (sc->cmdq[sc->cmdq_last].func != NULL) {
 		device_printf(sc->sc_dev, "%s: cmdq overflow\n", __func__);
 		RTWN_CMDQ_UNLOCK(sc);
