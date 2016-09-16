@@ -37,8 +37,6 @@ int	r12au_classify_intr(struct rtwn_softc *, void *, int);
 int	r12au_align_rx(int, int);
 
 /* r12au_tx.c */
-void	r12au_fill_tx_desc_null(struct rtwn_softc *, void *, int, int, int);
 void	r12au_dump_tx_desc(struct rtwn_softc *, const void *);
-void	r12au_tx_checksum(void *);
 
 #endif	/* RTL8812AU_H */

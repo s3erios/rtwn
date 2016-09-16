@@ -43,20 +43,9 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/if_rtwnvar.h>
 #include <dev/rtwn/if_rtwn_debug.h>
 
-#include <dev/rtwn/usb/rtwn_usb_reg.h>
-
 #include <dev/rtwn/rtl8192c/usb/r92cu.h>
 #include <dev/rtwn/rtl8192c/usb/r92cu_tx_desc.h>
 
-
-void
-r92cu_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b,
-    int qos, int id)
-{
-
-	r92c_fill_tx_desc_null(sc, buf, is11b, qos, id);
-	r92cu_tx_checksum(buf);
-}
 
 void
 r92cu_dump_tx_desc(struct rtwn_softc *sc, const void *desc)
@@ -72,13 +61,4 @@ r92cu_dump_tx_desc(struct rtwn_softc *sc, const void *desc)
 	    le16toh(txd->txdseq), le32toh(txd->txdw4), le32toh(txd->txdw5),
 	    le32toh(txd->txdw6), le16toh(txd->txdsum), le16toh(txd->pad));
 #endif
-}
-
-void
-r92cu_tx_checksum(void *buf)
-{
-	struct r92cu_tx_desc *txd = (struct r92cu_tx_desc *)buf;
-
-	txd->txdsum = 0;
-	txd->txdsum = rtwn_usb_calc_tx_checksum(txd);
 }

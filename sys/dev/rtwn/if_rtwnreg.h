@@ -39,6 +39,13 @@ struct rtwn_tx_desc_common {
 #define RTWN_TXDW1_CIPHER_RC4	1
 #define RTWN_TXDW1_CIPHER_SM4	2
 #define RTWN_TXDW1_CIPHER_AES	3
+
+	uint32_t	reserved[5];
+
+	union txdw7_shared {
+		uint16_t	usb_checksum;
+		uint16_t	pci_txbufsize;
+	} txdw7;
 } __packed __attribute__((aligned(4)));
 
 /*

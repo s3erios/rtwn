@@ -120,8 +120,6 @@ r21au_attach(struct rtwn_usb_softc *uc)
 
 	/* USB part. */
 	uc->uc_align_rx			= r12au_align_rx;
-	uc->uc_tx_checksum		= r12au_tx_checksum;
-
 	uc->tx_agg_desc_num		= 6;
 
 	/* Common part. */
@@ -130,7 +128,7 @@ r21au_attach(struct rtwn_usb_softc *uc)
 	sc->sc_set_chan			= r12a_set_chan;
 	sc->sc_fill_tx_desc		= r12a_fill_tx_desc;
 	sc->sc_fill_tx_desc_raw		= r12a_fill_tx_desc_raw;
-	sc->sc_fill_tx_desc_null	= r12au_fill_tx_desc_null;
+	sc->sc_fill_tx_desc_null	= r12a_fill_tx_desc_null;
 	sc->sc_dump_tx_desc		= r12au_dump_tx_desc;
 	sc->sc_tx_radiotap_flags	= r12a_tx_radiotap_flags;
 	sc->sc_rx_radiotap_flags	= r12a_rx_radiotap_flags;

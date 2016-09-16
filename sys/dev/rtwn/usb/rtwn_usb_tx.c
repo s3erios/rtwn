@@ -58,6 +58,8 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/if_rtwn_tx.h>
 
 #include <dev/rtwn/usb/rtwn_usb_var.h>
+
+#include <dev/rtwn/usb/rtwn_usb_reg.h>
 #include <dev/rtwn/usb/rtwn_usb_tx.h>
 
 static struct rtwn_data * _rtwn_usb_getbuf(struct rtwn_usb_softc *);
@@ -212,6 +214,13 @@ finish:
 	rtwn_start(sc);
 }
 
+static void
+rtwn_usb_tx_checksum(struct rtwn_tx_desc_common *txd)
+{
+	txd->txdw7.usb_checksum = 0;
+	txd->txdw7.usb_checksum = rtwn_usb_calc_tx_checksum(txd);
+}
+
 int
 rtwn_usb_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
     struct mbuf *m, uint8_t *tx_desc, uint8_t type, int id)
@@ -244,7 +253,7 @@ rtwn_usb_tx_start(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	txd->pktlen = htole16(m->m_pkthdr.len);
 	txd->offset = sc->txdesc_len;
 	txd->flags0 |= RTWN_FLAGS0_OWN;
-	rtwn_usb_tx_checksum(uc, txd);
+	rtwn_usb_tx_checksum(txd);
 
 	/* Dump Tx descriptor. */
 	rtwn_dump_tx_desc(sc, tx_desc);
