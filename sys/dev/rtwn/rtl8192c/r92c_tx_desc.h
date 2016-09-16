@@ -22,7 +22,7 @@
 #define R92C_TX_DESC_H
 
 /* Tx MAC descriptor (common part). */
-struct r92c_tx_desc_common {
+struct r92c_tx_desc {
 	uint16_t 	pktlen;
 	uint8_t		offset;
 	uint8_t		flags0;

@@ -67,7 +67,7 @@ r92c_tx_get_sco(struct rtwn_softc *sc, struct ieee80211_channel *c)
 static void
 r92c_tx_set_ht40(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 
 	if (ni->ni_chan != IEEE80211_CHAN_ANYC &&
 	    IEEE80211_IS_CHAN_HT40(ni->ni_chan)) {
@@ -80,7 +80,7 @@ r92c_tx_set_ht40(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 }
 
 static void
-r92c_tx_protection(struct rtwn_softc *sc, struct r92c_tx_desc_common *txd,
+r92c_tx_protection(struct rtwn_softc *sc, struct r92c_tx_desc *txd,
     enum ieee80211_protmode mode, uint8_t ridx)
 {
 	struct ieee80211com *ic = &sc->sc_ic;
@@ -116,7 +116,7 @@ r92c_tx_protection(struct rtwn_softc *sc, struct r92c_tx_desc_common *txd,
 }
 
 static void
-r92c_tx_raid(struct rtwn_softc *sc, struct r92c_tx_desc_common *txd,
+r92c_tx_raid(struct rtwn_softc *sc, struct r92c_tx_desc *txd,
     struct ieee80211_node *ni, int ismcast)
 {
 	struct ieee80211com *ic = &sc->sc_ic;
@@ -173,7 +173,7 @@ r92c_tx_raid(struct rtwn_softc *sc, struct r92c_tx_desc_common *txd,
 static void
 r92c_tx_set_sgi(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 	struct ieee80211vap *vap = ni->ni_vap;
 
 	if ((vap->iv_flags_ht & IEEE80211_FHT_SHORTGI20) &&	/* HT20 */
@@ -189,7 +189,7 @@ r92c_tx_set_sgi(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 void
 r92c_tx_enable_ampdu(void *buf, int enable)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 
 	if (enable)
 		txd->txdw1 |= htole32(R92C_TXDW1_AGGEN);
@@ -200,7 +200,7 @@ r92c_tx_enable_ampdu(void *buf, int enable)
 void
 r92c_tx_setup_hwseq(void *buf)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 
 	txd->txdw4 |= htole32(R92C_TXDW4_HWSEQ_EN);
 }
@@ -208,7 +208,7 @@ r92c_tx_setup_hwseq(void *buf)
 void
 r92c_tx_setup_macid(void *buf, int id)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 
 	txd->txdw1 |= htole32(SM(R92C_TXDW1_MACID, id));
 }
@@ -224,7 +224,7 @@ r92c_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	struct ieee80211vap *vap = ni->ni_vap;
 	struct rtwn_vap *uvp = RTWN_VAP(vap);
 	struct ieee80211_frame *wh;
-	struct r92c_tx_desc_common *txd;
+	struct r92c_tx_desc *txd;
 	enum ieee80211_protmode prot;
 	uint8_t type, tid, qos, qsel;
 	int hasqos, ismcast, macid;
@@ -244,7 +244,7 @@ r92c_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	}
 
 	/* Fill Tx descriptor. */
-	txd = (struct r92c_tx_desc_common *)buf;
+	txd = (struct r92c_tx_desc *)buf;
 	txd->flags0 |= R92C_FLAGS0_LSG | R92C_FLAGS0_FSG;
 	if (ismcast)
 		txd->flags0 |= R92C_FLAGS0_BMCAST;
@@ -349,7 +349,7 @@ r92c_fill_tx_desc_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	struct ieee80211vap *vap = ni->ni_vap;
 	struct rtwn_vap *uvp = RTWN_VAP(vap);
 	struct ieee80211_frame *wh;
-	struct r92c_tx_desc_common *txd;
+	struct r92c_tx_desc *txd;
 	uint8_t ridx;
 	int ismcast;
 
@@ -360,7 +360,7 @@ r92c_fill_tx_desc_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	ridx = rate2ridx(params->ibp_rate0);
 
 	/* Fill Tx descriptor. */
-	txd = (struct r92c_tx_desc_common *)buf;
+	txd = (struct r92c_tx_desc *)buf;
 	txd->flags0 |= R92C_FLAGS0_LSG | R92C_FLAGS0_FSG;
 	if (ismcast)
 		txd->flags0 |= R92C_FLAGS0_BMCAST;
@@ -399,7 +399,7 @@ void
 r92c_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b,
     int qos, int id)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 
 	txd->flags0 = R92C_FLAGS0_FSG | R92C_FLAGS0_LSG | R92C_FLAGS0_OWN;
 	txd->txdw1 = htole32(
@@ -424,7 +424,7 @@ r92c_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b,
 uint8_t
 r92c_tx_radiotap_flags(const void *buf)
 {
-	const struct r92c_tx_desc_common *txd = buf;
+	const struct r92c_tx_desc *txd = buf;
 	uint8_t flags;
 
 	flags = 0;

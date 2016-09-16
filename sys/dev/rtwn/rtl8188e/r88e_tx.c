@@ -54,7 +54,7 @@ __FBSDID("$FreeBSD$");
 void
 r88e_tx_enable_ampdu(void *buf, int enable)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 
 	if (enable)
 		txd->txdw2 |= htole32(R88E_TXDW2_AGGEN);
@@ -65,7 +65,7 @@ r88e_tx_enable_ampdu(void *buf, int enable)
 void
 r88e_tx_setup_hwseq(void *buf)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 
 	txd->txdseq |= htole16(R88E_TXDSEQ_HWSEQ_EN);
 }
@@ -73,7 +73,7 @@ r88e_tx_setup_hwseq(void *buf)
 void
 r88e_tx_setup_macid(void *buf, int id)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 
 	txd->txdw1 |= htole32(SM(R88E_TXDW1_MACID, id));
 }

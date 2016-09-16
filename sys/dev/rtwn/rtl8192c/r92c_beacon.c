@@ -54,7 +54,7 @@ __FBSDID("$FreeBSD$");
 void
 r92c_beacon_init(struct rtwn_softc *sc, void *buf, int id)
 {
-	struct r92c_tx_desc_common *txd = (struct r92c_tx_desc_common *)buf;
+	struct r92c_tx_desc *txd = (struct r92c_tx_desc *)buf;
 
 	/*
 	 * NB: there is no need to setup HWSEQ_EN bit;

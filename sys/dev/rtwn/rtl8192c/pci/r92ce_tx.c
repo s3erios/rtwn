@@ -83,7 +83,7 @@ void
 r92ce_copy_tx_desc(void *dest, const void *src)
 {
 	struct r92ce_tx_desc *txd = dest;
-	size_t len = sizeof(struct r92c_tx_desc_common) +
+	size_t len = sizeof(struct r92c_tx_desc) +
 	    sizeof(txd->txbufsize) + sizeof(txd->pad);
 
 	if (src != NULL)
