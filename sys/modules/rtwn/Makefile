@@ -32,7 +32,7 @@ SRCS	+= r88e_beacon.c r88e_calib.c r88e_chan.c r88e_fw.c r88e_init.c \
 SRCS	+= r12a_beacon.c r12a_calib.c r12a_caps.c r12a_chan.c r12a_fw.c \
 	   r12a_init.c r12a_led.c r12a_rf.c r12a_rom.c r12a_rx.c r12a_tx.c \
 	   r12a.h r12a_priv.h r12a_reg.h r12a_var.h r12a_rom_defs.h \
-	   r12a_rom_image.h r12a_fw_cmd.h r12a_rx_desc.h
+	   r12a_rom_image.h r12a_fw_cmd.h r12a_rx_desc.h r12a_tx_desc.h
 
 .PATH:	   ${.CURDIR}/../../dev/rtwn/rtl8821a
 SRCS	+= r21a_beacon.c r21a_calib.c r21a_chan.c r21a_fw.c r21a_init.c \
