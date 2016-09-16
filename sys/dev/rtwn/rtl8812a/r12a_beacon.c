@@ -47,13 +47,13 @@ __FBSDID("$FreeBSD$");
 
 #include <dev/rtwn/rtl8812a/r12a.h>
 #include <dev/rtwn/rtl8812a/r12a_reg.h>
-#include <dev/rtwn/rtl8812a/usb/r12au_tx_desc.h>	/* XXX */
+#include <dev/rtwn/rtl8812a/r12a_tx_desc.h>
 
 
 void
 r12a_beacon_init(struct rtwn_softc *sc, void *buf, int id)
 {
-	struct r12au_tx_desc *txd = (struct r12au_tx_desc *)buf; /* XXX */
+	struct r12a_tx_desc *txd = (struct r12a_tx_desc *)buf;
 
 	txd->flags0 = R12A_FLAGS0_LSG | R12A_FLAGS0_FSG | R12A_FLAGS0_BMCAST;
 
@@ -73,7 +73,7 @@ r12a_beacon_init(struct rtwn_softc *sc, void *buf, int id)
 void
 r12a_beacon_set_rate(void *buf, int is5ghz)
 {
-	struct r12au_tx_desc *txd = (struct r12au_tx_desc *)buf; /* XXX */
+	struct r12a_tx_desc *txd = (struct r12a_tx_desc *)buf;
 
 	txd->txdw4 &= ~htole32(R12A_TXDW4_DATARATE_M);
 	if (is5ghz) {

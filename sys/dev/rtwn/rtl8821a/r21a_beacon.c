@@ -44,7 +44,7 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/if_rtwnvar.h>
 
 #include <dev/rtwn/rtl8812a/r12a.h>
-#include <dev/rtwn/rtl8812a/usb/r12au_tx_desc.h>	/* XXX */
+#include <dev/rtwn/rtl8812a/r12a_tx_desc.h>
 
 #include <dev/rtwn/rtl8821a/r21a.h>
 #include <dev/rtwn/rtl8821a/r21a_reg.h>
@@ -53,7 +53,7 @@ __FBSDID("$FreeBSD$");
 void
 r21a_beacon_init(struct rtwn_softc *sc, void *buf, int id)
 {
-	struct r12au_tx_desc *txd = (struct r12au_tx_desc *)buf; /* XXX */
+	struct r12a_tx_desc *txd = (struct r12a_tx_desc *)buf;
 
 	r12a_beacon_init(sc, buf, id);
 

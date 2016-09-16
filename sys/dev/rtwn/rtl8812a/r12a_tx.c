@@ -46,7 +46,7 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/if_rtwn_ridx.h>
 
 #include <dev/rtwn/rtl8812a/r12a.h>
-#include <dev/rtwn/rtl8812a/usb/r12au_tx_desc.h>	/* XXX */
+#include <dev/rtwn/rtl8812a/r12a_tx_desc.h>
 
 
 static int
@@ -62,7 +62,7 @@ r12a_get_primary_channel(struct rtwn_softc *sc, struct ieee80211_channel *c)
 static void
 r12a_tx_set_ht40(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 {
-	struct r12au_tx_desc *txd = (struct r12au_tx_desc *)buf; /* XXX */
+	struct r12a_tx_desc *txd = (struct r12a_tx_desc *)buf;
 
 	/* XXX 80 Mhz */
 	if (ni->ni_chan != IEEE80211_CHAN_ANYC &&
@@ -78,7 +78,7 @@ r12a_tx_set_ht40(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 }
 
 static void
-r12a_tx_protection(struct rtwn_softc *sc, struct r12au_tx_desc *txd,
+r12a_tx_protection(struct rtwn_softc *sc, struct r12a_tx_desc *txd,
     enum ieee80211_protmode mode, uint8_t ridx)
 {
 	struct ieee80211com *ic = &sc->sc_ic;
@@ -114,7 +114,7 @@ r12a_tx_protection(struct rtwn_softc *sc, struct r12au_tx_desc *txd,
 }
 
 static void
-r12a_tx_raid(struct rtwn_softc *sc, struct r12au_tx_desc *txd,
+r12a_tx_raid(struct rtwn_softc *sc, struct r12a_tx_desc *txd,
     struct ieee80211_node *ni, int ismcast)
 {
 	struct ieee80211com *ic = &sc->sc_ic;
@@ -191,7 +191,7 @@ r12a_tx_raid(struct rtwn_softc *sc, struct r12au_tx_desc *txd,
 static void
 r12a_tx_set_sgi(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 {
-	struct r12au_tx_desc *txd = (struct r12au_tx_desc *)buf; /* XXX */
+	struct r12a_tx_desc *txd = (struct r12a_tx_desc *)buf;
 	struct ieee80211vap *vap = ni->ni_vap;
 
 	if ((vap->iv_flags_ht & IEEE80211_FHT_SHORTGI20) &&	/* HT20 */
@@ -212,7 +212,7 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	struct ieee80211vap *vap = ni->ni_vap;
 	struct rtwn_vap *uvp = RTWN_VAP(vap);
 	struct ieee80211_frame *wh;
-	struct r12au_tx_desc *txd;	/* XXX */
+	struct r12a_tx_desc *txd;
 	enum ieee80211_protmode prot;
 	uint8_t type, tid, qos, qsel;
 	int hasqos, ismcast, macid;
@@ -232,7 +232,7 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	}
 
 	/* Fill Tx descriptor. */
-	txd = (struct r12au_tx_desc *)buf;
+	txd = (struct r12a_tx_desc *)buf;
 	txd->flags0 |= R12A_FLAGS0_LSG | R12A_FLAGS0_FSG;
 	if (ismcast)
 		txd->flags0 |= R12A_FLAGS0_BMCAST;
@@ -299,6 +299,7 @@ r12a_fill_tx_desc(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	txd->txdw4 |= htole32(SM(R12A_TXDW4_DATARATE, ridx));
 	/* Data rate fallback limit (max). */
 	txd->txdw4 |= htole32(SM(R12A_TXDW4_DATARATE_FB_LMT, 0x1f));
+	/* XXX recheck for non-21au */
 	txd->txdw6 |= htole32(SM(R21A_TXDW6_MBSSID, uvp->id));
 	r12a_tx_raid(sc, txd, ni, ismcast);
 
@@ -333,7 +334,7 @@ r12a_fill_tx_desc_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	struct ieee80211vap *vap = ni->ni_vap;
 	struct rtwn_vap *uvp = RTWN_VAP(vap);
 	struct ieee80211_frame *wh;
-	struct r12au_tx_desc *txd;	/* XXX */
+	struct r12a_tx_desc *txd;
 	uint8_t ridx;
 	int ismcast;
 
@@ -344,7 +345,7 @@ r12a_fill_tx_desc_raw(struct rtwn_softc *sc, struct ieee80211_node *ni,
 	ridx = rate2ridx(params->ibp_rate0);
 
 	/* Fill Tx descriptor. */
-	txd = (struct r12au_tx_desc *)buf;
+	txd = (struct r12a_tx_desc *)buf;
 	txd->flags0 |= R12A_FLAGS0_LSG | R12A_FLAGS0_FSG;
 	if (ismcast)
 		txd->flags0 |= R12A_FLAGS0_BMCAST;
@@ -384,7 +385,7 @@ void
 r12a_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b, int qos,
     int id)
 {
-	struct r12au_tx_desc *txd = (struct r12au_tx_desc *)buf; /* XXX */
+	struct r12a_tx_desc *txd = (struct r12a_tx_desc *)buf;
 
 	txd->flags0 = R12A_FLAGS0_FSG | R12A_FLAGS0_LSG | R12A_FLAGS0_OWN;
 	txd->txdw1 = htole32(
@@ -410,7 +411,7 @@ r12a_fill_tx_desc_null(struct rtwn_softc *sc, void *buf, int is11b, int qos,
 uint8_t
 r12a_tx_radiotap_flags(const void *buf)
 {
-	const struct r12au_tx_desc *txd = buf; /* XXX */
+	const struct r12a_tx_desc *txd = buf;
 	uint8_t flags, rate;
 
 	if (!(txd->txdw5 & htole32(R12A_TXDW5_DATA_SHORT)))
