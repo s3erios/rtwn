@@ -82,7 +82,7 @@ r88e_fw_cmd(struct rtwn_softc *sc, uint8_t id, const void *buf, int len)
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.id = id;
 	KASSERT(len <= sizeof(cmd.msg),
-	    ("%s: firmware command too long (%d > %d)\n",
+	    ("%s: firmware command too long (%d > %zu)\n",
 	    __func__, len, sizeof(cmd.msg)));
 	memcpy(cmd.msg, buf, len);
 
