@@ -254,7 +254,7 @@ rtwn_pci_intr(void *arg)
 	status = rtwn_classify_intr(sc, &tx_rings, 0);
 	RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: status %08X, tx_rings %08X\n",
 	    __func__, status, tx_rings);
-	if (status == 0) {
+	if (status == 0 && tx_rings == 0) {
 		RTWN_UNLOCK(sc);
 		return;
 	}

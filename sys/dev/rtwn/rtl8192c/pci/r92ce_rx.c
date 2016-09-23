@@ -63,6 +63,7 @@ r92ce_classify_intr(struct rtwn_softc *sc, void *arg, int len __unused)
 	int *rings = arg;
 	int ret;
 
+	*rings = 0;
 	status = rtwn_read_4(sc, R92C_HISR);
 	if (status == 0 || status == 0xffffffff)
 		return (0);
@@ -73,7 +74,6 @@ r92ce_classify_intr(struct rtwn_softc *sc, void *arg, int len __unused)
 	/* Ack interrupts. */
 	rtwn_write_4(sc, R92C_HISR, status);
 
-	*rings = 0;
 	if (status & R92C_IMR_BDOK)
 		*rings |= (1 << RTWN_PCI_BEACON_QUEUE);
 	if (status & R92C_IMR_HIGHDOK)
