@@ -56,6 +56,10 @@ struct r88e_rx_phystat {
 /* Tx report (type 1). */
 struct r88e_tx_rpt_ccx {
 	uint8_t		rptb0;
+#define R88E_RPTB6_PKT_NUM_M	0x0e
+#define R88E_RPTB6_PKT_NUM_S	1
+#define R88E_RPTB0_INT_CCX	0x80
+
 	uint8_t		rptb1;
 #define R88E_RPTB1_MACID_M	0x3f
 #define R88E_RPTB1_MACID_S	0
@@ -68,9 +72,9 @@ struct r88e_tx_rpt_ccx {
 #define R88E_RPTB2_LIFE_EXPIRE	0x40
 #define R88E_RPTB2_RETRY_OVER	0x80
 
-	uint8_t		rptb3;
-	uint8_t		rptb4;
-	uint8_t		rptb5;
+	uint8_t		queue_time_low;
+	uint8_t		queue_time_high;
+	uint8_t		final_rate;
 	uint8_t		rptb6;
 #define R88E_RPTB6_QSEL_M	0xf0
 #define R88E_RPTB6_QSEL_S	4

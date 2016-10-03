@@ -118,7 +118,8 @@ struct r92c_c2h_tx_rpt {
 #define R92C_RPTB1_RTS_RETRY_CNT_M	0x3f
 #define R92C_RPTB1_RTS_RETRY_CNT_S	0
 
-	uint8_t		ccx_qtime[2];
+	uint8_t		queue_time_low;
+	uint8_t		queue_time_high;
 	uint8_t		rptb4;
 #define R92C_RPTB4_MISSED_PKT_NUM_M	0x1f
 #define R92C_RPTB4_MISSED_PKT_NUM_S	0

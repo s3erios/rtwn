@@ -365,8 +365,10 @@ r92c_set_rssi(struct rtwn_softc *sc)
 static void
 r92c_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 {
+#if __FreeBSD_version >= 1200012
+	struct ieee80211_ratectl_tx_status txs;
+#endif
 	struct r92c_c2h_tx_rpt *rpt;
-	struct ieee80211vap *vap;
 	struct ieee80211_node *ni;
 	uint8_t macid;
 	int ntries;
@@ -387,24 +389,39 @@ r92c_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 	}
 
 	macid = MS(rpt->rptb5, R92C_RPTB5_MACID);
-        if (macid > sc->macid_limit) {
-                device_printf(sc->sc_dev,
-                    "macid %u is too big; increase MACID_MAX limit\n",
-                    macid);
-                return;
-        }
+	if (macid > sc->macid_limit) {
+		device_printf(sc->sc_dev,
+		    "macid %u is too big; increase MACID_MAX limit\n",
+		    macid);
+		return;
+	}
 
 	ntries = MS(rpt->rptb0, R92C_RPTB0_RETRY_CNT);
 
 	RTWN_NT_LOCK(sc);
 	ni = sc->node_list[macid];
 	if (ni != NULL) {
-		vap = ni->ni_vap;
 		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: frame for macid %u was"
 		    "%s sent (%d retries)\n", __func__, macid,
 		    (rpt->rptb7 & R92C_RPTB7_PKT_OK) ? "" : " not",
 		    ntries);
 
+#if __FreeBSD_version >= 1200012
+		txs.flags = IEEE80211_RATECTL_STATUS_SHORT_RETRY |
+			    IEEE80211_RATECTL_STATUS_LONG_RETRY;
+		txs.long_retries = ntries;
+		txs.short_retries = MS(rpt->rptb1, R92C_RPTB1_RTS_RETRY_CNT);
+		if (rpt->rptb7 & R92C_RPTB7_PKT_OK)
+			txs.status = IEEE80211_RATECTL_TX_SUCCESS;
+		else if (rpt->rptb6 & R92C_RPTB6_RETRY_OVER)
+			txs.status = IEEE80211_RATECTL_TX_FAIL_LONG; /* XXX */
+		else if (rpt->rptb6 & R92C_RPTB6_LIFE_EXPIRE)
+			txs.status = IEEE80211_RATECTL_TX_FAIL_EXPIRED;
+		else
+			txs.status = IEEE80211_RATECTL_TX_FAIL_UNSPECIFIED;
+		ieee80211_ratectl_tx_complete(ni, &txs);
+#else
+		struct ieee80211vap *vap = ni->ni_vap;
 		if (rpt->rptb7 & R92C_RPTB7_PKT_OK) {
 			ieee80211_ratectl_tx_complete(vap, ni,
 			    IEEE80211_RATECTL_TX_SUCCESS, &ntries, NULL);
@@ -412,6 +429,7 @@ r92c_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 			ieee80211_ratectl_tx_complete(vap, ni,
 			    IEEE80211_RATECTL_TX_FAILURE, &ntries, NULL);
 		}
+#endif
 	} else {
 		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: macid %u, ni is NULL\n",
 		    __func__, macid);

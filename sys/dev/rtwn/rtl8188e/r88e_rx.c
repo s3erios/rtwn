@@ -49,6 +49,7 @@ __FBSDID("$FreeBSD$");
 #include <dev/rtwn/if_rtwnvar.h>
 
 #include <dev/rtwn/if_rtwn_debug.h>
+#include <dev/rtwn/if_rtwn_ridx.h>
 
 #include <dev/rtwn/rtl8188e/r88e.h>
 #include <dev/rtwn/rtl8188e/r88e_rx_desc.h>
@@ -57,8 +58,10 @@ __FBSDID("$FreeBSD$");
 void
 r88e_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 {
+#if __FreeBSD_version >= 1200012
+	struct ieee80211_ratectl_tx_status txs;
+#endif
 	struct r88e_tx_rpt_ccx *rpt;
-	struct ieee80211vap *vap;
 	struct ieee80211_node *ni;
 	uint8_t macid;
 	int ntries;
@@ -87,12 +90,31 @@ r88e_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 
 	ni = sc->node_list[macid];
 	if (ni != NULL) {
-		vap = ni->ni_vap;
 		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: frame for macid %u was"
 		    "%s sent (%d retries)\n", __func__, macid,
 		    (rpt->rptb1 & R88E_RPTB1_PKT_OK) ? "" : " not",
 		    ntries);
 
+#if __FreeBSD_version >= 1200012
+		txs.flags = IEEE80211_RATECTL_STATUS_LONG_RETRY |
+			    IEEE80211_RATECTL_STATUS_FINAL_RATE;
+		txs.long_retries = ntries;
+		if (rpt->final_rate > RTWN_RIDX_OFDM54) {	/* MCS */
+			txs.final_rate =
+			    (rpt->final_rate - 12) | IEEE80211_RATE_MCS;
+		} else
+			txs.final_rate = ridx2rate[rpt->final_rate];
+		if (rpt->rptb1 & R88E_RPTB1_PKT_OK)
+			txs.status = IEEE80211_RATECTL_TX_SUCCESS;
+		else if (rpt->rptb2 & R88E_RPTB2_RETRY_OVER)
+			txs.status = IEEE80211_RATECTL_TX_FAIL_LONG;
+		else if (rpt->rptb2 & R88E_RPTB2_LIFE_EXPIRE)
+			txs.status = IEEE80211_RATECTL_TX_FAIL_EXPIRED;
+		else
+			txs.status = IEEE80211_RATECTL_TX_FAIL_UNSPECIFIED;
+		ieee80211_ratectl_tx_complete(ni, &txs);
+#else
+		struct ieee80211vap *vap = ni->ni_vap;
 		if (rpt->rptb1 & R88E_RPTB1_PKT_OK) {
 			ieee80211_ratectl_tx_complete(vap, ni,
 			    IEEE80211_RATECTL_TX_SUCCESS, &ntries, NULL);
@@ -100,6 +122,7 @@ r88e_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 			ieee80211_ratectl_tx_complete(vap, ni,
 			    IEEE80211_RATECTL_TX_FAILURE, &ntries, NULL);
 		}
+#endif
 	} else {
 		RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: macid %u, ni is NULL\n",
 		    __func__, macid);

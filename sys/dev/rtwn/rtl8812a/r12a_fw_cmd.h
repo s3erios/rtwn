@@ -101,7 +101,8 @@ struct r12a_c2h_tx_rpt {
 #define R12A_TXRPTB2_RETRY_CNT_M	0x3f
 #define R12A_TXRPTB2_RETRY_CNT_S	0
 
-	uint16_t	queue_time;	/* 256 msec unit */
+	uint8_t		queue_time_low;	/* 256 msec unit */
+	uint8_t		queue_time_high;
 	uint8_t		final_rate;
 	uint16_t	reserved;
 } __packed;
