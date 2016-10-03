@@ -49,6 +49,7 @@ __FBSDID("$FreeBSD$");
 #include <net80211/ieee80211_radiotap.h>
 
 #include <dev/rtwn/if_rtwnvar.h>
+#include <dev/rtwn/if_rtwn_debug.h>
 
 #include <dev/rtwn/pci/rtwn_pci_var.h>
 
@@ -65,6 +66,8 @@ r92ce_classify_intr(struct rtwn_softc *sc, void *arg, int len __unused)
 
 	*rings = 0;
 	status = rtwn_read_4(sc, R92C_HISR);
+	RTWN_DPRINTF(sc, RTWN_DEBUG_INTR, "%s: HISR %08X, HISRE %04X\n",
+	    __func__, status, rtwn_read_2(sc, R92C_HISRE));
 	if (status == 0 || status == 0xffffffff)
 		return (0);
 
