@@ -78,6 +78,12 @@ r88e_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 		return;
 	}
 
+	RTWN_DPRINTF(sc, RTWN_DEBUG_INTR,
+	    "%s: ccx report dump: 0: %02X, 1: %02X, 2: %02X, queue time: "
+	    "low %02X, high %02X, final ridx: %02X, 6: %02X, 7: %02X\n",
+	    __func__, rpt->rptb0, rpt->rptb1, rpt->rptb2, rpt->queue_time_low,
+	    rpt->queue_time_high, rpt->final_rate, rpt->rptb6, rpt->rptb7);
+
 	macid = MS(rpt->rptb1, R88E_RPTB1_MACID);
 	if (macid > sc->macid_limit) {
 		device_printf(sc->sc_dev,

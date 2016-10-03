@@ -86,6 +86,13 @@ r12a_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 		return;
 	}
 
+	RTWN_DPRINTF(sc, RTWN_DEBUG_INTR,
+	    "%s: ccx report dump: 0: %02X, id: %02X, 2: %02X, queue time: "
+	    "low %02X, high %02X, final ridx: %02X, rsvd: %04X\n",
+	    __func__, rpt->txrptb0, rpt->macid, rpt->txrptb2,
+	    rpt->queue_time_low, rpt->queue_time_high, rpt->final_rate,
+	    rpt->reserved);
+
 	if (rpt->macid > sc->macid_limit) {
 		device_printf(sc->sc_dev,
 		    "macid %u is too big; increase MACID_MAX limit\n",
