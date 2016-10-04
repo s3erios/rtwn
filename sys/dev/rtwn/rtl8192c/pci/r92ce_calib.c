@@ -127,8 +127,7 @@ r92ce_iq_calib_run(struct rtwn_softc *sc, int n, uint16_t tx[2][2],
 	struct iq_cal_regs {
 		uint32_t	adda[16];
 		uint8_t		txpause;
-		uint8_t		bcn_ctrl;
-		uint8_t		ustime_tsf;
+		uint8_t		bcn_ctrl[2];
 		uint32_t	gpio_muxcfg;
 		uint32_t	ofdm0_trxpathena;
 		uint32_t	ofdm0_trmuxpar;
@@ -148,8 +147,8 @@ r92ce_iq_calib_run(struct rtwn_softc *sc, int n, uint16_t tx[2][2],
 			iq_cal_regs.adda[i] = rtwn_bb_read(sc, reg_adda[i]);
 
 		iq_cal_regs.txpause = rtwn_read_1(sc, R92C_TXPAUSE);
-		iq_cal_regs.bcn_ctrl = rtwn_read_1(sc, R92C_BCN_CTRL(0));
-		iq_cal_regs.ustime_tsf = rtwn_read_1(sc, R92C_USTIME_TSF);
+		iq_cal_regs.bcn_ctrl[0] = rtwn_read_1(sc, R92C_BCN_CTRL(0));
+		iq_cal_regs.bcn_ctrl[1] = rtwn_read_1(sc, R92C_BCN_CTRL(1));
 		iq_cal_regs.gpio_muxcfg = rtwn_read_4(sc, R92C_GPIO_MUXCFG);
 	}
 
@@ -190,8 +189,9 @@ r92ce_iq_calib_run(struct rtwn_softc *sc, int n, uint16_t tx[2][2],
 	rtwn_write_1(sc, R92C_TXPAUSE,
 	    R92C_TX_QUEUE_AC | R92C_TX_QUEUE_MGT | R92C_TX_QUEUE_HIGH);
 	rtwn_write_1(sc, R92C_BCN_CTRL(0),
-	    iq_cal_regs.bcn_ctrl & ~R92C_BCN_CTRL_EN_BCN);
-	rtwn_write_1(sc, R92C_USTIME_TSF, iq_cal_regs.ustime_tsf & ~(0x08));
+	    iq_cal_regs.bcn_ctrl[0] & ~R92C_BCN_CTRL_EN_BCN);
+	rtwn_write_1(sc, R92C_BCN_CTRL(1),
+	    iq_cal_regs.bcn_ctrl[1] & ~R92C_BCN_CTRL_EN_BCN);
 	rtwn_write_1(sc, R92C_GPIO_MUXCFG,
 	    iq_cal_regs.gpio_muxcfg & ~R92C_GPIO_MUXCFG_ENBT);
 
@@ -271,8 +271,8 @@ r92ce_iq_calib_run(struct rtwn_softc *sc, int n, uint16_t tx[2][2],
 			rtwn_bb_write(sc, reg_adda[i], iq_cal_regs.adda[i]);
 
 		rtwn_write_1(sc, R92C_TXPAUSE, iq_cal_regs.txpause);
-		rtwn_write_1(sc, R92C_BCN_CTRL(0), iq_cal_regs.bcn_ctrl);
-		rtwn_write_1(sc, R92C_USTIME_TSF, iq_cal_regs.ustime_tsf);
+		rtwn_write_1(sc, R92C_BCN_CTRL(0), iq_cal_regs.bcn_ctrl[0]);
+		rtwn_write_1(sc, R92C_BCN_CTRL(1), iq_cal_regs.bcn_ctrl[1]);
 		rtwn_write_4(sc, R92C_GPIO_MUXCFG, iq_cal_regs.gpio_muxcfg);
 	}
 }
