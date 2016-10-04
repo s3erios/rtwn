@@ -180,8 +180,6 @@ rtwn_efuse_read(struct rtwn_softc *sc, uint8_t *rom, uint16_t size)
 	uint8_t msk, off, reg;
 	int error;
 
-	RTWN_CHK(rtwn_efuse_switch_power(sc));
-
 	/* Read full ROM image. */
 	sc->next_rom_addr = 0;
 	memset(rom, 0xff, size);
@@ -216,8 +214,6 @@ end:
 	/* Device-specific. */
 	rtwn_efuse_postread(sc);
 
-	rtwn_write_1(sc, R92C_EFUSE_ACCESS, R92C_EFUSE_ACCESS_OFF);
-
 	if (error != 0) {
 		device_printf(sc->sc_dev, "%s: error while reading ROM\n",
 		    __func__);
@@ -225,6 +221,23 @@ end:
 
 	return (error);
 #undef RTWN_CHK
+}
+
+static int
+rtwn_efuse_read_prepare(struct rtwn_softc *sc, uint8_t *rom, uint16_t size)
+{
+	int error;
+
+	error = rtwn_efuse_switch_power(sc);
+	if (error != 0)
+		goto fail;
+
+	error = rtwn_efuse_read(sc, rom, size);
+
+fail:
+	rtwn_write_1(sc, R92C_EFUSE_ACCESS, R92C_EFUSE_ACCESS_OFF);
+
+	return (error);
 }
 
 int
@@ -237,7 +250,7 @@ rtwn_read_rom(struct rtwn_softc *sc)
 
 	/* Read full ROM image. */
 	RTWN_LOCK(sc);
-	error = rtwn_efuse_read(sc, rom, sc->efuse_maplen);
+	error = rtwn_efuse_read_prepare(sc, rom, sc->efuse_maplen);
 	RTWN_UNLOCK(sc);
 	if (error != 0)
 		goto fail;
