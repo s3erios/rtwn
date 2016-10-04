@@ -58,7 +58,7 @@ struct rtwn_tx_ring {
 	bus_dma_tag_t		desc_dmat;
 	bus_dmamap_t		desc_map;
 	bus_dma_tag_t		data_dmat;
-	bus_dma_segment_t       seg;
+	bus_dma_segment_t	seg;
 	void			*desc;
 	struct rtwn_tx_data	tx_data[RTWN_PCI_TX_LIST_COUNT];
 	int			queued;

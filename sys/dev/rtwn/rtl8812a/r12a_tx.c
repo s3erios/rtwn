@@ -84,7 +84,7 @@ r12a_tx_set_ht40(struct rtwn_softc *sc, void *buf, struct ieee80211_node *ni)
 		    R12A_TXDW5_DATA_BW40));
 		txd->txdw5 |= htole32(SM(R12A_TXDW5_DATA_PRIM_CHAN,
 		    prim_chan));
-        }
+	}
 }
 
 static void

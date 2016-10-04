@@ -61,7 +61,7 @@ r92cu_set_led(struct rtwn_softc *sc, int led, int on)
 		if (!on)
 			reg |= R92C_LEDCFG0_DIS;
 		rtwn_write_1(sc, R92C_LEDCFG0, reg);
-		sc->ledlink = on;       /* Save LED state. */
+		sc->ledlink = on;	/* Save LED state. */
 	}
 }
 

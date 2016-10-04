@@ -34,7 +34,7 @@
 #define R88E_HISRE			0x0bc
 /* MAC General Configuration. */
 #define R88E_32K_CTRL			0x194
-#define R88E_HMEBOX_EXT(idx)            (0x1f0 + (idx) * 4)
+#define R88E_HMEBOX_EXT(idx)		(0x1f0 + (idx) * 4)
 /* Protocol Configuration. */
 #define R88E_TXPKTBUF_BCNQ1_BDNY	0x457
 #define R88E_MACID_NO_LINK		0x484

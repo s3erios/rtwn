@@ -220,10 +220,10 @@ struct rtwn_softc {
 	struct mtx		sc_mtx;
 
 	struct rtwn_cmdq	cmdq[RTWN_CMDQ_SIZE];
-        struct mtx		cmdq_mtx;
-        struct task		cmdq_task;
-        uint8_t			cmdq_first;
-        uint8_t			cmdq_last;
+	struct mtx		cmdq_mtx;
+	struct task		cmdq_task;
+	uint8_t			cmdq_first;
+	uint8_t			cmdq_last;
 
 	struct wmeParams	cap_wmeParams[WME_NUM_AC];
 
@@ -231,7 +231,7 @@ struct rtwn_softc {
 	struct rtwn_tx_radiotap_header	sc_txtap;
 
 	int			ntxchains;
-        int			nrxchains;
+	int			nrxchains;
 
 	int			ledlink;
 	uint8_t			thermal_meter;

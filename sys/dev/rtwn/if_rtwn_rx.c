@@ -355,7 +355,7 @@ rtwn_set_multi(struct rtwn_softc *sc)
 	rtwn_write_4(sc, R92C_MAR + 4, mfilt[1]);
 
 	RTWN_DPRINTF(sc, RTWN_DEBUG_STATE, "%s: MC filter %08x:%08x\n",
-	     __func__, mfilt[0], mfilt[1]);
+	    __func__, mfilt[0], mfilt[1]);
 }
 
 static void

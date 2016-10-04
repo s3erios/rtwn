@@ -85,9 +85,9 @@ static void		rtwn_vap_decrement_counters(struct rtwn_softc *,
 			    enum ieee80211_opmode, int);
 static void		rtwn_set_ic_opmode(struct rtwn_softc *);
 static struct ieee80211vap *rtwn_vap_create(struct ieee80211com *,
-		    const char [IFNAMSIZ], int, enum ieee80211_opmode, int,
-                    const uint8_t [IEEE80211_ADDR_LEN],
-                    const uint8_t [IEEE80211_ADDR_LEN]);
+			    const char [IFNAMSIZ], int, enum ieee80211_opmode,
+			    int, const uint8_t [IEEE80211_ADDR_LEN],
+			    const uint8_t [IEEE80211_ADDR_LEN]);
 static void		rtwn_vap_delete(struct ieee80211vap *);
 static int		rtwn_read_chipid(struct rtwn_softc *);
 static int		rtwn_ioctl_reset(struct ieee80211vap *, u_long);

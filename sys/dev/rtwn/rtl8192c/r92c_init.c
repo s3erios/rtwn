@@ -261,7 +261,7 @@ r92c_init_rf(struct rtwn_softc *sc)
 
 	/* Turn CCK and OFDM blocks on. */
 	rtwn_bb_setbits(sc, R92C_FPGA0_RFMOD, 0, R92C_RFMOD_CCK_EN);
-        rtwn_bb_setbits(sc, R92C_FPGA0_RFMOD, 0, R92C_RFMOD_OFDM_EN);
+	rtwn_bb_setbits(sc, R92C_FPGA0_RFMOD, 0, R92C_RFMOD_OFDM_EN);
 }
 
 void
@@ -292,7 +292,7 @@ r92c_init_ampdu(struct rtwn_softc *sc)
 void
 r92c_init_antsel(struct rtwn_softc *sc)
 {
-        uint32_t reg;
+	uint32_t reg;
 
 	if (sc->ntxchains != 1 || sc->nrxchains != 1)
 		return;

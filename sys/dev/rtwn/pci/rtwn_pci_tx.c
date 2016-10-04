@@ -130,10 +130,10 @@ rtwn_pci_tx_start_common(struct rtwn_softc *sc, struct ieee80211_node *ni,
 			device_printf(sc->sc_dev,
 			    "can't map mbuf (error %d)\n", error);
 			if (ni != NULL) {
-                                if_inc_counter(ni->ni_vap->iv_ifp,
-                                    IFCOUNTER_OERRORS, 1);
+				if_inc_counter(ni->ni_vap->iv_ifp,
+				    IFCOUNTER_OERRORS, 1);
 				ieee80211_free_node(ni);
-                        }
+			}
 			m_freem(m);
 			return (0);	/* XXX */
 		}

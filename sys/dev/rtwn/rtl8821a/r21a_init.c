@@ -268,7 +268,7 @@ r21a_power_off(struct rtwn_softc *sc)
 	}
 
 	/* Analog Ips to digital isolation. */
-        rtwn_setbits_1(sc, R92C_SYS_ISO_CTRL, 0, R92C_SYS_ISO_CTRL_IP2MAC);
+	rtwn_setbits_1(sc, R92C_SYS_ISO_CTRL, 0, R92C_SYS_ISO_CTRL_IP2MAC);
 
 	/* Disable LDOA12 MACRO block. */
 	rtwn_setbits_1(sc, R92C_LDOA15_CTRL, R92C_LDOA15_CTRL_EN, 0);
