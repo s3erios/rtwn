@@ -168,6 +168,7 @@
 #define R92C_RD_NAV_NXT			0x544
 #define R92C_NAV_PROT_LEN		0x546
 #define R92C_BCN_CTRL(id)		((id) + 0x550)
+/* WARNING: R92C_USTIME_TSF == 0x55c, not 0x551 */
 #define R92C_MBID_NUM			0x552
 #define R92C_DUAL_TSF_RST		0x553
 #define R92C_BCN_INTERVAL(id)		(0x554 + (id) * 2)
