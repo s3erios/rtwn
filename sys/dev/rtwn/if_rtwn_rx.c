@@ -210,8 +210,7 @@ rtwn_rx_common(struct rtwn_softc *sc, struct mbuf *m, void *desc,
 	shift = MS(rxdw0, R92C_RXDW0_SHIFT);
 	rate = MS(rxdw3, R92C_RXDW3_RATE);
 
-	wh = (struct ieee80211_frame_min *)(mtod(m, uint8_t *) +
-	    shift + infosz);
+	wh = (struct ieee80211_frame_min *)(mtodo(m, shift + infosz));
 	if ((wh->i_fc[1] & IEEE80211_FC1_PROTECTED) &&
 	    cipher != R92C_CAM_ALGO_NONE)
 		m->m_flags |= M_WEP;
