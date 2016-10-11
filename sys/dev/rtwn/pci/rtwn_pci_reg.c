@@ -95,16 +95,20 @@ uint16_t
 rtwn_pci_read_2(struct rtwn_softc *sc, uint16_t addr)
 {
 	struct rtwn_pci_softc *pc = RTWN_PCI_SOFTC(sc);
+	uint16_t val;
 
-	return (bus_space_read_2(pc->pc_st, pc->pc_sh, addr));
+	val = bus_space_read_2(pc->pc_st, pc->pc_sh, addr);
+	return le16toh(val);
 }
 
 uint32_t
 rtwn_pci_read_4(struct rtwn_softc *sc, uint16_t addr)
 {
 	struct rtwn_pci_softc *pc = RTWN_PCI_SOFTC(sc);
+	uint32_t val;
 
-	return (bus_space_read_4(pc->pc_st, pc->pc_sh, addr));
+	val = bus_space_read_4(pc->pc_st, pc->pc_sh, addr);
+	return le32toh(val);
 }
 
 void
