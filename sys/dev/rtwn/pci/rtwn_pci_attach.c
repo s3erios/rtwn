@@ -51,6 +51,7 @@ __FBSDID("$FreeBSD$");
 
 #include <dev/rtwn/if_rtwnvar.h>
 #include <dev/rtwn/if_rtwn_nop.h>
+#include <dev/rtwn/if_rtwn_debug.h>
 
 #include <dev/rtwn/pci/rtwn_pci_var.h>
 
@@ -434,6 +435,18 @@ static void
 rtwn_pci_set_desc_addr(struct rtwn_softc *sc)
 {
 	struct rtwn_pci_softc *pc = RTWN_PCI_SOFTC(sc);
+
+	RTWN_DPRINTF(sc, RTWN_DEBUG_RESET, "%s: addresses:\n"
+	    "bk: %08X, be: %08X, vi: %08X, vo: %08X"
+	    "bcn: %08X, mgt: %08X, high: %08X, rx: %08X\n",
+	    __func__, pc->tx_ring[RTWN_PCI_BK_QUEUE].paddr,
+	    pc->tx_ring[RTWN_PCI_BE_QUEUE].paddr,
+	    pc->tx_ring[RTWN_PCI_VI_QUEUE].paddr,
+	    pc->tx_ring[RTWN_PCI_VO_QUEUE].paddr,
+	    pc->tx_ring[RTWN_PCI_BEACON_QUEUE].paddr,
+	    pc->tx_ring[RTWN_PCI_MGNT_QUEUE].paddr,
+	    pc->tx_ring[RTWN_PCI_HIGH_QUEUE].paddr,
+	    pc->rx_ring.paddr);
 
 	/* Set Tx Configuration Register. */
 	rtwn_pci_write_4(sc, R92C_TCR, pc->tcr);
