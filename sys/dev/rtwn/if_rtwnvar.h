@@ -392,12 +392,14 @@ MALLOC_DECLARE(M_RTWN_PRIV);
 	mtx_init(&(sc)->cmdq_mtx, "cmdq lock", NULL, MTX_DEF)
 #define RTWN_CMDQ_LOCK(sc)		mtx_lock(&(sc)->cmdq_mtx)
 #define RTWN_CMDQ_UNLOCK(sc)		mtx_unlock(&(sc)->cmdq_mtx)
+#define RTWN_CMDQ_LOCK_INITIALIZED(sc)	mtx_initialized(&(sc)->cmdq_mtx)
 #define RTWN_CMDQ_LOCK_DESTROY(sc)	mtx_destroy(&(sc)->cmdq_mtx)
 
 #define RTWN_NT_LOCK_INIT(sc) \
 	mtx_init(&(sc)->nt_mtx, "node table lock", NULL, MTX_DEF)
 #define RTWN_NT_LOCK(sc)		mtx_lock(&(sc)->nt_mtx)
 #define RTWN_NT_UNLOCK(sc)		mtx_unlock(&(sc)->nt_mtx)
+#define RTWN_NT_LOCK_INITIALIZED(sc)	mtx_initialized(&(sc)->nt_mtx)
 #define RTWN_NT_LOCK_DESTROY(sc)	mtx_destroy(&(sc)->nt_mtx)
 
 

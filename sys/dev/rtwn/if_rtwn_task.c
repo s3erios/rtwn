@@ -85,7 +85,8 @@ rtwn_cmdq_init(struct rtwn_softc *sc)
 void
 rtwn_cmdq_destroy(struct rtwn_softc *sc)
 {
-	RTWN_CMDQ_LOCK_DESTROY(sc);
+	if (RTWN_CMDQ_LOCK_INITIALIZED(sc))
+		RTWN_CMDQ_LOCK_DESTROY(sc);
 }
 
 int

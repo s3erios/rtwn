@@ -373,18 +373,19 @@ rtwn_detach(struct rtwn_softc *sc)
 {
 	struct ieee80211com *ic = &sc->sc_ic;
 
-	/* Stop command queue. */
-	RTWN_CMDQ_LOCK(sc);
-	sc->sc_detached = 1;
-	RTWN_CMDQ_UNLOCK(sc);
-
 	if (ic->ic_softc == sc) {
+		/* Stop command queue. */
+		RTWN_CMDQ_LOCK(sc);
+		sc->sc_detached = 1;
+		RTWN_CMDQ_UNLOCK(sc);
+
 		ieee80211_draintask(ic, &sc->cmdq_task);
 		ieee80211_ifdetach(ic);
 	}
 
 	rtwn_cmdq_destroy(sc);
-	RTWN_NT_LOCK_DESTROY(sc);
+	if (RTWN_NT_LOCK_INITIALIZED(sc))
+		RTWN_NT_LOCK_DESTROY(sc);
 }
 
 void
