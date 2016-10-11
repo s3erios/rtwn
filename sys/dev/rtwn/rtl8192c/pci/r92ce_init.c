@@ -226,7 +226,7 @@ r92ce_power_on(struct rtwn_softc *sc)
 	    R92C_CR_SCHEDULE_EN | R92C_CR_MACTXEN | R92C_CR_MACRXEN |
 	    ((sc->sc_hwcrypto != RTWN_CRYPTO_SW) ? R92C_CR_ENSEC : 0));
 
-	rtwn_write_1(sc, 0xfe10, 0x19);
+	rtwn_write_4(sc, R92C_MCUTST_1, 0x0);
 
 	return (0);
 }
@@ -297,8 +297,6 @@ r92ce_post_init(struct rtwn_softc *sc)
 	    0x1f00 | R92C_FWHW_TXQ_CTRL_AMPDU_RTY_NEW);
 
 	rtwn_write_1(sc, R92C_BCN_MAX_ERR, 0xff);
-
-	rtwn_write_4(sc, R92C_MCUTST_1, 0x0);
 
 	/* Perform LO and IQ calibrations. */
 	r92ce_iq_calib(sc);
