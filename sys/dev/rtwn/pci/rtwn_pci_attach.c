@@ -437,16 +437,16 @@ rtwn_pci_set_desc_addr(struct rtwn_softc *sc)
 	struct rtwn_pci_softc *pc = RTWN_PCI_SOFTC(sc);
 
 	RTWN_DPRINTF(sc, RTWN_DEBUG_RESET, "%s: addresses:\n"
-	    "bk: %08X, be: %08X, vi: %08X, vo: %08X"
-	    "bcn: %08X, mgt: %08X, high: %08X, rx: %08X\n",
-	    __func__, pc->tx_ring[RTWN_PCI_BK_QUEUE].paddr,
-	    pc->tx_ring[RTWN_PCI_BE_QUEUE].paddr,
-	    pc->tx_ring[RTWN_PCI_VI_QUEUE].paddr,
-	    pc->tx_ring[RTWN_PCI_VO_QUEUE].paddr,
-	    pc->tx_ring[RTWN_PCI_BEACON_QUEUE].paddr,
-	    pc->tx_ring[RTWN_PCI_MGNT_QUEUE].paddr,
-	    pc->tx_ring[RTWN_PCI_HIGH_QUEUE].paddr,
-	    pc->rx_ring.paddr);
+	    "bk: %08jX, be: %08jX, vi: %08jX, vo: %08jX\n"
+	    "bcn: %08jX, mgt: %08jX, high: %08jX, rx: %08jX\n",
+	    __func__, (uintmax_t)pc->tx_ring[RTWN_PCI_BK_QUEUE].paddr,
+	    (uintmax_t)pc->tx_ring[RTWN_PCI_BE_QUEUE].paddr,
+	    (uintmax_t)pc->tx_ring[RTWN_PCI_VI_QUEUE].paddr,
+	    (uintmax_t)pc->tx_ring[RTWN_PCI_VO_QUEUE].paddr,
+	    (uintmax_t)pc->tx_ring[RTWN_PCI_BEACON_QUEUE].paddr,
+	    (uintmax_t)pc->tx_ring[RTWN_PCI_MGNT_QUEUE].paddr,
+	    (uintmax_t)pc->tx_ring[RTWN_PCI_HIGH_QUEUE].paddr,
+	    (uintmax_t)pc->rx_ring.paddr);
 
 	/* Set Tx Configuration Register. */
 	rtwn_pci_write_4(sc, R92C_TCR, pc->tcr);
