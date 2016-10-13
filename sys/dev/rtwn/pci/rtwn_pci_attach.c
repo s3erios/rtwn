@@ -179,6 +179,8 @@ rtwn_pci_alloc_rx_list(struct rtwn_softc *sc)
 		rtwn_pci_setup_rx_desc(pc, &rx_ring->desc[i], rx_data->paddr,
 		    MCLBYTES, i);
 	}
+	rx_ring->cur = 0;
+
 	return (0);
 
 fail:
@@ -199,6 +201,7 @@ rtwn_pci_reset_rx_list(struct rtwn_softc *sc)
 		rtwn_pci_setup_rx_desc(pc, &rx_ring->desc[i],
 		    rx_data->paddr, MCLBYTES, i);
 	}
+	rx_ring->cur = 0;
 }
 
 static void

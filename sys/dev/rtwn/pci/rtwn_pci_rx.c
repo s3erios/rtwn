@@ -85,10 +85,11 @@ rtwn_pci_setup_rx_desc(struct rtwn_pci_softc *pc, struct r92ce_rx_stat *desc,
 
 static void
 rtwn_pci_rx_frame(struct rtwn_softc *sc, struct r92ce_rx_stat *rx_desc,
-    struct rtwn_rx_data *rx_data, int desc_idx)
+    int desc_idx)
 {
 	struct rtwn_pci_softc *pc = RTWN_PCI_SOFTC(sc);
 	struct rtwn_rx_ring *ring = &pc->rx_ring;
+	struct rtwn_rx_data *rx_data = &ring->rx_data[desc_idx];
 	struct ieee80211com *ic = &sc->sc_ic;
 	struct ieee80211_node *ni;
 	uint32_t rxdw0;
@@ -239,6 +240,29 @@ rtwn_pci_tx_done(struct rtwn_softc *sc, int qid)
 	rtwn_start(sc);
 }
 
+static void
+rtwn_pci_rx_done(struct rtwn_softc *sc)
+{
+	struct rtwn_pci_softc *pc = RTWN_PCI_SOFTC(sc);
+	struct rtwn_rx_ring *ring = &pc->rx_ring;
+
+	bus_dmamap_sync(ring->desc_dmat, ring->desc_map, BUS_DMASYNC_POSTREAD);
+
+	for (;;) {
+		struct r92ce_rx_stat *rx_desc = &ring->desc[ring->cur];
+
+		if (le32toh(rx_desc->rxdw0) & R92C_RXDW0_OWN)
+			break;
+
+		rtwn_pci_rx_frame(sc, rx_desc, ring->cur);
+
+		if (!(sc->sc_flags & RTWN_RUNNING))
+			return;
+
+		ring->cur = (ring->cur + 1) % RTWN_PCI_RX_LIST_COUNT;
+	}
+}
+
 void
 rtwn_pci_intr(void *arg)
 {
@@ -255,31 +279,15 @@ rtwn_pci_intr(void *arg)
 		return;
 	}
 
-	if (status & RTWN_PCI_INTR_RX) {
-		bus_dmamap_sync(pc->rx_ring.desc_dmat, pc->rx_ring.desc_map,
-		    BUS_DMASYNC_POSTREAD);
-
-		for (i = 0; i < RTWN_PCI_RX_LIST_COUNT; i++) {
-			struct r92ce_rx_stat *rx_desc = &pc->rx_ring.desc[i];
-			struct rtwn_rx_data *rx_data = &pc->rx_ring.rx_data[i];
-
-			if (le32toh(rx_desc->rxdw0) & R92C_RXDW0_OWN)
-				continue;
-
-			rtwn_pci_rx_frame(sc, rx_desc, rx_data, i);
-
-			if (!(sc->sc_flags & RTWN_RUNNING)) {
-				RTWN_UNLOCK(sc);
-				return;
-			}
-		}
-	}
+	if (status & RTWN_PCI_INTR_RX)
+		rtwn_pci_rx_done(sc);
 
 	if (tx_rings != 0)
 		for (i = 0; i < RTWN_PCI_NTXQUEUES; i++)
 			if (tx_rings & (1 << i))
 				rtwn_pci_tx_done(sc, i);
 
-	rtwn_pci_enable_intr(pc);
+	if (sc->sc_flags & RTWN_RUNNING)
+		rtwn_pci_enable_intr(pc);
 	RTWN_UNLOCK(sc);
 }

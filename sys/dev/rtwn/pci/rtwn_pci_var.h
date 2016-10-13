@@ -43,7 +43,7 @@ struct rtwn_rx_ring {
 	bus_dma_tag_t		data_dmat;
 	bus_dma_segment_t	seg;
 	struct rtwn_rx_data	rx_data[RTWN_PCI_RX_LIST_COUNT];
-
+	int			cur;
 };
 
 struct rtwn_tx_data {
