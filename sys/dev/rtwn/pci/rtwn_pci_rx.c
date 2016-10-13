@@ -145,7 +145,7 @@ rtwn_pci_rx_frame(struct rtwn_softc *sc, struct r92ce_rx_stat *rx_desc,
 
 		error = bus_dmamap_load(ring->data_dmat, rx_data->map,
 		    mtod(rx_data->m, void *), MCLBYTES, rtwn_pci_dma_map_addr,
-                    &rx_data->paddr, BUS_DMA_NOWAIT);
+		    &rx_data->paddr, BUS_DMA_NOWAIT);
 		if (error != 0)
 			panic("%s: could not load old RX mbuf",
 			    device_get_name(sc->sc_dev));
@@ -210,7 +210,7 @@ rtwn_pci_tx_done(struct rtwn_softc *sc, int qid)
 		KASSERT(data->m != NULL, ("no mbuf"));
 
 		if (desc->flags0 & RTWN_FLAGS0_OWN)
-			continue;
+			break;
 
 		/* Unmap and free mbuf. */
 		bus_dmamap_sync(ring->data_dmat, data->map,
