@@ -318,14 +318,6 @@ r92ce_post_init(struct rtwn_softc *sc)
 		} else
 			sc->sc_ratectl = sc->sc_ratectl_sysctl;
 
-		if (sc->sc_ratectl == RTWN_RATECTL_NET80211) {
-			/* XXX may not work for PCIe */
-			/* XXX recheck with wlandebug -i wlan0 "rate" */
-			device_printf(sc->sc_dev,
-			    "%s: warning: net80211 ratectl is used\n",
-			    __func__);
-		}
-
 		/* Start C2H event handling. */
 		callout_reset(&rs->rs_c2h_report, rs->rs_c2h_timeout,
 		    r92c_handle_c2h_report, sc);

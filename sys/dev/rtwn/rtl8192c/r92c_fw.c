@@ -454,7 +454,7 @@ r92c_handle_c2h_task(struct rtwn_softc *sc, union sec_param *data)
 {
 	const uint16_t off = R92C_C2H_EVT_MSG + sizeof(struct r92c_c2h_evt);
 	struct r92c_softc *rs = sc->sc_priv;
-	uint32_t buf[R92C_C2H_MSG_MAX_LEN / 4 + 1];
+	uint16_t buf[R92C_C2H_MSG_MAX_LEN / 2 + 1];
 	uint8_t id, len, status;
 	int i;
 
@@ -473,8 +473,8 @@ r92c_handle_c2h_task(struct rtwn_softc *sc, union sec_param *data)
 
 		memset(buf, 0, sizeof(buf));
 		/* Try to optimize event reads. */
-		for (i = 0; i < len; i += 4)
-			buf[i / 4] = rtwn_read_4(sc, off + i);
+		for (i = 0; i < len; i += 2)
+			buf[i / 2] = rtwn_read_2(sc, off + i);
 		KASSERT(i < sizeof(buf), ("%s: buffer overrun (%d >= %zu)!",
 		    __func__, i, sizeof(buf)));
 
