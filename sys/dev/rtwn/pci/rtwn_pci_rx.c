@@ -93,10 +93,8 @@ rtwn_pci_rx_frame(struct rtwn_softc *sc, struct r92ce_rx_stat *rx_desc,
 	struct ieee80211_node *ni;
 	uint32_t rxdw0;
 	struct mbuf *m, *m1;
-	bus_dma_segment_t segs[1];
-	bus_addr_t physaddr;
 	int8_t rssi = 0, nf;
-	int infosz, nsegs, pktlen, shift, error;
+	int infosz, pktlen, shift, error;
 
 	/* Dump Rx descriptor. */
 	RTWN_DPRINTF(sc, RTWN_DEBUG_RECV_DESC,
@@ -140,17 +138,19 @@ rtwn_pci_rx_frame(struct rtwn_softc *sc, struct r92ce_rx_stat *rx_desc,
 	bus_dmamap_unload(ring->data_dmat, rx_data->map);
 
 	error = bus_dmamap_load(ring->data_dmat, rx_data->map, mtod(m1, void *),
-	    MCLBYTES, rtwn_pci_dma_map_addr, &physaddr, 0);
+	    MCLBYTES, rtwn_pci_dma_map_addr, &rx_data->paddr, 0);
 	if (error != 0) {
 		m_freem(m1);
 
-		if (bus_dmamap_load_mbuf_sg(ring->data_dmat, rx_data->map,
-		    rx_data->m, segs, &nsegs, 0))
+		error = bus_dmamap_load(ring->data_dmat, rx_data->map,
+		    mtod(rx_data->m, void *), MCLBYTES, rtwn_pci_dma_map_addr,
+                    &rx_data->paddr, BUS_DMA_NOWAIT);
+		if (error != 0)
 			panic("%s: could not load old RX mbuf",
 			    device_get_name(sc->sc_dev));
 
 		/* Physical address may have changed. */
-		rtwn_pci_setup_rx_desc(pc, rx_desc, physaddr, MCLBYTES,
+		rtwn_pci_setup_rx_desc(pc, rx_desc, rx_data->paddr, MCLBYTES,
 		    desc_idx);
 		goto fail;
 	}
@@ -168,7 +168,8 @@ rtwn_pci_rx_frame(struct rtwn_softc *sc, struct r92ce_rx_stat *rx_desc,
 	    __func__, pktlen, infosz, shift, rssi);
 
 	/* Update RX descriptor. */
-	rtwn_pci_setup_rx_desc(pc, rx_desc, physaddr, MCLBYTES, desc_idx);
+	rtwn_pci_setup_rx_desc(pc, rx_desc, rx_data->paddr, MCLBYTES,
+	    desc_idx);
 
 	/* Send the frame to the 802.11 layer. */
 	RTWN_UNLOCK(sc);
