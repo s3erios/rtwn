@@ -161,7 +161,7 @@ rtwn_pci_rx_frame(struct rtwn_softc *sc, struct r92ce_rx_stat *rx_desc,
 	m->m_pkthdr.len = m->m_len = pktlen + infosz + shift;
 
 	nf = RTWN_NOISE_FLOOR;
-	ni = rtwn_rx_common(sc, m, &rx_desc, &rssi);
+	ni = rtwn_rx_common(sc, m, rx_desc, &rssi);
 
 	RTWN_DPRINTF(sc, RTWN_DEBUG_RECV,
 	    "%s: Rx frame len %d, infosz %d, shift %d, rssi %d\n",
