@@ -258,12 +258,5 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	sc->bcn_status_reg[1]		= R92C_TDECTRL;
 	sc->rcr				= 0;
 
-	if (sc->sc_hwcrypto != RTWN_CRYPTO_SW) {
-		/* XXX untested */
-		device_printf(sc->sc_dev,
-		    "%s: warning: hardware crypto enabled\n",
-		    __func__);
-	}
-
 	r92ce_attach_private(sc);
 }
