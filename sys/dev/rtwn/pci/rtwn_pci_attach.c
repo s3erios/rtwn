@@ -627,6 +627,7 @@ rtwn_pci_detach(device_t dev)
 		bus_release_resource(dev, SYS_RES_MEMORY,
 		    rman_get_rid(pc->mem), pc->mem);
 
+	rtwn_detach_private(sc);
 	mtx_destroy(&sc->sc_mtx);
 
 	return (0);
