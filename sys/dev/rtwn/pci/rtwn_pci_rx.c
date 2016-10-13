@@ -216,11 +216,6 @@ rtwn_pci_tx_done(struct rtwn_softc *sc, int qid)
 		    BUS_DMASYNC_POSTWRITE);
 		bus_dmamap_unload(ring->data_dmat, data->map);
 
-		/*
-		 * XXX TODO: figure out whether the transmit succeeded or not.
-		 * .. and then notify rate control.
-		 * XXX probably not here.
-		 */
 		if (data->ni != NULL) {	/* not a beacon frame */
 			ieee80211_tx_complete(data->ni, data->m, 0);
 
