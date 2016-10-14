@@ -414,10 +414,8 @@ r92c_ratectl_tx_complete(struct rtwn_softc *sc, uint8_t *buf, int len)
 		    ntries);
 
 #if __FreeBSD_version >= 1200012
-		txs.flags = IEEE80211_RATECTL_STATUS_SHORT_RETRY |
-			    IEEE80211_RATECTL_STATUS_LONG_RETRY;
+		txs.flags = IEEE80211_RATECTL_STATUS_LONG_RETRY;
 		txs.long_retries = ntries;
-		txs.short_retries = MS(rpt->rptb1, R92C_RPTB1_RTS_RETRY_CNT);
 		if (rpt->rptb7 & R92C_RPTB7_PKT_OK)
 			txs.status = IEEE80211_RATECTL_TX_SUCCESS;
 		else if (rpt->rptb6 & R92C_RPTB6_RETRY_OVER)

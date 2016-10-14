@@ -114,7 +114,7 @@ struct r92c_c2h_tx_rpt {
 #define R92C_RPTB0_RETRY_CNT_M		0x3f
 #define R92C_RPTB0_RETRY_CNT_S		0
 
-	uint8_t		rptb1;
+	uint8_t		rptb1;		/* XXX junk */
 #define R92C_RPTB1_RTS_RETRY_CNT_M	0x3f
 #define R92C_RPTB1_RTS_RETRY_CNT_S	0
 
