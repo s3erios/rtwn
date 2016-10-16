@@ -140,9 +140,9 @@ r88e_macid_enable_link(struct rtwn_softc *sc, int id, int enable)
 		reg += 4;
 
 	if (enable)
-		rtwn_setbits_4(sc, reg, id % 32, 0);
+		rtwn_setbits_4(sc, reg, 1 << (id % 32), 0);
 	else
-		rtwn_setbits_4(sc, reg, 0, id % 32);
+		rtwn_setbits_4(sc, reg, 0, 1 << (id % 32));
 
 	/* XXX max macid for tx reports */
 }
