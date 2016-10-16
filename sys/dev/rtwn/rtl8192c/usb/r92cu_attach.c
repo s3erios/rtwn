@@ -157,7 +157,7 @@ r92cu_attach(struct rtwn_usb_softc *uc)
 	uc->tx_agg_desc_num		= 6;
 
 	/* Common part. */
-	sc->sc_flags			= 0;
+	sc->sc_flags			= RTWN_FLAG_CAM_FIXED;
 
 	sc->sc_set_chan			= r92c_set_chan;
 	sc->sc_fill_tx_desc		= r92c_fill_tx_desc;

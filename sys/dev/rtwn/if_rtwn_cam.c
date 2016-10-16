@@ -87,6 +87,7 @@ rtwn_init_seccfg(struct rtwn_softc *sc)
 	case RTWN_CRYPTO_SW:
 		break;	/* nothing to do */
 	case RTWN_CRYPTO_PAIR:
+		/* NB: TXUCKEY_DEF / RXUCKEY_DEF are required for RTL8192C */
 		seccfg = R92C_SECCFG_TXUCKEY_DEF | R92C_SECCFG_RXUCKEY_DEF |
 		    R92C_SECCFG_TXENC_ENA | R92C_SECCFG_RXDEC_ENA |
 		    R92C_SECCFG_MC_SRCH_DIS;
@@ -147,6 +148,10 @@ rtwn_key_alloc(struct ieee80211vap *vap, struct ieee80211_key *k,
 	case RTWN_CRYPTO_PAIR:
 		/* all slots for pairwise keys. */
 		start = 0;
+		RTWN_LOCK(sc);
+		if (sc->sc_flags & RTWN_FLAG_CAM_FIXED)
+			start = 4;
+		RTWN_UNLOCK(sc);
 		break;
 	case RTWN_CRYPTO_FULL:
 		/* first 4 - for group keys, others for pairwise. */

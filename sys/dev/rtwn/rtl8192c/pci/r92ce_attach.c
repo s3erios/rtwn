@@ -167,7 +167,8 @@ r92ce_attach(struct rtwn_pci_softc *pc)
 	    R92C_TCR_CFENDFORM | (1 << 12) | (1 << 13);
 
 	/* Common part. */
-	sc->sc_flags			= 0;
+	/* RTL8192C* cannot use pairwise keys from first 4 slots */
+	sc->sc_flags			= RTWN_FLAG_CAM_FIXED;
 
 	sc->sc_start_xfers		= r92ce_start_xfers;
 	sc->sc_set_chan			= r92c_set_chan;

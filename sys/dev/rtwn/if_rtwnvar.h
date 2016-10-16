@@ -177,12 +177,15 @@ struct rtwn_softc {
 
 	uint8_t			sc_detached;
 	uint8_t			sc_flags;
+/* Device flags */
 #define RTWN_FLAG_CCK_HIPWR	0x01
 #define RTWN_FLAG_EXT_HDR	0x02
-#define RTWN_STARTED		0x04
-#define RTWN_RUNNING		0x08
-#define RTWN_FW_LOADED		0x10
-#define RTWN_TEMP_MEASURED	0x20
+#define RTWN_FLAG_CAM_FIXED	0x04
+/* Driver state */
+#define RTWN_STARTED		0x08
+#define RTWN_RUNNING		0x10
+#define RTWN_FW_LOADED		0x20
+#define RTWN_TEMP_MEASURED	0x40
 
 #define RTWN_CHIP_HAS_BCNQ1(_sc)	\
 	((_sc)->bcn_status_reg[0] != (_sc)->bcn_status_reg[1])
