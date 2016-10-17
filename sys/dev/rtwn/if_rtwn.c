@@ -227,8 +227,10 @@ rtwn_attach(struct rtwn_softc *sc)
 		| IEEE80211_C_MONITOR		/* monitor mode */
 		| IEEE80211_C_IBSS		/* adhoc mode */
 		| IEEE80211_C_HOSTAP		/* hostap mode */
+#if 0	/* TODO: HRPWM register setup */
 #ifndef RTWN_WITHOUT_UCODE
 		| IEEE80211_C_PMGT		/* Station-side power mgmt */
+#endif
 #endif
 		| IEEE80211_C_SHPREAMBLE	/* short preamble supported */
 		| IEEE80211_C_SHSLOT		/* short slot time supported */
