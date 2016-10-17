@@ -137,4 +137,3 @@ r92c_parse_rom(struct rtwn_softc *sc, uint8_t *buf)
 		sc->thermal_meter = 0xff;
 	IEEE80211_ADDR_COPY(sc->sc_ic.ic_macaddr, rom->macaddr);
 }
-

@@ -219,4 +219,3 @@ r12a_parse_rom(struct rtwn_softc *sc, uint8_t *buf)
 	/* Execute common part of initialization. */
 	r12a_parse_rom_common(sc, buf);
 }
-

@@ -18,8 +18,8 @@
  * $FreeBSD$
  */
 
-#ifndef R92C_ROM_H
-#define R92C_ROM_H
+#ifndef R92C_ROM_IMAGE_H
+#define R92C_ROM_IMAGE_H
 
 #include <dev/rtwn/rtl8192c/r92c_rom_defs.h>
 
@@ -68,4 +68,4 @@ struct r92c_rom {
 _Static_assert(sizeof(struct r92c_rom) == R92C_EFUSE_MAP_LEN,
     "R92C_EFUSE_MAP_LEN must be equal to sizeof(struct r92c_rom)!");
 
-#endif	/* R92C_ROM_H */
+#endif	/* R92C_ROM_IMAGE_H */

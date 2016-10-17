@@ -121,4 +121,3 @@ struct r12a_c2h_ra_report {
 } __packed;
 
 #endif	/* R12A_FW_CMD_H */
-

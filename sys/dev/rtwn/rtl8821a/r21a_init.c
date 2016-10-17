@@ -356,4 +356,3 @@ r21a_init_ampdu_fwhw(struct rtwn_softc *sc)
 	    R92C_FWHW_TXQ_CTRL_AMPDU_RTY_NEW);
 	rtwn_write_4(sc, R92C_FAST_EDCA_CTRL, 0x03087777);
 }
-

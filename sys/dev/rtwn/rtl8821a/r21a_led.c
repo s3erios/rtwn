@@ -65,4 +65,3 @@ r21a_set_led(struct rtwn_softc *sc, int led, int on)
 		sc->ledlink = on;	/* Save LED state. */
 	}
 }
-

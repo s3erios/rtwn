@@ -76,4 +76,3 @@ r21a_fw_reset(struct rtwn_softc *sc, int reason)
 	    0, R92C_SYS_FUNC_EN_CPUEN, 1);
 }
 #endif
-

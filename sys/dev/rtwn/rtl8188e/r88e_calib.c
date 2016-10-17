@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2015-2016 Andriy Voskoboinyk <avos@FreeBSD.org>
+ * Copyright (c) 2016 Andriy Voskoboinyk <avos@FreeBSD.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -65,4 +65,3 @@ r88e_temp_read(struct rtwn_softc *sc)
 	return (MS(rtwn_rf_read(sc, 0, R88E_RF_T_METER),
 	    R88E_RF_T_METER_VAL));
 }
-

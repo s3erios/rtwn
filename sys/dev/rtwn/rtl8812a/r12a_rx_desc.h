@@ -77,4 +77,3 @@ struct r12a_rx_phystat {
 } __packed;
 
 #endif	/* R12A_RX_DESC_H */
-

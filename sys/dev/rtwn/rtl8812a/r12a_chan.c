@@ -599,4 +599,3 @@ r12a_set_band_5ghz(struct rtwn_softc *sc, uint32_t basicrates)
 	/* Write basic rates. */
 	rtwn_set_basicrates(sc, basicrates);
 }
-

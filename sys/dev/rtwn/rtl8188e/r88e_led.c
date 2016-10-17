@@ -66,4 +66,3 @@ r88e_set_led(struct rtwn_softc *sc, int led, int on)
 
 	/* XXX led #1? */
 }
-

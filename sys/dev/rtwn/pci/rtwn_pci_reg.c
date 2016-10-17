@@ -1,9 +1,9 @@
-/*	$OpenBSD: if_urtwn.c,v 1.16 2011/02/10 17:26:40 jakemsr Exp $	*/
+/*      $OpenBSD: if_rtwn.c,v 1.6 2015/08/28 00:03:53 deraadt Exp $     */
 
 /*-
  * Copyright (c) 2010 Damien Bergamini <damien.bergamini@free.fr>
- * Copyright (c) 2014 Kevin Lo <kevlo@FreeBSD.org>
- * Copyright (c) 2015-2016 Andriy Voskoboinyk <avos@FreeBSD.org>
+ * Copyright (c) 2015 Stefan Sperling <stsp@openbsd.org>
+ * Copyright (c) 2016 Andriy Voskoboinyk <avos@FreeBSD.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above

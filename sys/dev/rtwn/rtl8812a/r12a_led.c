@@ -70,4 +70,3 @@ r12a_set_led(struct rtwn_softc *sc, int led, int on)
 
 	/* XXX leds #1/#2 ? */
 }
-

@@ -124,4 +124,3 @@ r21a_iq_calib_sw(struct rtwn_softc *sc)
 	    nitems(r21a_iq_bb_regs));
 #undef R21A_MAX_NRXCHAINS
 }
-

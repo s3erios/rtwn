@@ -108,4 +108,3 @@ r12a_rf_write(struct rtwn_softc *sc, int chain, uint8_t addr,
 	    SM(R88E_LSSI_PARAM_ADDR, addr) |
 	    SM(R92C_LSSI_PARAM_DATA, val));
 }
-

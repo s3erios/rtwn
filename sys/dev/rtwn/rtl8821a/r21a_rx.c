@@ -86,4 +86,3 @@ r21a_get_rssi_cck(struct rtwn_softc *sc, void *physt)
 
 	return (rssi);
 }
-

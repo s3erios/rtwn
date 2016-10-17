@@ -91,4 +91,3 @@ r21a_beacon_select(struct rtwn_softc *sc, int id)
 		break;
 	}
 }
-

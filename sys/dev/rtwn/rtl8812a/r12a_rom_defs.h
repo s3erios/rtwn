@@ -41,4 +41,3 @@
 #define R12A_EFUSE_MAP_LEN	512
 
 #endif	/* R12A_ROM_DEFS_H */
-

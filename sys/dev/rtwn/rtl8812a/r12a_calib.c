@@ -284,4 +284,3 @@ r12a_iq_calib(struct rtwn_softc *sc)
 #endif
 		rtwn_r12a_iq_calib_sw(sc);
 }
-

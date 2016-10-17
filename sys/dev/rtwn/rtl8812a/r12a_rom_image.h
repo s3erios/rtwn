@@ -26,8 +26,8 @@
  * $FreeBSD$
  */
 
-#ifndef R12A_ROM_H
-#define R12A_ROM_H
+#ifndef R12A_ROM_IMAGE_H
+#define R12A_ROM_IMAGE_H
 
 #include <dev/rtwn/rtl8812a/r12a_rom_defs.h>
 
@@ -130,5 +130,4 @@ struct r12a_rom {
 _Static_assert(sizeof(struct r12a_rom) == R12A_EFUSE_MAP_LEN,
     "R12A_EFUSE_MAP_LEN must be equal to sizeof(struct r12a_rom)!");
 
-#endif	/* R12A_ROM_H */
-
+#endif	/* R12A_ROM_IMAGE_H */

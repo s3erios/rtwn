@@ -123,4 +123,3 @@ r12a_ioctl_net(struct ieee80211com *ic, u_long cmd, void *data)
 
 	return (error);
 }
-

@@ -16,8 +16,8 @@
  * $FreeBSD$
  */
 
-#ifndef R88E_ROM_H
-#define R88E_ROM_H
+#ifndef R88E_ROM_IMAGE_H
+#define R88E_ROM_IMAGE_H
 
 #include <dev/rtwn/rtl8188e/r88e_rom_defs.h>
 
@@ -57,4 +57,4 @@ struct r88e_rom {
 _Static_assert(sizeof(struct r88e_rom) == R88E_EFUSE_MAP_LEN,
     "R88E_EFUSE_MAP_LEN must be equal to sizeof(struct r88e_rom)!");
 
-#endif	/* R88E_ROM_H */
+#endif	/* R88E_ROM_IMAGE_H */
