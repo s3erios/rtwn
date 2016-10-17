@@ -383,7 +383,6 @@ struct rtwn_softc {
 
 	uint16_t			bcn_status_reg[RTWN_PORT_COUNT];
 	uint32_t			rcr;	/* Rx filter */
-	uint32_t			rrsr;	/* Response Rate Set */
 };
 MALLOC_DECLARE(M_RTWN_PRIV);
 

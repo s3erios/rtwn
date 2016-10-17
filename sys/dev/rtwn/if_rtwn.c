@@ -1874,9 +1874,6 @@ rtwn_init(struct rtwn_softc *sc)
 	/* Initialize Rx filter. */
 	rtwn_rxfilter_init(sc);
 
-	/* Set response rate. */
-	rtwn_setbits_4(sc, R92C_RRSR, R92C_RRSR_RATE_BITMAP_M, sc->rrsr);
-
 	/* Set short/long retry limits. */
 	rtwn_write_2(sc, R92C_RL,
 	    SM(R92C_RL_SRL, 0x30) | SM(R92C_RL_LRL, 0x30));

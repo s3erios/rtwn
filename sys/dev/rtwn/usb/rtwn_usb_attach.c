@@ -316,8 +316,6 @@ rtwn_usb_attach_methods(struct rtwn_softc *sc)
 	sc->sc_get_qmap		= rtwn_usb_get_qmap;
 	sc->sc_set_desc_addr	= rtwn_nop_softc;
 	sc->sc_drop_incorrect_tx = rtwn_usb_drop_incorrect_tx;
-
-	sc->rrsr		= R92C_RRSR_RATE_CCK_ONLY_1M;
 }
 
 static int

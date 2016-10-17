@@ -491,8 +491,6 @@ rtwn_pci_attach_methods(struct rtwn_softc *sc)
 	sc->sc_get_qmap		= rtwn_pci_get_qmap;
 	sc->sc_set_desc_addr	= rtwn_pci_set_desc_addr;
 	sc->sc_drop_incorrect_tx = rtwn_nop_softc;
-
-	sc->rrsr		= R92C_RRSR_RATE_ALL;
 }
 
 static int
