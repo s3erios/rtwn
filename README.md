@@ -7,7 +7,7 @@ Should be compatible with 11.0-RELEASE
 
 1) Clone / download this repository.  
 2) Apply 'patch-usbdevs.diff' to your source tree checkout; e.g.  
-  *cd /usr/src/ && svn patch \<patch-usbdevs.diff location\>*  
+  *cd /usr/src/ && svn patch \<repository location\>/patch-usbdevs.diff*  
 3) Build and install firmware:  
    *cd \<repository location\>/sys/modules/rtwnfw && make depend && make && make install*  
 4) Build and install main module:  
