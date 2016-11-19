@@ -17,7 +17,12 @@ Should be compatible with 11.0-RELEASE
    *cd ../rtwn_usb && make depend && make && make install*   
     - PCI (RTL8188CE):    
     *cd ../rtwn_pci && make depend && make && make install*   
-     
+    
+For ARM users: if you see   
+> error: implicit declaration of function 'cp15_pmccntr_get' is invalid in C99
+
+message, then you need to add 'CONF_CFLAGS=-march=armv7a' to the second make invocation; e.g.:   
+*cd ../rtwn && make depend && make CONF_CFLAGS=-march=armv7a && make install*   
      
    
 ### **How-to-test:**  
