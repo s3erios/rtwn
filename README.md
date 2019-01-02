@@ -15,7 +15,7 @@ Should be compatible with 11.0-RELEASE
 5) Bus-specific modules:   
     - USB (RTL8188CUS/RTL8192CU/RTL8188EU/RTL8812AU/RTL8821AU):   
    *cd ../rtwn_usb && make depend && make && make install*   
-    - PCI (RTL8188CE):    
+    - PCI (RTL8188CE/RTL8188EE):    
     *cd ../rtwn_pci && make depend && make && make install*   
     
 For ARM users: if you see   
