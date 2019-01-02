@@ -334,7 +334,11 @@ rtwn_set_multi(struct rtwn_softc *sc)
 		TAILQ_FOREACH(vap, &ic->ic_vaps, iv_next) {
 			ifp = vap->iv_ifp;
 			if_maddr_rlock(ifp);
+#if __FreeBSD_version >= 1200064
+			CK_STAILQ_FOREACH(ifma, &ifp->if_multiaddrs, ifma_link) {
+#else
 			TAILQ_FOREACH(ifma, &ifp->if_multiaddrs, ifma_link) {
+#endif
 				caddr_t dl;
 				uint8_t pos;
 
