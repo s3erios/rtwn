@@ -313,6 +313,20 @@ rtwn_get_multi_pos(const uint8_t maddr[])
 	return (pos);
 }
 
+#if __FreeBSD_version >= 1300054
+static u_int
+rtwm_hash_maddr(void *arg, struct sockaddr_dl *sdl, u_int cnt)
+{
+	uint32_t *mfilt = arg;
+	uint8_t pos;
+
+	pos = rtwn_get_multi_pos(LLADDR(sdl));
+	mfilt[pos / 32] |= (1 << (pos % 32));
+
+	return (1);
+}
+#endif
+
 void
 rtwn_set_multi(struct rtwn_softc *sc)
 {
@@ -324,13 +338,16 @@ rtwn_set_multi(struct rtwn_softc *sc)
 	/* general structure was copied from ath(4). */
 	if (ic->ic_allmulti == 0) {
 		struct ieee80211vap *vap;
+#if __FreeBSD_version < 1300054
 		struct ifnet *ifp;
 		struct ifmultiaddr *ifma;
+#endif
 
 		/*
 		 * Merge multicast addresses to form the hardware filter.
 		 */
 		mfilt[0] = mfilt[1] = 0;
+#if __FreeBSD_version < 1300054
 		TAILQ_FOREACH(vap, &ic->ic_vaps, iv_next) {
 			ifp = vap->iv_ifp;
 			if_maddr_rlock(ifp);
@@ -350,6 +367,10 @@ rtwn_set_multi(struct rtwn_softc *sc)
 			}
 			if_maddr_runlock(ifp);
 		}
+#else
+		TAILQ_FOREACH(vap, &ic->ic_vaps, iv_next)
+			if_foreach_llmaddr(vap->iv_ifp, rtwm_hash_maddr, mfilt);
+#endif
 	} else
 		mfilt[0] = mfilt[1] = ~0;
 
